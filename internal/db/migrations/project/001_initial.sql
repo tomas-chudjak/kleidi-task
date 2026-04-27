@@ -10,7 +10,7 @@ CREATE TABLE meta (
 CREATE TABLE tasks (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     type         TEXT NOT NULL DEFAULT 'task'
-                 CHECK(type IN ('task', 'bug')),
+                 CHECK(type IN ('task', 'bug', 'feature', 'hotfix')),
     title        TEXT NOT NULL,
     description  TEXT,
     status       TEXT NOT NULL DEFAULT 'todo'

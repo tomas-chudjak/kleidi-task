@@ -41,6 +41,10 @@ kvt init --name "My App"
 ```bash
 kvt add "Implement user auth"           # add a task
 kvt add "CSS broken on mobile" --bug    # add a bug
+kvt add --feature "Dark mode support"    # add a feature
+kvt add --hotfix "Fix crash on start"    # add a hotfix
+kvt add "BUG: login broken"             # auto-detected from prefix
+kvt add "FEAT: dark mode"               # auto-detected (also: FEATURE:, HOTFIX:, TASK:)
 kvt list                                 # list all tasks
 kvt list --status todo --type bug        # filter
 kvt done 1                               # mark as done

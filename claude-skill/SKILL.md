@@ -46,6 +46,12 @@ Use the MCP tools `task_create`, `task_list`, `task_complete`, etc.
 2. Call `task_create(project=current, title="login fails on Firefox", type="bug")`
 3. Confirm: "Created bug #42 in project webapp"
 
+**Tip:** Title prefix auto-detection works too — `task_create(title="BUG: login fails")` creates a bug automatically. Supported prefixes: `BUG:`, `FEATURE:`, `FEAT:`, `HOTFIX:`, `TASK:`.
+
+### "I need a new feature for dark mode"
+1. Call `task_create(project=current, title="Dark mode support", type="feature")`
+2. Confirm: "Created feature #43 in project webapp"
+
 ### "What am I working on?"
 1. Call `task_list(status="doing")`
 2. Format as readable list with project, type, title

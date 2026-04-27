@@ -12,12 +12,10 @@ tasks:
 
   build:
     desc: Build the kvt binary
-    deps: [templ]
     cmds:
       - go build -o {{.BINARY}} ./cmd/kvt
     sources:
       - "**/*.go"
-      - "**/*.templ"
     generates:
       - "{{.BINARY}}"
 

@@ -38,25 +38,63 @@ func TestCreateTask(t *testing.T) {
 	}
 }
 
-func TestCreateBug(t *testing.T) {
+func TestCreateAllTypes(t *testing.T) {
 	testDB := db.NewTestProjectDB(t)
 	svc := NewTaskService(testDB)
 	ctx := context.Background()
 
-	task, err := svc.Create(ctx, CreateTaskInput{
-		Title:  "Login broken",
-		Type:   TypeBug,
-		Source: SourceMCP,
-	})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	tests := []struct {
+		title    string
+		taskType TaskType
+	}{
+		{"Login broken", TypeBug},
+		{"Add dark mode", TypeFeature},
+		{"Fix crash on start", TypeHotfix},
+		{"Regular work", TypeTask},
 	}
 
-	if task.Type != TypeBug {
-		t.Errorf("expected type 'bug', got '%s'", task.Type)
+	for _, tt := range tests {
+		task, err := svc.Create(ctx, CreateTaskInput{
+			Title:  tt.title,
+			Type:   tt.taskType,
+			Source: SourceCLI,
+		})
+		if err != nil {
+			t.Fatalf("creating %s: %v", tt.taskType, err)
+		}
+		if task.Type != tt.taskType {
+			t.Errorf("expected type '%s', got '%s'", tt.taskType, task.Type)
+		}
 	}
-	if task.Source != SourceMCP {
-		t.Errorf("expected source 'mcp', got '%s'", task.Source)
+}
+
+func TestDetectTypeFromTitle(t *testing.T) {
+	tests := []struct {
+		input    string
+		wantType TaskType
+		wantTitle string
+	}{
+		{"BUG: login broken", TypeBug, "login broken"},
+		{"bug: login broken", TypeBug, "login broken"},
+		{"bug login broken", TypeBug, "login broken"},
+		{"FEATURE: dark mode", TypeFeature, "dark mode"},
+		{"feat: dark mode", TypeFeature, "dark mode"},
+		{"feat dark mode", TypeFeature, "dark mode"},
+		{"HOTFIX: crash fix", TypeHotfix, "crash fix"},
+		{"hotfix: crash fix", TypeHotfix, "crash fix"},
+		{"TASK: normal work", TypeTask, "normal work"},
+		{"just a normal title", TypeTask, "just a normal title"},
+		{"buggy behavior", TypeTask, "buggy behavior"}, // "buggy" != "bug "
+	}
+
+	for _, tt := range tests {
+		gotType, gotTitle := DetectTypeFromTitle(tt.input, TypeTask)
+		if gotType != tt.wantType {
+			t.Errorf("DetectTypeFromTitle(%q): type = %s, want %s", tt.input, gotType, tt.wantType)
+		}
+		if gotTitle != tt.wantTitle {
+			t.Errorf("DetectTypeFromTitle(%q): title = %q, want %q", tt.input, gotTitle, tt.wantTitle)
+		}
 	}
 }
 

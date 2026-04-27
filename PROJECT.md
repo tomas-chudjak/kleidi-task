@@ -213,7 +213,7 @@ CREATE TABLE meta (
 CREATE TABLE tasks (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     type         TEXT NOT NULL DEFAULT 'task'
-                 CHECK(type IN ('task', 'bug')),
+                 CHECK(type IN ('task', 'bug', 'feature', 'hotfix')),
     title        TEXT NOT NULL,
     description  TEXT,
     status       TEXT NOT NULL DEFAULT 'todo'
@@ -336,7 +336,7 @@ MCP is the primary interface through which AI assistants access kvik-tasks.
 task_create(
     project: string,           // project slug (or "current")
     title: string,
-    type?: "task" | "bug",     // default: "task"
+    type?: "task" | "bug" | "feature" | "hotfix" | "feature" | "hotfix",  // default: "task", auto-detected from title prefix
     description?: string,
     priority?: number           // default: 0, higher = more important
 ): Task
@@ -345,7 +345,7 @@ task_create(
 task_list(
     project?: string,           // filter by project
     status?: "todo" | "doing" | "done",
-    type?: "task" | "bug",
+    type?: "task" | "bug" | "feature" | "hotfix",
     limit?: number              // default: 50
 ): Task[]
 
@@ -356,7 +356,7 @@ task_update(
     title?: string,
     description?: string,
     status?: "todo" | "doing" | "done",
-    type?: "task" | "bug",
+    type?: "task" | "bug" | "feature" | "hotfix",
     priority?: number
 ): Task
 
@@ -415,7 +415,8 @@ kvt init [--name <name>]    # Create .tasks/ in current dir
 kvt doctor                   # Verify setup, list projects
 
 # Tasks (most common)
-kvt add "Title" [--bug] [--description "..."] [--project <slug>]
+kvt add "Title" [--bug|--feature|--hotfix] [--description "..."] [--project <slug>]
+kvt add "BUG: title"          # auto-detected from prefix (also: FEATURE:, FEAT:, HOTFIX:, TASK:)
 kvt list [--status todo] [--type bug] [--all] [--project <slug>]
 kvt done <id>
 kvt show <id>
@@ -848,15 +849,16 @@ Use the MCP tools `task_create`, `task_list`, `task_complete`, etc.
 - (−) Cross-project queries require aggregation logic
 - (−) DB connection management is more complex
 
-### ADR-002: Bug = task with `type='bug'`
+### ADR-002: Single table with `type` column for all work item types
 
-**Context:** We need to track both bugs and tasks.
+**Context:** We need to track tasks, bugs, features, and hotfixes.
 
-**Decision:** Single `tasks` table, type differentiated by column.
+**Decision:** Single `tasks` table with `type` column: `task`, `bug`, `feature`, `hotfix`. Title prefix detection auto-classifies (e.g., "BUG: title" → bug).
 
 **Consequences:**
 - (+) No schema duplication
-- (+) Conversion task ↔ bug is just an UPDATE
+- (+) Conversion between types is just an UPDATE
+- (+) New types can be added with a migration
 - (−) UI must filter by type
 
 ### ADR-003: HTMX instead of SPA framework
@@ -1067,6 +1069,7 @@ After v1.0 release we'll measure:
 | 2026-04-27 | Rename kviki-css → ahoylog-css | ✅ Approved |
 | 2026-04-27 | Rename .tasky → .tasks, tasky:// → tasks:// | ✅ Approved |
 | 2026-04-27 | All code, comments, and docs in English | ✅ Approved |
+| 2026-04-27 | 4 task types: task, bug, feature, hotfix + title prefix auto-detection | ✅ Approved |
 | TBD | Timezone strategy | ⏳ Open |
 | TBD | Soft delete in MVP? | ⏳ Open |
 | TBD | Cross-project UX (switching vs. aggregation) | ⏳ Open |

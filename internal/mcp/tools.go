@@ -15,7 +15,7 @@ import (
 type TaskCreateInput struct {
 	Project     string `json:"project" jsonschema:"project slug or 'current'"`
 	Title       string `json:"title" jsonschema:"task title"`
-	Type        string `json:"type,omitempty" jsonschema:"task or bug,enum=task,enum=bug"`
+	Type        string `json:"type,omitempty" jsonschema:"work item type,enum=task,enum=bug,enum=feature,enum=hotfix"`
 	Description string `json:"description,omitempty" jsonschema:"task description"`
 	Priority    int64  `json:"priority,omitempty" jsonschema:"higher number means higher priority"`
 }
@@ -23,7 +23,7 @@ type TaskCreateInput struct {
 type TaskListInput struct {
 	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	Status  string `json:"status,omitempty" jsonschema:"filter by status,enum=todo,enum=doing,enum=done"`
-	Type    string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug"`
+	Type    string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix"`
 	Limit   int64  `json:"limit,omitempty" jsonschema:"max results (default 50)"`
 }
 
@@ -36,7 +36,7 @@ type TaskUpdateInput struct {
 	Title       string `json:"title,omitempty" jsonschema:"new title"`
 	Description string `json:"description,omitempty" jsonschema:"new description"`
 	Status      string `json:"status,omitempty" jsonschema:"new status,enum=todo,enum=doing,enum=done"`
-	Type        string `json:"type,omitempty" jsonschema:"new type,enum=task,enum=bug"`
+	Type        string `json:"type,omitempty" jsonschema:"new type,enum=task,enum=bug,enum=feature,enum=hotfix"`
 	Priority    *int64 `json:"priority,omitempty" jsonschema:"new priority"`
 }
 
@@ -133,13 +133,17 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 		return nil, TaskOutput{}, err
 	}
 
+	title := input.Title
 	taskType := core.TypeTask
-	if input.Type == "bug" {
-		taskType = core.TypeBug
+	if input.Type != "" {
+		taskType = core.TaskType(input.Type)
+	} else {
+		// No explicit type — try prefix detection
+		taskType, title = core.DetectTypeFromTitle(title, core.TypeTask)
 	}
 
 	task, err := taskService.Create(ctx, core.CreateTaskInput{
-		Title:       input.Title,
+		Title:       title,
 		Description: input.Description,
 		Type:        taskType,
 		Priority:    input.Priority,

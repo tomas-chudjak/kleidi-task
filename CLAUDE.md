@@ -28,7 +28,7 @@ Registry SQLite (~/.tasks/registry.db) + Per-project SQLite (.tasks/tasks.db)
 
 **Per-project DB with global registry:** Each project has its own SQLite DB in `.tasks/tasks.db`. The global registry at `~/.tasks/registry.db` only maps `slug → path`. Cross-project queries require aggregation.
 
-**Bug = task with `type='bug'`:** Single `tasks` table, differentiated by `type` column.
+**Work item types:** Single `tasks` table with `type` column: `task`, `bug`, `feature`, `hotfix`. Title prefix auto-detection (e.g., "BUG: title" → bug, "FEAT: title" → feature).
 
 ## Build & Development Commands
 

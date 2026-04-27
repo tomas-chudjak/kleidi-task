@@ -12,13 +12,18 @@ const (
 	SourceAPI Source = "api"
 )
 
-// TaskType differentiates between tasks and bugs.
+// TaskType differentiates between tasks, bugs, features, and hotfixes.
 type TaskType string
 
 const (
-	TypeTask TaskType = "task"
-	TypeBug  TaskType = "bug"
+	TypeTask    TaskType = "task"
+	TypeBug     TaskType = "bug"
+	TypeFeature TaskType = "feature"
+	TypeHotfix  TaskType = "hotfix"
 )
+
+// ValidTaskTypes contains all valid task types.
+var ValidTaskTypes = []TaskType{TypeTask, TypeBug, TypeFeature, TypeHotfix}
 
 // TaskStatus represents the lifecycle state of a task.
 type TaskStatus string
