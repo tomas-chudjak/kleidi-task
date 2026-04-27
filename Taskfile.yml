@@ -1,0 +1,90 @@
+version: "3"
+
+vars:
+  BINARY: kvt
+  MODULE: github.com/ahoylog/kvik-tasks
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  build:
+    desc: Build the kvt binary
+    deps: [templ]
+    cmds:
+      - go build -o {{.BINARY}} ./cmd/kvt
+    sources:
+      - "**/*.go"
+      - "**/*.templ"
+    generates:
+      - "{{.BINARY}}"
+
+  run:
+    desc: Build and run kvt serve
+    deps: [build]
+    cmds:
+      - ./{{.BINARY}} serve
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test ./...
+
+  test:verbose:
+    desc: Run all tests with verbose output
+    cmds:
+      - go test -v ./...
+
+  test:cover:
+    desc: Run tests with coverage HTML report
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+      - go tool cover -html=coverage.out -o coverage.html
+      - cmd: echo "Coverage report created at coverage.html"
+
+  sqlc:
+    desc: Generate Go code from SQL queries
+    cmds:
+      - sqlc generate
+    sources:
+      - internal/db/queries/*.sql
+      - sqlc.yaml
+
+  templ:
+    desc: Generate Go code from templ templates
+    cmds:
+      - cmd: templ generate
+        ignore_error: true
+    sources:
+      - "**/*.templ"
+    status:
+      - '! which templ'
+
+  tidy:
+    desc: Tidy Go modules
+    cmds:
+      - go mod tidy
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -f {{.BINARY}}
+      - rm -f coverage.out coverage.html
+
+  lint:
+    desc: Run linters
+    cmds:
+      - go vet ./...
+
+  check:
+    desc: Run all checks (lint + test)
+    cmds:
+      - task: lint
+      - task: test
+
+  dev:
+    desc: Development mode with file watching (requires air)
+    cmds:
+      - air

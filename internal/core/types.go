@@ -1,0 +1,93 @@
+package core
+
+import "time"
+
+// Source represents the entry point that created or modified a task.
+type Source string
+
+const (
+	SourceCLI Source = "cli"
+	SourceMCP Source = "mcp"
+	SourceUI  Source = "ui"
+	SourceAPI Source = "api"
+)
+
+// TaskType differentiates between tasks and bugs.
+type TaskType string
+
+const (
+	TypeTask TaskType = "task"
+	TypeBug  TaskType = "bug"
+)
+
+// TaskStatus represents the lifecycle state of a task.
+type TaskStatus string
+
+const (
+	StatusTodo  TaskStatus = "todo"
+	StatusDoing TaskStatus = "doing"
+	StatusDone  TaskStatus = "done"
+)
+
+// Task is the domain representation of a task or bug.
+type Task struct {
+	ID          int64      `json:"id"`
+	Type        TaskType   `json:"type"`
+	Title       string     `json:"title"`
+	Description string     `json:"description,omitempty"`
+	Status      TaskStatus `json:"status"`
+	Priority    int64      `json:"priority"`
+	Source      Source     `json:"source"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
+	CreatedBy   int64      `json:"created_by"`
+	AssignedTo  *int64     `json:"assigned_to,omitempty"`
+}
+
+// CreateTaskInput holds the parameters for creating a new task.
+type CreateTaskInput struct {
+	Title       string     `json:"title"`
+	Description string     `json:"description,omitempty"`
+	Type        TaskType   `json:"type"`
+	Priority    int64      `json:"priority"`
+	Source      Source     `json:"source"` // required, set by entry point
+}
+
+// UpdateTaskInput holds the parameters for updating a task.
+// Nil fields are not updated.
+type UpdateTaskInput struct {
+	Title       *string     `json:"title,omitempty"`
+	Description *string     `json:"description,omitempty"`
+	Status      *TaskStatus `json:"status,omitempty"`
+	Type        *TaskType   `json:"type,omitempty"`
+	Priority    *int64      `json:"priority,omitempty"`
+}
+
+// ListTasksFilter holds filter parameters for listing tasks.
+type ListTasksFilter struct {
+	Status *TaskStatus `json:"status,omitempty"`
+	Type   *TaskType   `json:"type,omitempty"`
+	Limit  int64       `json:"limit"`
+}
+
+// Project represents a registered project in the global registry.
+type Project struct {
+	ID               int64     `json:"id"`
+	Slug             string    `json:"slug"`
+	Name             string    `json:"name"`
+	Path             string    `json:"path"`
+	LastSeenAt       time.Time `json:"last_seen_at"`
+	CreatedAt        time.Time `json:"created_at"`
+	CachedTodoCount  int64     `json:"cached_todo_count"`
+	CachedDoingCount int64     `json:"cached_doing_count"`
+	CachedTotalCount int64     `json:"cached_total_count"`
+}
+
+// ProjectStats holds aggregate statistics for a project.
+type ProjectStats struct {
+	Todo     int64 `json:"todo"`
+	Doing    int64 `json:"doing"`
+	Done     int64 `json:"done"`
+	BugsOpen int64 `json:"bugs_open"`
+}

@@ -1,0 +1,30 @@
+# Binary
+kvt
+kvt.exe
+
+# Database files (per-project and registry)
+.tasks/
+*.db
+*.db-wal
+*.db-shm
+
+# Test & coverage
+coverage.out
+coverage.html
+
+# Go
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
