@@ -1,0 +1,49 @@
+version: 2
+
+project_name: kvik-tasks
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: kvt
+    main: ./cmd/kvt
+    binary: kvt
+    ldflags:
+      - -s -w -X github.com/ahoylog/kvik-tasks/internal/cli.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: default
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: ahoylog
+    name: kvik-tasks
