@@ -64,6 +64,13 @@ tasks:
     cmds:
       - go mod tidy
 
+  install:
+    desc: Build and install kvt to /usr/local/bin
+    deps: [build]
+    cmds:
+      - cp {{.BINARY}} /usr/local/bin/{{.BINARY}}
+      - echo "Installed kvt $(kvt version) to /usr/local/bin/"
+
   clean:
     desc: Clean build artifacts
     cmds:
