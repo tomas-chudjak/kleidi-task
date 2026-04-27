@@ -3,6 +3,7 @@ module github.com/ahoylog/kvik-tasks
 go 1.25.7
 
 require (
+	github.com/go-chi/chi/v5 v5.2.5
 	github.com/modelcontextprotocol/go-sdk v1.5.0
 	github.com/pressly/goose/v3 v3.27.1
 	github.com/spf13/cobra v1.10.2
