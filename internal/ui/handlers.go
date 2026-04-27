@@ -61,7 +61,17 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
+	filter := core.ListTasksFilter{Limit: 100}
+	if s := r.URL.Query().Get("status"); s != "" {
+		status := core.TaskStatus(s)
+		filter.Status = &status
+	}
+	if t := r.URL.Query().Get("type"); t != "" {
+		taskType := core.TaskType(t)
+		filter.Type = &taskType
+	}
+
+	tasks, err := taskService.List(r.Context(), filter)
 	if err != nil {
 		slog.Error("listing tasks", "err", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -77,6 +87,38 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.ProjectPage(project, tasks, stats).Render(r.Context(), w)
+}
+
+// TaskDetail renders a single task page.
+func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	task, err := taskService.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskPage(project, task).Render(r.Context(), w)
 }
 
 // CreateTask handles HTMX task creation — accepts JSON, returns HTML task list.
@@ -189,4 +231,88 @@ func (h *UIHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
+}
+
+// UpdateTaskField handles inline field updates from the task detail page.
+func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input map[string]any
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	updateInput := core.UpdateTaskInput{}
+	if v, ok := input["status"].(string); ok {
+		s := core.TaskStatus(v)
+		updateInput.Status = &s
+	}
+	if v, ok := input["type"].(string); ok {
+		t := core.TaskType(v)
+		updateInput.Type = &t
+	}
+	if v, ok := input["priority"].(float64); ok {
+		p := int64(v)
+		updateInput.Priority = &p
+	}
+	if v, ok := input["title"].(string); ok {
+		updateInput.Title = &v
+	}
+	if v, ok := input["description"].(string); ok {
+		updateInput.Description = &v
+	}
+
+	task, err := taskService.Update(r.Context(), id, updateInput)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskPage(project, task).Render(r.Context(), w)
+}
+
+// DeleteTaskRedirect handles task deletion from detail page — deletes and redirects to project.
+func (h *UIHandler) DeleteTaskRedirect(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	taskService.Delete(r.Context(), id)
+	http.Redirect(w, r, "/p/"+slug, http.StatusSeeOther)
 }

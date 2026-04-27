@@ -9,6 +9,19 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 
 		@StatsBar(stats)
 
+		<!-- Filter bar -->
+		<div class="kvt-filters">
+			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-filter-link">All</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=todo") } class="kvt-filter-link">Todo</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=doing") } class="kvt-filter-link">Doing</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=done") } class="kvt-filter-link">Done</a>
+			<span class="kvt-filter-sep">|</span>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=task") } class="kvt-filter-link">Tasks</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=bug") } class="kvt-filter-link">Bugs</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=feature") } class="kvt-filter-link">Features</a>
+			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=hotfix") } class="kvt-filter-link">Hotfixes</a>
+		</div>
+
 		<form
 			hx-post={ "/p/" + project.Slug + "/tasks" }
 			hx-target="#task-list"
@@ -18,7 +31,7 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 			class="kvt-add-form"
 		>
 			<input type="text" name="title" placeholder="Add a task... (prefix with BUG:, FEATURE:, HOTFIX:)" required/>
-			<button type="submit" class="k-button k-button--sm">Add</button>
+			<button type="submit" class="kvt-add-btn">Add</button>
 		</form>
 
 		<div id="task-list" class="kvt-task-list">
@@ -28,43 +41,67 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 }
 
 templ StatsBar(stats core.ProjectStats) {
-	<div id="stats-bar" class="k-grid k-grid--4 kvt-stats">
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
-			<div class="kvt-stat-label">Todo</div>
+	<div id="stats-bar" class="kvt-stats">
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+				<div class="kvt-stat-label">Todo</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
-			<div class="kvt-stat-label">Doing</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--doing"><i class="icon icon-play"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+				<div class="kvt-stat-label">In Progress</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
-			<div class="kvt-stat-label">Done</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+				<div class="kvt-stat-label">Done</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
-			<div class="kvt-stat-label">Bugs</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+				<div class="kvt-stat-label">Open Bugs</div>
+			</div>
 		</div>
 	</div>
 }
 
 templ StatsBarOOB(stats core.ProjectStats) {
-	<div id="stats-bar" hx-swap-oob="true" class="k-grid k-grid--4 kvt-stats">
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
-			<div class="kvt-stat-label">Todo</div>
+	<div id="stats-bar" hx-swap-oob="true" class="kvt-stats">
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+				<div class="kvt-stat-label">Todo</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
-			<div class="kvt-stat-label">Doing</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--doing"><i class="icon icon-play"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+				<div class="kvt-stat-label">In Progress</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
-			<div class="kvt-stat-label">Done</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+				<div class="kvt-stat-label">Done</div>
+			</div>
 		</div>
-		<div class="kvt-stat">
-			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
-			<div class="kvt-stat-label">Bugs</div>
+		<div class="kvt-stat-card">
+			<div class="kvt-stat-icon kvt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
+			<div>
+				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+				<div class="kvt-stat-label">Open Bugs</div>
+			</div>
 		</div>
 	</div>
 }
@@ -83,7 +120,7 @@ templ TaskRow(task core.Task, slug string) {
 	<div class="kvt-task-row" id={ fmt.Sprintf("task-%d", task.ID) }>
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
-		<span class="kvt-task-title">{ task.Title }</span>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
 		if task.Priority > 0 {
 			<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
 		}
