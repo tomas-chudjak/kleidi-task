@@ -36,13 +36,13 @@ func Layout(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 9, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 9, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script></head><body><div class=\"kvt-app\"><aside class=\"kvt-sidebar\"><a href=\"/\" class=\"kvt-sidebar-logo\">kvt</a><nav class=\"kvt-sidebar-nav\"><a href=\"/\" class=\"kvt-sidebar-link\" title=\"Dashboard\"><i class=\"icon icon-layout-dashboard\"></i></a> <a href=\"/\" class=\"kvt-sidebar-link\" title=\"Settings\"><i class=\"icon icon-settings\"></i></a></nav></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-title\">kvik-tasks</div><div class=\"kvt-topbar-actions\"><a href=\"/\">Dashboard</a></div></header><main class=\"kvt-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script></head><body><div class=\"kvt-app\"><aside class=\"kvt-sidebar\"><a href=\"/\" class=\"kvt-sidebar-logo\">kvt</a><nav class=\"kvt-sidebar-nav\"><a href=\"/\" class=\"kvt-sidebar-link\" title=\"Dashboard\"><i class=\"icon icon-layout-dashboard\"></i></a> <a href=\"/\" class=\"kvt-sidebar-link\" title=\"Settings\"><i class=\"icon icon-settings\"></i></a></nav></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"/\">Dashboard</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +50,7 @@ func Layout(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main></div></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main></div></div><script>\n\tdocument.body.addEventListener('htmx:afterRequest', function(e) {\n\t\tvar el = document.getElementById('save-indicator');\n\t\tif (el && e.detail.elt.closest && e.detail.elt.closest('.kvt-task-layout, .kvt-toolbar')) {\n\t\t\tel.textContent = 'Saved';\n\t\t\tel.classList.add('kvt-save-indicator--visible');\n\t\t\tclearTimeout(el._t);\n\t\t\tel._t = setTimeout(function() {\n\t\t\t\tel.classList.remove('kvt-save-indicator--visible');\n\t\t\t}, 2000);\n\t\t}\n\t});\n\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

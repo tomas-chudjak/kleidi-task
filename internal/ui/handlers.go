@@ -85,8 +85,13 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pf := templates.ProjectFilter{
+		Status: r.URL.Query().Get("status"),
+		Type:   r.URL.Query().Get("type"),
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ProjectPage(project, tasks, stats).Render(r.Context(), w)
+	templates.ProjectPage(project, tasks, stats, pf).Render(r.Context(), w)
 }
 
 // TaskDetail renders a single task page.

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ahoylog/kvik-tasks/internal/config"
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/ahoylog/kvik-tasks/internal/db"
 	"github.com/spf13/cobra"
@@ -27,20 +28,6 @@ var addCmd = &cobra.Command{
 		description, _ := cmd.Flags().GetString("description")
 		priority, _ := cmd.Flags().GetInt64("priority")
 
-		// Determine type from flags
-		taskType := core.TypeTask
-		switch {
-		case flagChanged(cmd, "bug"):
-			taskType = core.TypeBug
-		case flagChanged(cmd, "feature"):
-			taskType = core.TypeFeature
-		case flagChanged(cmd, "hotfix"):
-			taskType = core.TypeHotfix
-		default:
-			// No flag set — try prefix detection
-			taskType, title = core.DetectTypeFromTitle(title, core.TypeTask)
-		}
-
 		manager, err := db.NewManager()
 		if err != nil {
 			return fmt.Errorf("initializing database: %w", err)
@@ -57,6 +44,36 @@ var addCmd = &cobra.Command{
 		projectPath, err := projectService.DetectProject(cwd)
 		if err != nil {
 			return err
+		}
+
+		// Load project config for defaults and custom types
+		cfg := config.Load(projectPath)
+
+		// Apply default priority if not set via flag
+		if !flagChanged(cmd, "priority") && cfg.DefaultPriority != 0 {
+			priority = int64(cfg.DefaultPriority)
+		}
+
+		// Build custom type prefixes from config
+		var extraPrefixes []core.TypePrefix
+		for _, ct := range cfg.CustomTypes {
+			extraPrefixes = append(extraPrefixes, core.TypePrefix{
+				Prefix:   ct.Prefix,
+				TaskType: core.TaskType(ct.Name),
+			})
+		}
+
+		// Determine type from flags or prefix detection
+		taskType := core.TypeTask
+		switch {
+		case flagChanged(cmd, "bug"):
+			taskType = core.TypeBug
+		case flagChanged(cmd, "feature"):
+			taskType = core.TypeFeature
+		case flagChanged(cmd, "hotfix"):
+			taskType = core.TypeHotfix
+		default:
+			taskType, title = core.DetectTypeFromTitle(title, core.TypeTask, extraPrefixes...)
 		}
 
 		taskService, err := projectService.TaskServiceFor(projectPath)

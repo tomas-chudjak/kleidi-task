@@ -24,16 +24,29 @@ templ Layout(title string) {
 			</aside>
 			<div class="kvt-main">
 				<header class="kvt-topbar">
-					<div class="kvt-topbar-title">kvik-tasks</div>
 					<div class="kvt-topbar-actions">
 						<a href="/">Dashboard</a>
 					</div>
+					<div class="kvt-topbar-title">kvik-tasks</div>
 				</header>
 				<main class="kvt-content">
 					{ children... }
 				</main>
 			</div>
 		</div>
+	<script>
+	document.body.addEventListener('htmx:afterRequest', function(e) {
+		var el = document.getElementById('save-indicator');
+		if (el && e.detail.elt.closest && e.detail.elt.closest('.kvt-task-layout, .kvt-toolbar')) {
+			el.textContent = 'Saved';
+			el.classList.add('kvt-save-indicator--visible');
+			clearTimeout(el._t);
+			el._t = setTimeout(function() {
+				el.classList.remove('kvt-save-indicator--visible');
+			}, 2000);
+		}
+	});
+	</script>
 	</body>
 	</html>
 }

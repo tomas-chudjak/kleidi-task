@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/ahoylog/kvik-tasks/internal/api"
+	"github.com/ahoylog/kvik-tasks/internal/config"
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/ahoylog/kvik-tasks/internal/db"
 	"github.com/spf13/cobra"
@@ -17,7 +18,11 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start HTTP server (REST API + UI)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		port, _ := cmd.Flags().GetInt("port")
+		cfg := config.LoadGlobal()
+		port := cfg.Port
+		if cmd.Flags().Changed("port") {
+			port, _ = cmd.Flags().GetInt("port")
+		}
 		addr := fmt.Sprintf("127.0.0.1:%d", port)
 
 		manager, err := db.NewManager()

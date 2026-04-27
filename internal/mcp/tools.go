@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ahoylog/kvik-tasks/internal/config"
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -344,13 +345,23 @@ func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
 		}
 		projectPath = p.Path
 	} else {
+		// Try cwd first
 		cwd, err := os.Getwd()
-		if err != nil {
-			return nil, fmt.Errorf("getting working directory: %w", err)
+		if err == nil {
+			projectPath, err = s.projectService.DetectProject(cwd)
 		}
-		projectPath, err = s.projectService.DetectProject(cwd)
-		if err != nil {
-			return nil, err
+		// Fall back to default project from config
+		if err != nil || projectPath == "" {
+			cfg := config.LoadGlobal()
+			if cfg.DefaultProject != "" {
+				p, slugErr := s.projectService.GetBySlug(cfg.DefaultProject)
+				if slugErr == nil {
+					projectPath = p.Path
+				}
+			}
+			if projectPath == "" {
+				return nil, core.ErrNoProject
+			}
 		}
 	}
 

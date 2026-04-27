@@ -5,121 +5,158 @@ import "fmt"
 
 templ TaskPage(project core.Project, task core.Task) {
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title)) {
-		<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-			<h2 class="kvt-title" style="margin-bottom:0;">
+		<!-- Task toolbar -->
+		<div class="kvt-toolbar">
+			<div class="kvt-toolbar-left">
+				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
 				<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
-				{ task.Title }
-			</h2>
-			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i> Back</a>
+				<span class="kvt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+				<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
+			</div>
+			<div class="kvt-toolbar-right">
+				if task.Status != core.StatusDone {
+					<button
+						class="kvt-toolbar-btn kvt-toolbar-btn--success"
+						hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", project.Slug, task.ID) }
+						hx-target="body"
+						hx-swap="outerHTML"
+						hx-push-url="false"
+					>
+						<i class="icon icon-check-circle"></i> Done
+					</button>
+				}
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/delete", project.Slug, task.ID)) }
+					class="kvt-toolbar-btn kvt-toolbar-btn--danger"
+					onclick="return confirm('Delete this task permanently?')"
+				>
+					<i class="icon icon-trash"></i>
+				</a>
+			</div>
 		</div>
 
-		<div class="kvt-detail-grid">
-			<div style="display:flex;flex-direction:column;gap:16px;">
+		<!-- Save indicator -->
+		<div id="save-indicator" class="kvt-save-indicator"></div>
+
+		<!-- Two-column layout: content + sidebar -->
+		<div class="kvt-task-layout">
+			<!-- Main content (left) -->
+			<div class="kvt-task-main">
 				<div class="kvt-detail-card">
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Status</span>
-						<select
-							class="kvt-inline-select"
-							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
-							hx-target="body"
-							hx-swap="outerHTML"
-							hx-ext="json-enc"
-							name="status"
-							hx-trigger="change"
-						>
-							<option value="todo" selected?={ task.Status == core.StatusTodo }>todo</option>
-							<option value="doing" selected?={ task.Status == core.StatusDoing }>doing</option>
-							<option value="done" selected?={ task.Status == core.StatusDone }>done</option>
-						</select>
-					</div>
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Type</span>
-						<select
-							class="kvt-inline-select"
-							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
-							hx-target="body"
-							hx-swap="outerHTML"
-							hx-ext="json-enc"
-							name="type"
-							hx-trigger="change"
-						>
-							<option value="task" selected?={ task.Type == core.TypeTask }>task</option>
-							<option value="bug" selected?={ task.Type == core.TypeBug }>bug</option>
-							<option value="feature" selected?={ task.Type == core.TypeFeature }>feature</option>
-							<option value="hotfix" selected?={ task.Type == core.TypeHotfix }>hotfix</option>
-						</select>
-					</div>
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Priority</span>
+					<div class="kvt-field" style="margin-bottom:16px;">
+						<label class="kvt-field-label">Title</label>
 						<input
-							type="number"
-							class="kvt-inline-input"
-							value={ fmt.Sprintf("%d", task.Priority) }
+							type="text"
+							class="kvt-input kvt-input--title"
+							value={ task.Title }
 							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 							hx-target="body"
 							hx-swap="outerHTML"
 							hx-ext="json-enc"
-							name="priority"
+							name="title"
 							hx-trigger="change"
-							min="0"
-							style="width:4rem;"
 						/>
 					</div>
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Source</span>
-						<span class="kvt-detail-mono">{ string(task.Source) }</span>
-					</div>
-				</div>
-
-				if task.Description != "" {
-					<div class="kvt-detail-card">
-						<div class="kvt-detail-label" style="margin-bottom:8px;">Description</div>
-						<div>{ task.Description }</div>
-					</div>
-				}
-			</div>
-
-			<div style="display:flex;flex-direction:column;gap:16px;">
-				<div class="kvt-detail-card">
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Created</span>
-						<span class="kvt-detail-mono">{ task.CreatedAt.Format("2006-01-02 15:04") }</span>
-					</div>
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">Updated</span>
-						<span class="kvt-detail-mono">{ task.UpdatedAt.Format("2006-01-02 15:04") }</span>
-					</div>
-					if task.CompletedAt != nil {
-						<div class="kvt-detail-row">
-							<span class="kvt-detail-label">Completed</span>
-							<span class="kvt-detail-mono">{ task.CompletedAt.Format("2006-01-02 15:04") }</span>
-						</div>
-					}
-					<div class="kvt-detail-row">
-						<span class="kvt-detail-label">ID</span>
-						<span class="kvt-detail-mono">#{ fmt.Sprintf("%d", task.ID) }</span>
-					</div>
-				</div>
-
-				<div class="kvt-detail-actions">
-					if task.Status != core.StatusDone {
-						<button
-							class="kvt-btn-action kvt-btn-action--primary"
-							hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", project.Slug, task.ID) }
+					<div class="kvt-field">
+						<label class="kvt-field-label">Description</label>
+						<textarea
+							class="kvt-textarea"
+							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 							hx-target="body"
 							hx-swap="outerHTML"
-							hx-push-url="false"
-						>
-							Mark as done
-						</button>
-					}
-					<a
-						href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/delete", project.Slug, task.ID)) }
-						class="kvt-btn-action kvt-btn-action--danger"
-						onclick="return confirm('Delete this task permanently?')"
-					>
-						Delete
-					</a>
+							hx-ext="json-enc"
+							name="description"
+							hx-trigger="change"
+							rows="6"
+							placeholder="Add a description..."
+						>{ task.Description }</textarea>
+					</div>
+				</div>
+			</div>
+
+			<!-- Properties sidebar (right) -->
+			<div class="kvt-task-sidebar">
+				<div class="kvt-detail-card">
+					<div class="kvt-detail-fields">
+						<div class="kvt-field">
+							<label class="kvt-field-label">Status</label>
+							<div class="kvt-select-wrap">
+								<select
+									class="kvt-select"
+									hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
+									hx-target="body"
+									hx-swap="outerHTML"
+									hx-ext="json-enc"
+									name="status"
+									hx-trigger="change"
+								>
+									<option value="todo" selected?={ task.Status == core.StatusTodo }>Todo</option>
+									<option value="doing" selected?={ task.Status == core.StatusDoing }>In Progress</option>
+									<option value="done" selected?={ task.Status == core.StatusDone }>Done</option>
+								</select>
+								<i class="icon icon-chevron-down kvt-select-icon"></i>
+							</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Type</label>
+							<div class="kvt-select-wrap">
+								<select
+									class="kvt-select"
+									hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
+									hx-target="body"
+									hx-swap="outerHTML"
+									hx-ext="json-enc"
+									name="type"
+									hx-trigger="change"
+								>
+									<option value="task" selected?={ task.Type == core.TypeTask }>Task</option>
+									<option value="bug" selected?={ task.Type == core.TypeBug }>Bug</option>
+									<option value="feature" selected?={ task.Type == core.TypeFeature }>Feature</option>
+									<option value="hotfix" selected?={ task.Type == core.TypeHotfix }>Hotfix</option>
+								</select>
+								<i class="icon icon-chevron-down kvt-select-icon"></i>
+							</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Priority</label>
+							<input
+								type="number"
+								class="kvt-input"
+								value={ fmt.Sprintf("%d", task.Priority) }
+								hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
+								hx-target="body"
+								hx-swap="outerHTML"
+								hx-ext="json-enc"
+								name="priority"
+								hx-trigger="change"
+								min="0"
+								placeholder="0"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="kvt-detail-card">
+					<div class="kvt-detail-fields">
+						<div class="kvt-field">
+							<label class="kvt-field-label">Source</label>
+							<div class="kvt-field-value">{ string(task.Source) }</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Created</label>
+							<div class="kvt-field-value kvt-field-value--mono">{ task.CreatedAt.Format("2006-01-02 15:04") }</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Updated</label>
+							<div class="kvt-field-value kvt-field-value--mono">{ task.UpdatedAt.Format("2006-01-02 15:04") }</div>
+						</div>
+						if task.CompletedAt != nil {
+							<div class="kvt-field">
+								<label class="kvt-field-label">Completed</label>
+								<div class="kvt-field-value kvt-field-value--mono">{ task.CompletedAt.Format("2006-01-02 15:04") }</div>
+							</div>
+						}
+					</div>
 				</div>
 			</div>
 		</div>

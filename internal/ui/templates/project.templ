@@ -3,7 +3,53 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats) {
+type ProjectFilter struct {
+	Status string
+	Type   string
+}
+
+func filterClass(active bool) string {
+	if active {
+		return "kvt-filter-link kvt-filter-link--active"
+	}
+	return "kvt-filter-link"
+}
+
+func statusURL(slug, status, currentType string) string {
+	base := "/p/" + slug
+	if status == "" && currentType == "" {
+		return base
+	}
+	q := "?"
+	if status != "" {
+		q += "status=" + status
+		if currentType != "" {
+			q += "&type=" + currentType
+		}
+	} else if currentType != "" {
+		q += "type=" + currentType
+	}
+	return base + q
+}
+
+func typeURL(slug, typ, currentStatus string) string {
+	base := "/p/" + slug
+	if typ == "" && currentStatus == "" {
+		return base
+	}
+	q := "?"
+	if currentStatus != "" {
+		q += "status=" + currentStatus
+		if typ != "" {
+			q += "&type=" + typ
+		}
+	} else if typ != "" {
+		q += "type=" + typ
+	}
+	return base + q
+}
+
+templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter) {
 	@Layout(project.Name) {
 		<h2 class="kvt-title">{ project.Name }</h2>
 
@@ -11,15 +57,16 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 
 		<!-- Filter bar -->
 		<div class="kvt-filters">
-			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-filter-link">All</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=todo") } class="kvt-filter-link">Todo</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=doing") } class="kvt-filter-link">Doing</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?status=done") } class="kvt-filter-link">Done</a>
+			<a href={ templ.SafeURL(statusURL(project.Slug, "", "")) } class={ filterClass(filter.Status == "" && filter.Type == "") }>All</a>
+			<a href={ templ.SafeURL(statusURL(project.Slug, "todo", filter.Type)) } class={ filterClass(filter.Status == "todo") }>Todo</a>
+			<a href={ templ.SafeURL(statusURL(project.Slug, "doing", filter.Type)) } class={ filterClass(filter.Status == "doing") }>Doing</a>
+			<a href={ templ.SafeURL(statusURL(project.Slug, "done", filter.Type)) } class={ filterClass(filter.Status == "done") }>Done</a>
 			<span class="kvt-filter-sep">|</span>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=task") } class="kvt-filter-link">Tasks</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=bug") } class="kvt-filter-link">Bugs</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=feature") } class="kvt-filter-link">Features</a>
-			<a href={ templ.SafeURL("/p/" + project.Slug + "?type=hotfix") } class="kvt-filter-link">Hotfixes</a>
+			<a href={ templ.SafeURL(typeURL(project.Slug, "", filter.Status)) } class={ filterClass(filter.Type == "") }>All types</a>
+			<a href={ templ.SafeURL(typeURL(project.Slug, "task", filter.Status)) } class={ filterClass(filter.Type == "task") }>Tasks</a>
+			<a href={ templ.SafeURL(typeURL(project.Slug, "bug", filter.Status)) } class={ filterClass(filter.Type == "bug") }>Bugs</a>
+			<a href={ templ.SafeURL(typeURL(project.Slug, "feature", filter.Status)) } class={ filterClass(filter.Type == "feature") }>Features</a>
+			<a href={ templ.SafeURL(typeURL(project.Slug, "hotfix", filter.Status)) } class={ filterClass(filter.Type == "hotfix") }>Hotfixes</a>
 		</div>
 
 		<form
