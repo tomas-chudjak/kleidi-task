@@ -28,10 +28,12 @@ type TaskListInput struct {
 }
 
 type TaskGetInput struct {
-	ID int64 `json:"id" jsonschema:"task ID"`
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID"`
 }
 
 type TaskUpdateInput struct {
+	Project     string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	ID          int64  `json:"id" jsonschema:"task ID"`
 	Title       string `json:"title,omitempty" jsonschema:"new title"`
 	Description string `json:"description,omitempty" jsonschema:"new description"`
@@ -41,11 +43,13 @@ type TaskUpdateInput struct {
 }
 
 type TaskCompleteInput struct {
-	ID int64 `json:"id" jsonschema:"task ID"`
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID"`
 }
 
 type TaskDeleteInput struct {
-	ID int64 `json:"id" jsonschema:"task ID"`
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID"`
 }
 
 type ProjectStatsInput struct {
@@ -182,7 +186,7 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 }
 
 func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input TaskGetInput) (*mcp.CallToolResult, TaskOutput, error) {
-	taskService, err := s.resolveCurrentTaskService()
+	taskService, err := s.resolveTaskService(input.Project)
 	if err != nil {
 		return nil, TaskOutput{}, err
 	}
@@ -196,7 +200,7 @@ func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input Ta
 }
 
 func (s *Server) taskUpdate(ctx context.Context, req *mcp.CallToolRequest, input TaskUpdateInput) (*mcp.CallToolResult, TaskOutput, error) {
-	taskService, err := s.resolveCurrentTaskService()
+	taskService, err := s.resolveTaskService(input.Project)
 	if err != nil {
 		return nil, TaskOutput{}, err
 	}
@@ -229,7 +233,7 @@ func (s *Server) taskUpdate(ctx context.Context, req *mcp.CallToolRequest, input
 }
 
 func (s *Server) taskComplete(ctx context.Context, req *mcp.CallToolRequest, input TaskCompleteInput) (*mcp.CallToolResult, TaskOutput, error) {
-	taskService, err := s.resolveCurrentTaskService()
+	taskService, err := s.resolveTaskService(input.Project)
 	if err != nil {
 		return nil, TaskOutput{}, err
 	}
@@ -243,7 +247,7 @@ func (s *Server) taskComplete(ctx context.Context, req *mcp.CallToolRequest, inp
 }
 
 func (s *Server) taskDelete(ctx context.Context, req *mcp.CallToolRequest, input TaskDeleteInput) (*mcp.CallToolResult, DeleteOutput, error) {
-	taskService, err := s.resolveCurrentTaskService()
+	taskService, err := s.resolveTaskService(input.Project)
 	if err != nil {
 		return nil, DeleteOutput{}, err
 	}
@@ -332,7 +336,6 @@ func (s *Server) projectStats(ctx context.Context, req *mcp.CallToolRequest, inp
 
 func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
 	var projectPath string
-	var err error
 
 	if project != "" && project != "current" {
 		p, err := s.projectService.GetBySlug(project)
@@ -350,13 +353,8 @@ func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
 			return nil, err
 		}
 	}
-	_ = err
 
 	return s.projectService.TaskServiceFor(projectPath)
-}
-
-func (s *Server) resolveCurrentTaskService() (*core.TaskService, error) {
-	return s.resolveTaskService("")
 }
 
 func textResult(text string) *mcp.CallToolResult {

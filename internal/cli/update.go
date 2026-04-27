@@ -92,7 +92,7 @@ func init() {
 	updateCmd.Flags().String("title", "", "New title")
 	updateCmd.Flags().StringP("description", "d", "", "New description")
 	updateCmd.Flags().String("status", "", "New status (todo, doing, done)")
-	updateCmd.Flags().String("type", "", "New type (task, bug)")
+	updateCmd.Flags().String("type", "", "New type (task, bug, feature, hotfix)")
 	updateCmd.Flags().Int64P("priority", "p", 0, "New priority")
 	rootCmd.AddCommand(updateCmd)
 }
