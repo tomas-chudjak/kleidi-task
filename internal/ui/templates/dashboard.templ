@@ -3,7 +3,12 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ Dashboard(projects []core.Project) {
+type DashboardProject struct {
+	Project core.Project
+	Stats   core.ProjectStats
+}
+
+templ Dashboard(projects []DashboardProject) {
 	@Layout("Dashboard") {
 		<h2 class="kvt-title">Projects</h2>
 		if len(projects) == 0 {
@@ -12,23 +17,31 @@ templ Dashboard(projects []core.Project) {
 				<p>Run <code>kvt init</code> in a project directory to get started.</p>
 			</div>
 		} else {
-			<div class="k-stack">
-				for _, p := range projects {
-					<a href={ templ.SafeURL("/p/" + p.Slug) } class="kvt-project-card">
-						<div class="kvt-project-card-inner">
-							<div>
-								<div class="kvt-project-name">{ p.Name }</div>
-								<div class="kvt-project-meta">{ p.Slug } — { p.Path }</div>
-							</div>
-							<div class="kvt-project-stats">
-								<div class="kvt-stat">
-									<div class="kvt-stat-value">{ fmt.Sprintf("%d", p.CachedTodoCount) }</div>
-									<div class="kvt-stat-label">todo</div>
+			<div class="k-grid k-grid--2">
+				for _, dp := range projects {
+					<a href={ templ.SafeURL("/p/" + dp.Project.Slug) } class="kvt-project-card">
+						<div class="k-stack k-stack--sm">
+							<div class="kvt-project-name">{ dp.Project.Name }</div>
+							<div class="kvt-project-meta">{ dp.Project.Slug }</div>
+							<div class="k-cluster k-cluster--sm kvt-project-stats-row">
+								<div class="kvt-mini-stat">
+									<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Todo) }</span>
+									<span class="kvt-mini-stat-label">todo</span>
 								</div>
-								<div class="kvt-stat">
-									<div class="kvt-stat-value">{ fmt.Sprintf("%d", p.CachedDoingCount) }</div>
-									<div class="kvt-stat-label">doing</div>
+								<div class="kvt-mini-stat">
+									<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Doing) }</span>
+									<span class="kvt-mini-stat-label">doing</span>
 								</div>
+								<div class="kvt-mini-stat">
+									<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Done) }</span>
+									<span class="kvt-mini-stat-label">done</span>
+								</div>
+								if dp.Stats.BugsOpen > 0 {
+									<div class="kvt-mini-stat kvt-mini-stat--danger">
+										<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.BugsOpen) }</span>
+										<span class="kvt-mini-stat-label">bugs</span>
+									</div>
+								}
 							</div>
 						</div>
 					</a>

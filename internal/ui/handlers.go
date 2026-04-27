@@ -16,7 +16,7 @@ type UIHandler struct {
 	projectService *core.ProjectService
 }
 
-// Dashboard renders the main page with all projects.
+// Dashboard renders the main page with all projects and live stats.
 func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	projects, err := h.projectService.List()
 	if err != nil {
@@ -25,8 +25,22 @@ func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Compute live stats for each project
+	var items []templates.DashboardProject
+	for _, p := range projects {
+		dp := templates.DashboardProject{Project: p}
+		taskService, err := h.projectService.TaskServiceFor(p.Path)
+		if err == nil {
+			stats, err := taskService.Stats(r.Context())
+			if err == nil {
+				dp.Stats = stats
+			}
+		}
+		items = append(items, dp)
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.Dashboard(projects).Render(r.Context(), w)
+	templates.Dashboard(items).Render(r.Context(), w)
 }
 
 // Project renders the project page with tasks.
@@ -141,5 +155,38 @@ func (h *UIHandler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.TaskRow(task, slug).Render(r.Context(), w)
+	templates.StatsBarOOB(stats).Render(r.Context(), w)
+}
+
+// DeleteTask handles HTMX task deletion — returns empty string to remove the row + OOB stats.
+func (h *UIHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if err := taskService.Delete(r.Context(), id); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return OOB stats only — empty response removes the target element
+	stats, _ := taskService.Stats(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }

@@ -28,7 +28,7 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 }
 
 templ StatsBar(stats core.ProjectStats) {
-	<div id="stats-bar" class="kvt-stats">
+	<div id="stats-bar" class="k-grid k-grid--4 kvt-stats">
 		<div class="kvt-stat">
 			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
 			<div class="kvt-stat-label">Todo</div>
@@ -49,7 +49,7 @@ templ StatsBar(stats core.ProjectStats) {
 }
 
 templ StatsBarOOB(stats core.ProjectStats) {
-	<div id="stats-bar" hx-swap-oob="true" class="kvt-stats">
+	<div id="stats-bar" hx-swap-oob="true" class="k-grid k-grid--4 kvt-stats">
 		<div class="kvt-stat">
 			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
 			<div class="kvt-stat-label">Todo</div>
@@ -88,15 +88,26 @@ templ TaskRow(task core.Task, slug string) {
 			<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
 		}
 		<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
-		if task.Status != core.StatusDone {
+		<div class="kvt-task-actions">
+			if task.Status != core.StatusDone {
+				<button
+					class="kvt-btn-done"
+					hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
+					hx-target={ fmt.Sprintf("#task-%d", task.ID) }
+					hx-swap="outerHTML"
+				>
+					Done
+				</button>
+			}
 			<button
-				class="kvt-btn-done"
-				hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
+				class="kvt-btn-delete"
+				hx-delete={ fmt.Sprintf("/p/%s/tasks/%d", slug, task.ID) }
 				hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 				hx-swap="outerHTML"
+				hx-confirm="Delete this task?"
 			>
-				Done
+				&times;
 			</button>
-		}
+		</div>
 	</div>
 }

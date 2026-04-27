@@ -1,15 +1,9 @@
 /* kvik-tasks overrides on top of kviky.css */
 
-/* Plus Jakarta Sans from Google Fonts (self-hosted subset) */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --k-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-}
-
-/* App-specific tokens */
-:root {
-  --kvt-badge-radius: 999px;
 }
 
 /* Header */
@@ -21,56 +15,113 @@
   border-bottom: 1px solid var(--k-color-border);
   margin-bottom: var(--k-space-6);
 }
-.kvt-header h1 { font-size: var(--k-size-lg); font-weight: var(--k-weight-bold); }
-.kvt-header h1 a { color: var(--k-color-fg); text-decoration: none; }
-.kvt-header nav a {
+.kvt-header h1 {
+  font-size: var(--k-size-lg);
+  font-weight: var(--k-weight-bold);
+}
+.kvt-header h1 a {
   color: var(--k-color-accent);
   text-decoration: none;
-  margin-left: var(--k-space-4);
-  font-weight: var(--k-weight-medium);
 }
-.kvt-header nav a:hover { text-decoration: underline; }
+.kvt-header nav a {
+  color: var(--k-color-fg-muted);
+  text-decoration: none;
+  font-weight: var(--k-weight-medium);
+  font-size: var(--k-size-sm);
+}
+.kvt-header nav a:hover { color: var(--k-color-accent); }
 
 /* Page title */
 .kvt-title {
   font-size: var(--k-size-2xl);
   font-weight: var(--k-weight-bold);
-  margin-bottom: var(--k-space-4);
+  letter-spacing: var(--k-tracking-tight);
 }
 
-/* Stats bar */
+/* ── Stats bar (project page) ── */
 .kvt-stats {
-  display: flex;
-  gap: var(--k-space-8);
-  margin-bottom: var(--k-space-6);
   padding: var(--k-space-4);
   background: var(--k-color-surface);
   border-radius: var(--k-radius-lg, 8px);
+  border: 1px solid var(--k-color-border);
 }
 .kvt-stat { text-align: center; }
 .kvt-stat-value {
   font-size: var(--k-size-2xl);
   font-weight: var(--k-weight-bold);
   color: var(--k-color-fg);
+  line-height: 1;
 }
 .kvt-stat-label {
-  font-size: var(--k-size-xs);
+  font-size: 0.65rem;
   color: var(--k-color-fg-muted);
   text-transform: uppercase;
-  letter-spacing: var(--k-tracking-wide, 0.05em);
+  letter-spacing: 0.08em;
+  margin-top: var(--k-space-1);
 }
 
-/* Task row */
+/* ── Mini stats (dashboard cards) ── */
+.kvt-mini-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.kvt-mini-stat-value {
+  font-weight: var(--k-weight-semibold);
+  font-size: var(--k-size-sm);
+  color: var(--k-color-fg);
+}
+.kvt-mini-stat-label {
+  font-size: 0.65rem;
+  color: var(--k-color-fg-subtle);
+}
+.kvt-mini-stat--danger .kvt-mini-stat-value { color: var(--k-color-danger); }
+.kvt-project-stats-row { margin-top: var(--k-space-2); }
+
+/* ── Project card (dashboard) ── */
+.kvt-project-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: var(--k-space-4) var(--k-space-5);
+  background: var(--k-color-surface-raised);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-lg, 8px);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.kvt-project-card:hover {
+  border-color: var(--k-color-accent);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.kvt-project-name {
+  font-weight: var(--k-weight-semibold);
+  font-size: var(--k-size-base);
+}
+.kvt-project-meta {
+  font-size: var(--k-size-xs);
+  color: var(--k-color-fg-subtle);
+  font-family: var(--k-font-mono);
+}
+
+/* ── Task list ── */
+.kvt-task-list {
+  background: var(--k-color-surface-raised);
+  border: 1px solid var(--k-color-border);
+  border-radius: var(--k-radius-lg, 8px);
+  overflow: hidden;
+}
+
+/* ── Task row ── */
 .kvt-task-row {
   display: flex;
   align-items: center;
   gap: var(--k-space-3);
   padding: var(--k-space-3) var(--k-space-4);
   border-bottom: 1px solid var(--k-color-border);
-  transition: background 0.15s;
+  transition: background 0.1s;
 }
-.kvt-task-row:hover { background: var(--k-color-surface); }
 .kvt-task-row:last-child { border-bottom: none; }
+.kvt-task-row:hover { background: var(--k-color-surface); }
 
 .kvt-task-id {
   color: var(--k-color-fg-subtle);
@@ -78,22 +129,31 @@
   font-family: var(--k-font-mono);
   min-width: 2.5rem;
 }
-.kvt-task-title { flex: 1; font-weight: var(--k-weight-medium); }
+.kvt-task-title {
+  flex: 1;
+  font-weight: var(--k-weight-medium);
+}
 .kvt-task-priority {
   color: var(--k-color-fg-muted);
   font-size: var(--k-size-xs);
   font-family: var(--k-font-mono);
 }
+.kvt-task-actions {
+  display: flex;
+  gap: var(--k-space-1);
+  align-items: center;
+}
 
-/* Badges */
+/* ── Badges ── */
 .kvt-badge {
   display: inline-block;
-  padding: 0.15rem 0.6rem;
-  border-radius: var(--kvt-badge-radius);
-  font-size: 0.7rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
   font-weight: var(--k-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 .kvt-badge-todo { background: var(--k-color-surface); color: var(--k-color-fg-muted); border: 1px solid var(--k-color-border); }
 .kvt-badge-doing { background: var(--k-color-warning); color: var(--k-color-warning-fg); }
@@ -103,11 +163,10 @@
 .kvt-badge-feature { background: #7c3aed; color: #fff; }
 .kvt-badge-hotfix { background: #ea580c; color: #fff; }
 
-/* Add task form */
+/* ── Add task form ── */
 .kvt-add-form {
   display: flex;
   gap: var(--k-space-2);
-  margin-bottom: var(--k-space-6);
 }
 .kvt-add-form input {
   flex: 1;
@@ -118,69 +177,24 @@
   color: var(--k-color-fg);
   font-family: var(--k-font-sans);
   font-size: var(--k-size-sm);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .kvt-add-form input:focus {
   outline: none;
   border-color: var(--k-color-accent);
-  box-shadow: 0 0 0 2px var(--k-color-focus-ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--k-color-focus-ring) 25%, transparent);
 }
+.kvt-add-form input::placeholder { color: var(--k-color-fg-subtle); }
 
-/* Project card on dashboard */
-.kvt-project-card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  padding: var(--k-space-4);
-  background: var(--k-color-surface);
-  border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-lg, 8px);
-  margin-bottom: var(--k-space-3);
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.kvt-project-card:hover {
-  border-color: var(--k-color-accent);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-.kvt-project-card-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.kvt-project-name { font-weight: var(--k-weight-semibold); font-size: var(--k-size-base); }
-.kvt-project-meta { font-size: var(--k-size-xs); color: var(--k-color-fg-muted); margin-top: var(--k-space-1); }
-.kvt-project-stats { display: flex; gap: var(--k-space-6); }
-
-/* Task list container */
-.kvt-task-list {
-  background: var(--k-color-surface-raised);
-  border: 1px solid var(--k-color-border);
-  border-radius: var(--k-radius-lg, 8px);
-  overflow: hidden;
-}
-
-/* Empty state */
-.kvt-empty {
-  text-align: center;
-  color: var(--k-color-fg-muted);
-  padding: var(--k-space-8);
-}
-.kvt-empty code {
-  background: var(--k-color-surface);
-  padding: 0.1em 0.4em;
-  border-radius: var(--k-radius-sm, 4px);
-  font-family: var(--k-font-mono);
-  font-size: 0.9em;
-}
-
-/* Done button */
+/* ── Action buttons ── */
 .kvt-btn-done {
   padding: 0.2rem 0.6rem;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: var(--k-weight-medium);
   border: 1px solid var(--k-color-border);
   border-radius: var(--k-radius-md, 6px);
   background: var(--k-color-bg);
-  color: var(--k-color-fg);
+  color: var(--k-color-fg-muted);
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -188,4 +202,36 @@
   background: var(--k-color-success);
   color: var(--k-color-success-fg);
   border-color: var(--k-color-success);
+}
+
+.kvt-btn-delete {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: var(--k-radius-md, 6px);
+  background: transparent;
+  color: var(--k-color-fg-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+  opacity: 0;
+}
+.kvt-task-row:hover .kvt-btn-delete { opacity: 1; }
+.kvt-btn-delete:hover {
+  background: var(--k-color-danger);
+  color: var(--k-color-danger-fg);
+}
+
+/* ── Empty state ── */
+.kvt-empty {
+  text-align: center;
+  color: var(--k-color-fg-muted);
+  padding: var(--k-space-8);
+}
+.kvt-empty code {
+  background: var(--k-color-surface);
+  padding: 0.15em 0.4em;
+  border-radius: var(--k-radius-sm, 4px);
+  font-family: var(--k-font-mono);
+  font-size: 0.9em;
 }

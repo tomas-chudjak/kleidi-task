@@ -13,14 +13,14 @@ templ Layout(title string) {
 		<script src="/static/js/json-enc.js"></script>
 	</head>
 	<body>
-		<div class="k-container">
+		<div class="k-container k-container--narrow">
 			<header class="kvt-header">
 				<h1><a href="/">kvt</a></h1>
-				<nav>
+				<nav class="k-cluster k-cluster--sm">
 					<a href="/">Dashboard</a>
 				</nav>
 			</header>
-			<main>
+			<main class="k-stack">
 				{ children... }
 			</main>
 		</div>
