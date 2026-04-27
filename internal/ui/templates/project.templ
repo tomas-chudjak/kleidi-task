@@ -5,50 +5,73 @@ import "fmt"
 
 templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats) {
 	@Layout(project.Name) {
-		<h2>{ project.Name }</h2>
+		<h2 class="kvt-title">{ project.Name }</h2>
 
-		<div class="stats">
-			<div class="stat">
-				<div class="stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
-				<div class="stat-label">Todo</div>
-			</div>
-			<div class="stat">
-				<div class="stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
-				<div class="stat-label">Doing</div>
-			</div>
-			<div class="stat">
-				<div class="stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
-				<div class="stat-label">Done</div>
-			</div>
-			<div class="stat">
-				<div class="stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
-				<div class="stat-label">Bugs</div>
-			</div>
-		</div>
+		@StatsBar(stats)
 
-		<!-- Add task form -->
 		<form
 			hx-post={ "/p/" + project.Slug + "/tasks" }
 			hx-target="#task-list"
 			hx-swap="innerHTML"
 			hx-on::after-request="this.reset()"
 			hx-ext="json-enc"
-			class="form-row"
+			class="kvt-add-form"
 		>
 			<input type="text" name="title" placeholder="Add a task... (prefix with BUG:, FEATURE:, HOTFIX:)" required/>
-			<button type="submit" class="btn btn-primary">Add</button>
+			<button type="submit" class="k-button k-button--sm">Add</button>
 		</form>
 
-		<!-- Task list -->
-		<div id="task-list">
+		<div id="task-list" class="kvt-task-list">
 			@TaskList(tasks, project.Slug)
 		</div>
 	}
 }
 
+templ StatsBar(stats core.ProjectStats) {
+	<div id="stats-bar" class="kvt-stats">
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+			<div class="kvt-stat-label">Todo</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+			<div class="kvt-stat-label">Doing</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+			<div class="kvt-stat-label">Done</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+			<div class="kvt-stat-label">Bugs</div>
+		</div>
+	</div>
+}
+
+templ StatsBarOOB(stats core.ProjectStats) {
+	<div id="stats-bar" hx-swap-oob="true" class="kvt-stats">
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+			<div class="kvt-stat-label">Todo</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+			<div class="kvt-stat-label">Doing</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+			<div class="kvt-stat-label">Done</div>
+		</div>
+		<div class="kvt-stat">
+			<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+			<div class="kvt-stat-label">Bugs</div>
+		</div>
+	</div>
+}
+
 templ TaskList(tasks []core.Task, slug string) {
 	if len(tasks) == 0 {
-		<div class="empty">No tasks yet.</div>
+		<div class="kvt-empty">No tasks yet.</div>
 	} else {
 		for _, t := range tasks {
 			@TaskRow(t, slug)
@@ -57,17 +80,17 @@ templ TaskList(tasks []core.Task, slug string) {
 }
 
 templ TaskRow(task core.Task, slug string) {
-	<div class="task-row" id={ fmt.Sprintf("task-%d", task.ID) }>
-		<span class="task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
-		<span class={ "badge badge-" + string(task.Type) }>{ string(task.Type) }</span>
-		<span class="task-title">{ task.Title }</span>
+	<div class="kvt-task-row" id={ fmt.Sprintf("task-%d", task.ID) }>
+		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+		<span class="kvt-task-title">{ task.Title }</span>
 		if task.Priority > 0 {
-			<span class="priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
+			<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
 		}
-		<span class={ "badge badge-" + string(task.Status) }>{ string(task.Status) }</span>
+		<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
 		if task.Status != core.StatusDone {
 			<button
-				class="btn btn-sm"
+				class="kvt-btn-done"
 				hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
 				hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 				hx-swap="outerHTML"

@@ -101,10 +101,12 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return updated task list as HTML fragment
+	// Return updated task list + OOB stats
 	tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
+	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.TaskList(tasks, slug).Render(r.Context(), w)
+	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }
 
 // CompleteTask handles HTMX task completion — returns HTML for the completed task row.
@@ -135,7 +137,9 @@ func (h *UIHandler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return updated task row as HTML fragment
+	// Return updated task row + OOB stats
+	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.TaskRow(task, slug).Render(r.Context(), w)
+	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }

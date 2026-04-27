@@ -7,14 +7,15 @@ templ Layout(title string) {
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>{ title } — kvik-tasks</title>
+		<link rel="stylesheet" href="/static/css/kviky.css"/>
 		<link rel="stylesheet" href="/static/css/style.css"/>
 		<script src="/static/js/htmx.min.js"></script>
 		<script src="/static/js/json-enc.js"></script>
 	</head>
 	<body>
-		<div class="container">
-			<header class="header">
-				<h1><a href="/" style="text-decoration:none;color:inherit;">kvt</a></h1>
+		<div class="k-container">
+			<header class="kvt-header">
+				<h1><a href="/">kvt</a></h1>
 				<nav>
 					<a href="/">Dashboard</a>
 				</nav>
