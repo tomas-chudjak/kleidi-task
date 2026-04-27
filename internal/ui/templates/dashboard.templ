@@ -1,0 +1,37 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ Dashboard(projects []core.Project) {
+	@Layout("Dashboard") {
+		<h2>Projects</h2>
+		if len(projects) == 0 {
+			<div class="empty">
+				<p>No projects registered.</p>
+				<p>Run <code>kvt init</code> in a project directory to get started.</p>
+			</div>
+		} else {
+			for _, p := range projects {
+				<a href={ templ.SafeURL("/p/" + p.Slug) } class="card" style="display:block;text-decoration:none;color:inherit;">
+					<div style="display:flex;justify-content:space-between;align-items:center;">
+						<div>
+							<strong>{ p.Name }</strong>
+							<div style="font-size:0.8rem;color:var(--fg-muted);">{ p.Slug } — { p.Path }</div>
+						</div>
+						<div class="stats" style="margin:0;">
+							<div class="stat">
+								<div class="stat-value">{ fmt.Sprintf("%d", p.CachedTodoCount) }</div>
+								<div class="stat-label">todo</div>
+							</div>
+							<div class="stat">
+								<div class="stat-value">{ fmt.Sprintf("%d", p.CachedDoingCount) }</div>
+								<div class="stat-label">doing</div>
+							</div>
+						</div>
+					</div>
+				</a>
+			}
+		}
+	}
+}

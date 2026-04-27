@@ -1,0 +1,136 @@
+/* Minimal kvik-tasks styles — will be replaced by ahoylog-css */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f5f5f5;
+  --fg: #1a1a1a;
+  --fg-muted: #666666;
+  --border: #e0e0e0;
+  --primary: #2563eb;
+  --primary-fg: #ffffff;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+  --radius: 6px;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --bg-alt: #2a2a2a;
+    --fg: #e5e5e5;
+    --fg-muted: #999999;
+    --border: #404040;
+    --primary: #3b82f6;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: var(--space-md); }
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-lg);
+}
+.header h1 { font-size: 1.25rem; }
+.header nav a { color: var(--primary); text-decoration: none; margin-left: var(--space-md); }
+
+/* Cards */
+.card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+.card:hover { border-color: var(--primary); }
+
+/* Task list */
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+.task-row:last-child { border-bottom: none; }
+.task-id { color: var(--fg-muted); font-size: 0.85rem; min-width: 2rem; }
+.task-title { flex: 1; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.badge-todo { background: var(--border); color: var(--fg); }
+.badge-doing { background: var(--warning); color: #fff; }
+.badge-done { background: var(--success); color: #fff; }
+.badge-task { background: var(--primary); color: var(--primary-fg); }
+.badge-bug { background: var(--danger); color: #fff; }
+.badge-feature { background: #7c3aed; color: #fff; }
+.badge-hotfix { background: #ea580c; color: #fff; }
+
+/* Priority */
+.priority { color: var(--fg-muted); font-size: 0.8rem; }
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.btn:hover { border-color: var(--primary); }
+.btn-primary { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.btn-sm { padding: 0.1rem 0.5rem; font-size: 0.8rem; }
+
+/* Forms */
+.form-row { display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.form-row input, .form-row select { flex: 1; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--fg); }
+
+/* Stats */
+.stats { display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); }
+.stat { text-align: center; }
+.stat-value { font-size: 1.5rem; font-weight: 700; }
+.stat-label { font-size: 0.8rem; color: var(--fg-muted); }
+
+/* Filter bar */
+.filters { display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); flex-wrap: wrap; }
+
+/* Empty state */
+.empty { text-align: center; color: var(--fg-muted); padding: var(--space-xl); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: var(--space-md); right: var(--space-md);
+  background: var(--fg); color: var(--bg); padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius); font-size: 0.875rem;
+  animation: fadeout 3s forwards;
+}
+@keyframes fadeout { 0%,80% { opacity: 1; } 100% { opacity: 0; } }

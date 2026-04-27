@@ -7,6 +7,7 @@ import (
 	"github.com/ahoylog/kvik-tasks/internal/api/handlers"
 	"github.com/ahoylog/kvik-tasks/internal/api/middleware"
 	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/ahoylog/kvik-tasks/internal/ui"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -21,6 +22,9 @@ func NewRouter(projectService *core.ProjectService) http.Handler {
 	taskHandler := handlers.NewTaskHandler(projectService)
 	projectHandler := handlers.NewProjectHandler(projectService)
 	systemHandler := handlers.NewSystemHandler()
+
+	// UI routes (dashboard, project pages, static assets)
+	ui.MountRoutes(r, projectService)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		// System

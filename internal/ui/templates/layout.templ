@@ -1,0 +1,27 @@
+package templates
+
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>{ title } — kvik-tasks</title>
+		<link rel="stylesheet" href="/static/css/style.css"/>
+		<script src="/static/js/htmx.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<header class="header">
+				<h1><a href="/" style="text-decoration:none;color:inherit;">kvt</a></h1>
+				<nav>
+					<a href="/">Dashboard</a>
+				</nav>
+			</header>
+			<main>
+				{ children... }
+			</main>
+		</div>
+	</body>
+	</html>
+}
