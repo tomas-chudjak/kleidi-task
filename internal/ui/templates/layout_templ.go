@@ -36,13 +36,13 @@ func Layout(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 9, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.templ`, Line: 9, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script></head><body><div class=\"container\"><header class=\"header\"><h1><a href=\"/\" style=\"text-decoration:none;color:inherit;\">kvt</a></h1><nav><a href=\"/\">Dashboard</a></nav></header><main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script></head><body><div class=\"container\"><header class=\"header\"><h1><a href=\"/\" style=\"text-decoration:none;color:inherit;\">kvt</a></h1><nav><a href=\"/\">Dashboard</a></nav></header><main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,8 +1,11 @@
 package ui
 
 import (
+	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/ahoylog/kvik-tasks/internal/ui/templates"
@@ -13,6 +16,7 @@ type UIHandler struct {
 	projectService *core.ProjectService
 }
 
+// Dashboard renders the main page with all projects.
 func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	projects, err := h.projectService.List()
 	if err != nil {
@@ -25,6 +29,7 @@ func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	templates.Dashboard(projects).Render(r.Context(), w)
 }
 
+// Project renders the project page with tasks.
 func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 
@@ -58,4 +63,79 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.ProjectPage(project, tasks, stats).Render(r.Context(), w)
+}
+
+// CreateTask handles HTMX task creation — accepts JSON, returns HTML task list.
+func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Title string `json:"title"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	taskType, title := core.DetectTypeFromTitle(input.Title, core.TypeTask)
+
+	_, err = taskService.Create(r.Context(), core.CreateTaskInput{
+		Title:  title,
+		Type:   taskType,
+		Source: core.SourceUI,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return updated task list as HTML fragment
+	tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskList(tasks, slug).Render(r.Context(), w)
+}
+
+// CompleteTask handles HTMX task completion — returns HTML for the completed task row.
+func (h *UIHandler) CompleteTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	task, err := taskService.Complete(r.Context(), id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return updated task row as HTML fragment
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskRow(task, slug).Render(r.Context(), w)
 }

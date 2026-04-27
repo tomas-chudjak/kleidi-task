@@ -28,11 +28,10 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 
 		<!-- Add task form -->
 		<form
-			hx-post={ "/api/v1/projects/" + project.Slug + "/tasks" }
+			hx-post={ "/p/" + project.Slug + "/tasks" }
 			hx-target="#task-list"
 			hx-swap="innerHTML"
 			hx-on::after-request="this.reset()"
-			hx-headers='{"Content-Type": "application/json"}'
 			hx-ext="json-enc"
 			class="form-row"
 		>
@@ -69,7 +68,7 @@ templ TaskRow(task core.Task, slug string) {
 		if task.Status != core.StatusDone {
 			<button
 				class="btn btn-sm"
-				hx-post={ fmt.Sprintf("/api/v1/projects/%s/tasks/%d/complete", slug, task.ID) }
+				hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
 				hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 				hx-swap="outerHTML"
 			>
