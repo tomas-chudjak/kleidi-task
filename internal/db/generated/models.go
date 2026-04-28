@@ -29,3 +29,8 @@ type Task struct {
 	Source      string         `json:"source"`
 	Metadata    sql.NullString `json:"metadata"`
 }
+
+type TasksFt struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}

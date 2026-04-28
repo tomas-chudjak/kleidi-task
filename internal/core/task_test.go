@@ -220,6 +220,43 @@ func TestListWithDateFilter(t *testing.T) {
 	}
 }
 
+func TestSearch(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	svc.Create(ctx, CreateTaskInput{Title: "Fix login page", Description: "The login form crashes on Safari", Source: SourceCLI})
+	svc.Create(ctx, CreateTaskInput{Title: "Add dark mode", Description: "User requested dark theme support", Source: SourceCLI})
+	svc.Create(ctx, CreateTaskInput{Title: "Refactor auth module", Source: SourceCLI})
+
+	// Search by title
+	results, err := svc.Search(ctx, "login", 10)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(results) != 1 {
+		t.Errorf("expected 1 result for 'login', got %d", len(results))
+	}
+
+	// Search by description
+	results2, _ := svc.Search(ctx, "Safari", 10)
+	if len(results2) != 1 {
+		t.Errorf("expected 1 result for 'Safari', got %d", len(results2))
+	}
+
+	// Search matching multiple
+	results3, _ := svc.Search(ctx, "dark OR auth", 10)
+	if len(results3) != 2 {
+		t.Errorf("expected 2 results for 'dark OR auth', got %d", len(results3))
+	}
+
+	// Empty query
+	_, err = svc.Search(ctx, "", 10)
+	if err == nil {
+		t.Error("expected error for empty query")
+	}
+}
+
 func TestListWithMultiSelectStatus(t *testing.T) {
 	testDB := db.NewTestProjectDB(t)
 	svc := NewTaskService(testDB)

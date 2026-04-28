@@ -318,6 +318,43 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	templates.TaskPage(project, task).Render(r.Context(), w)
 }
 
+// SearchTasks handles search via HTMX — returns task list HTML fragment.
+func (h *UIHandler) SearchTasks(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	query := r.URL.Query().Get("q")
+	if query == "" {
+		// Empty query — return full list
+		tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 20})
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		templates.TaskList(tasks, slug).Render(r.Context(), w)
+		return
+	}
+
+	tasks, err := taskService.Search(r.Context(), query, 50)
+	if err != nil {
+		// FTS syntax error — fall back to empty
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		templates.TaskList(nil, slug).Render(r.Context(), w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskList(tasks, slug).Render(r.Context(), w)
+}
+
 // Board renders the kanban board view.
 func (h *UIHandler) Board(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

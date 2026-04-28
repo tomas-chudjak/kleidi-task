@@ -28,6 +28,7 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Get("/p/{slug}/t/{id}", h.TaskDetail)
 
 	// HTMX fragment endpoints (accept JSON, return HTML)
+	r.Get("/p/{slug}/search", h.SearchTasks)
 	r.Post("/p/{slug}/tasks", h.CreateTask)
 	r.Post("/p/{slug}/tasks/{id}/complete", h.CompleteTask)
 	r.Post("/p/{slug}/tasks/{id}/move", h.MoveTask)

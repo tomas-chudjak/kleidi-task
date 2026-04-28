@@ -727,6 +727,27 @@ input, select, textarea {
 
 /* ── Responsive ── */
 /* ── Advanced filters ── */
+/* ── Search bar ── */
+.kvt-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+.kvt-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--kvt-fg-subtle);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+.kvt-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
 /* ── Filter row (status/type + advanced toggle) ── */
 .kvt-filters-row {
   display: flex;

@@ -126,6 +126,25 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 
 		@StatsBar(stats)
 
+		<!-- Search bar -->
+		<div class="kvt-search">
+			<i class="icon icon-search kvt-search-icon"></i>
+			<input
+				type="search"
+				name="q"
+				placeholder="Search tasks..."
+				class="kvt-search-input"
+				hx-get={ "/p/" + project.Slug + "/search" }
+				hx-target="#task-list"
+				hx-swap="innerHTML"
+				hx-trigger="input changed delay:300ms, search"
+				autocomplete="off"
+				data-1p-ignore
+				data-lpignore="true"
+				data-form-type="other"
+			/>
+		</div>
+
 		<!-- Filter bar with inline advanced toggle -->
 		<div class="kvt-filters-row">
 			<div class="kvt-filters">

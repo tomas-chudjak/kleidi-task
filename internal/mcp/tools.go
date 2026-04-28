@@ -57,6 +57,12 @@ type TaskDeleteInput struct {
 	ID      int64  `json:"id" jsonschema:"task ID"`
 }
 
+type TaskSearchInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	Query   string `json:"query" jsonschema:"search query (FTS5 syntax)"`
+	Limit   int64  `json:"limit,omitempty" jsonschema:"max results (default 20)"`
+}
+
 type ProjectStatsInput struct {
 	Slug string `json:"slug,omitempty" jsonschema:"project slug (default: current)"`
 }
@@ -99,6 +105,11 @@ func (s *Server) registerTools() {
 		Name:        "task_list",
 		Description: "List tasks with optional filters by project, status, and type",
 	}, s.taskList)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_search",
+		Description: "Search tasks by title or description (full-text search)",
+	}, s.taskSearch)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_get",
@@ -198,6 +209,21 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 		text += fmt.Sprintf("\nPage %d/%d (total: %d)", result.Page, result.TotalPages, result.Total)
 	}
 	return textResult(text), TaskListOutput{Tasks: result.Tasks, Count: len(result.Tasks)}, nil
+}
+
+func (s *Server) taskSearch(ctx context.Context, req *mcp.CallToolRequest, input TaskSearchInput) (*mcp.CallToolResult, TaskListOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TaskListOutput{}, err
+	}
+
+	tasks, err := taskService.Search(ctx, input.Query, input.Limit)
+	if err != nil {
+		return nil, TaskListOutput{}, err
+	}
+
+	text := formatTaskList(tasks)
+	return textResult(text), TaskListOutput{Tasks: tasks, Count: len(tasks)}, nil
 }
 
 func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input TaskGetInput) (*mcp.CallToolResult, TaskOutput, error) {

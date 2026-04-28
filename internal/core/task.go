@@ -10,12 +10,14 @@ import (
 
 // TaskService handles task business logic.
 type TaskService struct {
+	db      *sql.DB
 	queries *generated.Queries
 }
 
 // NewTaskService creates a new TaskService with the given database connection.
 func NewTaskService(db *sql.DB) *TaskService {
 	return &TaskService{
+		db:      db,
 		queries: generated.New(db),
 	}
 }
@@ -237,6 +239,44 @@ func (s *TaskService) Stats(ctx context.Context) (ProjectStats, error) {
 	}
 
 	return stats, nil
+}
+
+// Search performs full-text search across task titles and descriptions.
+func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]Task, error) {
+	if query == "" {
+		return nil, fmt.Errorf("%w: search query is required", ErrInvalidInput)
+	}
+	if limit <= 0 {
+		limit = 20
+	}
+
+	rows, err := s.db.QueryContext(ctx,
+		`SELECT tasks.id, tasks.type, tasks.title, tasks.description, tasks.status,
+		        tasks.created_at, tasks.updated_at, tasks.completed_at,
+		        tasks.created_by, tasks.assigned_to, tasks.priority, tasks.source, tasks.metadata
+		 FROM tasks
+		 JOIN tasks_fts ON tasks.id = tasks_fts.rowid
+		 WHERE tasks_fts MATCH ?
+		 ORDER BY rank
+		 LIMIT ?`, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("searching tasks: %w", err)
+	}
+	defer rows.Close()
+
+	var tasks []Task
+	for rows.Next() {
+		var row generated.Task
+		if err := rows.Scan(
+			&row.ID, &row.Type, &row.Title, &row.Description, &row.Status,
+			&row.CreatedAt, &row.UpdatedAt, &row.CompletedAt,
+			&row.CreatedBy, &row.AssignedTo, &row.Priority, &row.Source, &row.Metadata,
+		); err != nil {
+			return nil, fmt.Errorf("scanning search result: %w", err)
+		}
+		tasks = append(tasks, taskFromRow(row))
+	}
+	return tasks, nil
 }
 
 // taskFromRow converts a generated.Task to a domain Task.

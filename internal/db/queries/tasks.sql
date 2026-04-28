@@ -44,3 +44,4 @@ SELECT status, COUNT(*) as count FROM tasks GROUP BY status;
 
 -- name: CountBugsOpen :one
 SELECT COUNT(*) as count FROM tasks WHERE type = 'bug' AND status != 'done';
+
