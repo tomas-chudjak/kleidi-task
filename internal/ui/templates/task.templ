@@ -8,7 +8,7 @@ templ TaskPage(project core.Project, task core.Task) {
 		<!-- Task toolbar -->
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
-				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+				<a href={ templ.SafeURL("/p/" + project.Slug) } onclick="if(document.referrer){event.preventDefault();history.back()}" class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
 				<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
 				<span class="kvt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 				<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>

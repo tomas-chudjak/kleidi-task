@@ -71,7 +71,17 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 
 templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter) {
 	@Layout(project.Name) {
-		<h2 class="kvt-title">{ project.Name }</h2>
+		<div class="kvt-board-header">
+			<h2 class="kvt-title">{ project.Name }</h2>
+			<div class="kvt-view-toggle">
+				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn kvt-view-btn--active">
+					<i class="icon icon-list"></i> List
+				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
+					<i class="icon icon-columns-3"></i> Board
+				</a>
+			</div>
+		</div>
 
 		@StatsBar(stats)
 

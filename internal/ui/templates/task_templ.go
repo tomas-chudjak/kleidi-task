@@ -57,7 +57,7 @@ func TaskPage(project core.Project, task core.Task) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" onclick=\"if(document.referrer){event.preventDefault();history.back()}\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -187,20 +187,21 @@ input, select, textarea {
 }
 .kvt-stat-card {
   background: var(--kvt-card-bg);
-  border-radius: var(--kvt-card-radius);
+  border-radius: 8px;
   box-shadow: var(--kvt-card-shadow);
-  padding: 20px;
+  padding: 10px 14px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
 }
 .kvt-stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.8rem;
   font-size: 1rem;
   flex-shrink: 0;
 }
@@ -209,17 +210,17 @@ input, select, textarea {
 .kvt-stat-icon--done { background: #e6f9ee; color: var(--kvt-success); }
 .kvt-stat-icon--bugs { background: #fde8ee; color: var(--kvt-danger); }
 .kvt-stat-value {
-  font-size: 1.8rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--kvt-fg);
   line-height: 1;
 }
 .kvt-stat-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--kvt-label);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* ── Filter bar ── */
@@ -845,6 +846,148 @@ input, select, textarea {
   cursor: default;
   pointer-events: none;
   opacity: 0.5;
+}
+
+/* ── Board header & view toggle ── */
+.kvt-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.kvt-board-header .kvt-title { margin: 0; }
+.kvt-view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--kvt-card-bg);
+  border: 1px solid var(--kvt-border);
+  border-radius: 8px;
+  padding: 3px;
+}
+.kvt-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--kvt-fg-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.kvt-view-btn:hover { color: var(--kvt-fg); background: var(--kvt-bg); }
+.kvt-view-btn--active {
+  color: var(--kvt-accent-fg);
+  background: var(--kvt-accent);
+}
+.kvt-view-btn--active:hover {
+  color: var(--kvt-accent-fg);
+  background: var(--kvt-accent);
+  opacity: 0.9;
+}
+
+/* ── Kanban board ── */
+.kvt-board {
+  align-items: start;
+  min-height: 60vh;
+}
+.kvt-board-column {
+  background: var(--kvt-bg);
+  border-radius: var(--kvt-card-radius);
+  padding: 12px;
+  min-height: 200px;
+}
+.kvt-board-column-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.kvt-board-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.kvt-board-dot--todo { background: var(--kvt-fg-muted); }
+.kvt-board-dot--doing { background: var(--kvt-accent); }
+.kvt-board-dot--done { background: var(--kvt-success); }
+.kvt-board-column-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--kvt-fg);
+}
+.kvt-board-count {
+  font-size: 0.7rem;
+  color: var(--kvt-fg-muted);
+  background: var(--kvt-card-bg);
+  border: 1px solid var(--kvt-border);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-weight: 500;
+}
+
+/* ── Board cards ── */
+.kvt-board-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 60px;
+}
+.kvt-board-card {
+  background: var(--kvt-card-bg);
+  border-radius: 10px;
+  padding: 12px 14px 12px 18px;
+  box-shadow: var(--kvt-card-shadow);
+  border: 1px solid var(--kvt-border);
+  border-left: 3px solid var(--kvt-border);
+  cursor: grab;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.kvt-board-card--task { border-left-color: var(--kvt-accent); }
+.kvt-board-card--bug { border-left-color: var(--kvt-danger); }
+.kvt-board-card--feature { border-left-color: var(--kvt-purple); }
+.kvt-board-card--hotfix { border-left-color: var(--kvt-orange); }
+.kvt-board-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+.kvt-board-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.kvt-board-card-id {
+  font-size: 0.7rem;
+  color: var(--kvt-fg-subtle);
+  font-family: var(--k-font-mono);
+}
+.kvt-board-card-title {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--kvt-fg);
+  text-decoration: none;
+  line-height: 1.4;
+}
+.kvt-board-card-title:hover { color: var(--kvt-accent); }
+.kvt-board-card-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+/* Drag states */
+.kvt-card-ghost {
+  opacity: 0.4;
+  border: 2px dashed var(--kvt-accent);
+  background: var(--kvt-accent-light);
+}
+.kvt-card-drag {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transform: rotate(2deg);
 }
 
 /* ── Total count ── */

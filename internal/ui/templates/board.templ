@@ -1,0 +1,102 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats) {
+	@Layout(project.Name + " — Board") {
+		<div class="kvt-board-header">
+			<h2 class="kvt-title">{ project.Name }</h2>
+			<div class="kvt-view-toggle">
+				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn">
+					<i class="icon icon-list"></i> List
+				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn kvt-view-btn--active">
+					<i class="icon icon-columns-3"></i> Board
+				</a>
+			</div>
+		</div>
+
+		@StatsBar(stats)
+
+		<div class="k-grid k-grid--3 kvt-board">
+			@BoardColumn("Todo", "todo", todo, project.Slug)
+			@BoardColumn("In Progress", "doing", doing, project.Slug)
+			@BoardColumn("Done", "done", done, project.Slug)
+		</div>
+
+		<script src="/static/js/sortable.min.js"></script>
+		@boardScript()
+	}
+}
+
+script boardScript() {
+	document.querySelectorAll('.kvt-board-cards').forEach(function(el) {
+		new Sortable(el, {
+			group: 'kanban',
+			animation: 150,
+			ghostClass: 'kvt-card-ghost',
+			dragClass: 'kvt-card-drag',
+			onEnd: function(evt) {
+				var taskId = evt.item.dataset.taskId;
+				var newStatus = evt.to.dataset.status;
+				fetch('/p/' + evt.to.dataset.slug + '/tasks/' + taskId + '/move', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({status: newStatus})
+				}).then(function(res) {
+					return res.text();
+				}).then(function(html) {
+					// Process OOB stats update
+					if (html.trim()) {
+						var parser = new DOMParser();
+						var doc = parser.parseFromString(html, 'text/html');
+						var oob = doc.querySelector('[hx-swap-oob]');
+						if (oob) {
+							var target = document.getElementById(oob.id);
+							if (target) {
+								oob.removeAttribute('hx-swap-oob');
+								target.replaceWith(oob);
+							}
+						}
+					}
+					// Update column counts
+					document.querySelectorAll('.kvt-board-cards').forEach(function(col) {
+						var count = col.children.length;
+						col.closest('.kvt-board-column').querySelector('.kvt-board-count').textContent = count;
+					});
+				});
+			}
+		});
+	});
+}
+
+templ BoardColumn(title string, status string, tasks []core.Task, slug string) {
+	<div class={ "kvt-board-column kvt-board-column--" + status }>
+		<div class="kvt-board-column-header">
+			<span class={ "kvt-board-dot kvt-board-dot--" + status }></span>
+			<span class="kvt-board-column-title">{ title }</span>
+			<span class="kvt-board-count">{ fmt.Sprintf("%d", len(tasks)) }</span>
+		</div>
+		<div class="kvt-board-cards" data-status={ status } data-slug={ slug }>
+			for _, t := range tasks {
+				@BoardCard(t, slug)
+			}
+		</div>
+	</div>
+}
+
+templ BoardCard(task core.Task, slug string) {
+	<div class={ "kvt-board-card kvt-board-card--" + string(task.Type) } data-task-id={ fmt.Sprintf("%d", task.ID) }>
+		<div class="kvt-board-card-top">
+			<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+			<span class="kvt-board-card-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+		</div>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-board-card-title">{ task.Title }</a>
+		if task.Priority > 0 {
+			<div class="kvt-board-card-meta">
+				<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
+			</div>
+		}
+	</div>
+}

@@ -320,6 +320,81 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	templates.TaskPage(project, task).Render(r.Context(), w)
 }
 
+// Board renders the kanban board view.
+func (h *UIHandler) Board(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		slog.Error("getting project", "slug", slug, "err", err)
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		slog.Error("getting task service", "err", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Fetch tasks for each column
+	todoStatus := core.StatusTodo
+	doingStatus := core.StatusDoing
+	doneStatus := core.StatusDone
+
+	todoTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &todoStatus, Limit: 100})
+	doingTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &doingStatus, Limit: 100})
+	doneTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &doneStatus, Limit: 100})
+	stats, _ := taskService.Stats(r.Context())
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.BoardPage(project, todoTasks, doingTasks, doneTasks, stats).Render(r.Context(), w)
+}
+
+// MoveTask handles drag & drop status change from kanban board.
+func (h *UIHandler) MoveTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Status string `json:"status"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	status := core.TaskStatus(input.Status)
+	_, err = taskService.Update(r.Context(), id, core.UpdateTaskInput{Status: &status})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return updated stats OOB
+	stats, _ := taskService.Stats(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.StatsBarOOB(stats).Render(r.Context(), w)
+}
+
 // DeleteTaskRedirect handles task deletion from detail page — deletes and redirects to project.
 func (h *UIHandler) DeleteTaskRedirect(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
