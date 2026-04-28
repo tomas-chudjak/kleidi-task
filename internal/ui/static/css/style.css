@@ -57,6 +57,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Override ahoylog-css form element background from gray to white ── */
+input, select, textarea {
+  --k-color-bg: var(--kvt-card-bg);
+}
+
 /* ── App layout ── */
 .kvt-app {
   display: flex;
@@ -221,7 +226,7 @@ body {
 .kvt-filters {
   display: flex;
   gap: 6px;
-  margin-bottom: 20px;
+  height: 27px;
   flex-wrap: wrap;
 }
 .kvt-filter-link {
@@ -281,9 +286,6 @@ body {
 .kvt-add-form input[type="text"] {
   padding: 0 12px;
   height: 36px;
-  border: 1px solid var(--kvt-border);
-  border-radius: 8px;
-  background: var(--kvt-bg);
   color: var(--kvt-fg);
   font-family: var(--k-font-sans);
   font-size: 0.875rem;
@@ -312,12 +314,6 @@ body {
   width: 100%;
   margin-top: 8px;
   padding: 10px 12px;
-  border: 1px solid var(--kvt-border);
-  border-radius: 8px;
-  background: var(--kvt-bg);
-  font-family: var(--k-font-sans);
-  font-size: 0.85rem;
-  color: var(--kvt-fg);
   resize: vertical;
   box-sizing: border-box;
 }
@@ -347,10 +343,11 @@ body {
 }
 
 .kvt-task-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3rem 5.5rem 1fr 5.5rem 2.5rem 4.5rem;
   align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
+  gap: 8px;
+  padding: 10px 20px;
   border-bottom: 1px solid var(--kvt-border);
   transition: background 0.1s;
 }
@@ -364,25 +361,37 @@ body {
   color: var(--kvt-fg-subtle);
   font-size: 0.75rem;
   font-family: var(--k-font-mono);
-  min-width: 2.5rem;
 }
 .kvt-task-title {
-  flex: 1;
   font-weight: 500;
   color: var(--kvt-fg);
   text-decoration: none;
   font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .kvt-task-title:hover { color: var(--kvt-accent); }
 .kvt-task-priority {
   color: var(--kvt-fg-muted);
   font-size: 0.75rem;
   font-family: var(--k-font-mono);
+  text-align: center;
 }
+/* Status text in task row */
+.kvt-task-status {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.kvt-task-status--todo { color: var(--kvt-fg-muted); }
+.kvt-task-status--doing { color: var(--kvt-accent); }
+.kvt-task-status--done { color: var(--kvt-success); }
+
 .kvt-task-actions {
   display: flex;
   gap: 4px;
   align-items: center;
+  justify-content: flex-end;
 }
 
 /* ── Badges ── */
@@ -406,36 +415,27 @@ body {
 .kvt-badge-hotfix { background: #fff1e6; color: var(--kvt-orange); }
 
 /* ── Action buttons ── */
-.kvt-btn-done {
-  padding: 4px 11px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 20px;
-  background: #e6f9ee;
-  color: var(--kvt-success);
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: var(--k-font-sans);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.kvt-btn-done:hover { background: var(--kvt-success); color: #fff; }
-
+.kvt-btn-done,
 .kvt-btn-delete {
-  padding: 4px 8px;
-  font-size: 0.85rem;
-  line-height: 1;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--kvt-border);
   border-radius: 6px;
   background: transparent;
-  color: var(--kvt-fg-subtle);
   cursor: pointer;
   transition: all 0.15s;
+  font-size: 0.85rem;
   opacity: 0;
 }
+.kvt-task-row:hover .kvt-btn-done,
 .kvt-task-row:hover .kvt-btn-delete { opacity: 1; }
-.kvt-btn-delete:hover { background: var(--kvt-danger); color: #fff; }
+.kvt-btn-done { color: var(--kvt-success); }
+.kvt-btn-done:hover { background: var(--kvt-success); color: #fff; border-color: var(--kvt-success); }
+.kvt-btn-delete { color: var(--kvt-fg-subtle); }
+.kvt-btn-delete:hover { background: var(--kvt-danger); color: #fff; border-color: var(--kvt-danger); }
 
 /* ── Project cards (dashboard) ── */
 .kvt-projects-grid {
@@ -729,7 +729,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
 }
 .kvt-advanced-btn {
   display: flex;
@@ -776,13 +775,7 @@ body {
 }
 .kvt-filter-select,
 .kvt-filter-date {
-  font-family: var(--k-font-sans);
-  font-size: 0.85rem;
   padding: 4px 8px;
-  border: 1px solid var(--kvt-border);
-  border-radius: 6px;
-  background: var(--kvt-bg);
-  color: var(--kvt-fg);
 }
 .kvt-filter-select:focus,
 .kvt-filter-date:focus {

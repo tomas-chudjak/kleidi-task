@@ -198,7 +198,7 @@ templ StatsBar(stats core.ProjectStats) {
 }
 
 templ StatsBarOOB(stats core.ProjectStats) {
-	<div id="stats-bar" hx-swap-oob="true" class="kvt-stats">
+	<div id="stats-bar" hx-swap-oob="true" class="k-grid k-grid--4 kvt-stats">
 		<div class="kvt-stat-card">
 			<div class="kvt-stat-icon kvt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
 			<div>
@@ -269,10 +269,14 @@ templ TaskRow(task core.Task, slug string) {
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
-		if task.Priority > 0 {
-			<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
-		}
-		<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
+		<span class={ "kvt-task-status kvt-task-status--" + string(task.Status) }>{ string(task.Status) }</span>
+		<span class="kvt-task-priority">
+			if task.Priority > 0 {
+				P{ fmt.Sprintf("%d", task.Priority) }
+			} else {
+				—
+			}
+		</span>
 		<div class="kvt-task-actions">
 			if task.Status != core.StatusDone {
 				<button
@@ -280,8 +284,9 @@ templ TaskRow(task core.Task, slug string) {
 					hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
 					hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 					hx-swap="outerHTML"
+					title="Mark as done"
 				>
-					Done
+					<i class="icon icon-check"></i>
 				</button>
 			}
 			<button
@@ -290,8 +295,9 @@ templ TaskRow(task core.Task, slug string) {
 				hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 				hx-swap="outerHTML"
 				hx-confirm="Delete this task?"
+				title="Delete"
 			>
-				&times;
+				<i class="icon icon-trash-2"></i>
 			</button>
 		</div>
 	</div>
