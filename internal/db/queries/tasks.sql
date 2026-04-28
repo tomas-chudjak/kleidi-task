@@ -6,28 +6,23 @@ RETURNING *;
 -- name: GetTask :one
 SELECT * FROM tasks WHERE id = ?;
 
--- name: ListTasks :many
+-- name: ListTasksFiltered :many
 SELECT * FROM tasks
+WHERE (sqlc.narg('status') IS NULL OR status = sqlc.narg('status'))
+  AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+  AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
+  AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
+  AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'))
 ORDER BY priority DESC, created_at DESC
-LIMIT ?;
+LIMIT sqlc.arg('lim') OFFSET sqlc.arg('off');
 
--- name: ListTasksByStatus :many
-SELECT * FROM tasks
-WHERE status = ?
-ORDER BY priority DESC, created_at DESC
-LIMIT ?;
-
--- name: ListTasksByType :many
-SELECT * FROM tasks
-WHERE type = ?
-ORDER BY priority DESC, created_at DESC
-LIMIT ?;
-
--- name: ListTasksByStatusAndType :many
-SELECT * FROM tasks
-WHERE status = ? AND type = ?
-ORDER BY priority DESC, created_at DESC
-LIMIT ?;
+-- name: CountTasksFiltered :one
+SELECT count(*) FROM tasks
+WHERE (sqlc.narg('status') IS NULL OR status = sqlc.narg('status'))
+  AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+  AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
+  AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
+  AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'));
 
 -- name: UpdateTask :one
 UPDATE tasks

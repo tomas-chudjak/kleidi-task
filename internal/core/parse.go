@@ -18,6 +18,8 @@ var typePrefixes = []struct {
 	{"hotfix ", TypeHotfix},
 	{"task:", TypeTask},
 	{"task ", TypeTask},
+	{"todo:", TypeTask},
+	{"todo ", TypeTask},
 }
 
 // DetectTypeFromTitle checks if the title starts with a known type prefix.

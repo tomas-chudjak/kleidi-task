@@ -71,9 +71,23 @@ type UpdateTaskInput struct {
 
 // ListTasksFilter holds filter parameters for listing tasks.
 type ListTasksFilter struct {
-	Status *TaskStatus `json:"status,omitempty"`
-	Type   *TaskType   `json:"type,omitempty"`
-	Limit  int64       `json:"limit"`
+	Status       *TaskStatus `json:"status,omitempty"`
+	Type         *TaskType   `json:"type,omitempty"`
+	MinPriority  *int64      `json:"min_priority,omitempty"`
+	CreatedAfter  *string    `json:"created_after,omitempty"`  // ISO 8601 datetime
+	CreatedBefore *string    `json:"created_before,omitempty"` // ISO 8601 datetime
+	Limit        int64       `json:"limit"`
+	Offset       int64       `json:"offset"`
+}
+
+// ListResult holds paginated task results.
+type ListResult struct {
+	Tasks      []Task `json:"tasks"`
+	Total      int64  `json:"total"`
+	Limit      int64  `json:"limit"`
+	Offset     int64  `json:"offset"`
+	TotalPages int64  `json:"total_pages"`
+	Page       int64  `json:"page"`
 }
 
 // Project represents a registered project in the global registry.

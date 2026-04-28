@@ -22,10 +22,14 @@ type TaskCreateInput struct {
 }
 
 type TaskListInput struct {
-	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
-	Status  string `json:"status,omitempty" jsonschema:"filter by status,enum=todo,enum=doing,enum=done"`
-	Type    string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix"`
-	Limit   int64  `json:"limit,omitempty" jsonschema:"max results (default 50)"`
+	Project       string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	Status        string `json:"status,omitempty" jsonschema:"filter by status,enum=todo,enum=doing,enum=done"`
+	Type          string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	MinPriority   *int64 `json:"min_priority,omitempty" jsonschema:"minimum priority filter"`
+	CreatedAfter  string `json:"created_after,omitempty" jsonschema:"filter tasks created after this date (ISO 8601)"`
+	CreatedBefore string `json:"created_before,omitempty" jsonschema:"filter tasks created before this date (ISO 8601)"`
+	Limit         int64  `json:"limit,omitempty" jsonschema:"max results (default 50)"`
+	Offset        int64  `json:"offset,omitempty" jsonschema:"offset for pagination (default 0)"`
 }
 
 type TaskGetInput struct {
@@ -167,7 +171,7 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 		return nil, TaskListOutput{}, err
 	}
 
-	filter := core.ListTasksFilter{Limit: input.Limit}
+	filter := core.ListTasksFilter{Limit: input.Limit, Offset: input.Offset}
 	if input.Status != "" {
 		status := core.TaskStatus(input.Status)
 		filter.Status = &status
@@ -176,14 +180,26 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 		taskType := core.TaskType(input.Type)
 		filter.Type = &taskType
 	}
+	if input.MinPriority != nil {
+		filter.MinPriority = input.MinPriority
+	}
+	if input.CreatedAfter != "" {
+		filter.CreatedAfter = &input.CreatedAfter
+	}
+	if input.CreatedBefore != "" {
+		filter.CreatedBefore = &input.CreatedBefore
+	}
 
-	tasks, err := taskService.List(ctx, filter)
+	result, err := taskService.ListWithCount(ctx, filter)
 	if err != nil {
 		return nil, TaskListOutput{}, err
 	}
 
-	text := formatTaskList(tasks)
-	return textResult(text), TaskListOutput{Tasks: tasks, Count: len(tasks)}, nil
+	text := formatTaskList(result.Tasks)
+	if result.TotalPages > 1 {
+		text += fmt.Sprintf("\nPage %d/%d (total: %d)", result.Page, result.TotalPages, result.Total)
+	}
+	return textResult(text), TaskListOutput{Tasks: result.Tasks, Count: len(result.Tasks)}, nil
 }
 
 func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input TaskGetInput) (*mcp.CallToolResult, TaskOutput, error) {

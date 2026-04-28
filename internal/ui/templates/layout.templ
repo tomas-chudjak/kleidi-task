@@ -46,6 +46,18 @@ templ Layout(title string) {
 			}, 2000);
 		}
 	});
+	function applyAdvancedFilters(btn) {
+		var container = btn.closest('.kvt-advanced-filters');
+		var url = new URL(window.location.href);
+		var pri = container.querySelector('[name="min_priority"]');
+		if (pri) { pri.value ? url.searchParams.set('min_priority', pri.value) : url.searchParams.delete('min_priority'); }
+		var after = container.querySelector('[name="created_after"]');
+		if (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }
+		var before = container.querySelector('[name="created_before"]');
+		if (before) { before.value ? url.searchParams.set('created_before', before.value) : url.searchParams.delete('created_before'); }
+		url.searchParams.delete('page');
+		window.location.href = url.toString();
+	}
 	</script>
 	</body>
 	</html>

@@ -61,45 +61,83 @@ func (s *TaskService) Get(ctx context.Context, id int64) (Task, error) {
 	return taskFromRow(row), nil
 }
 
-// List returns tasks matching the given filter.
+// List returns tasks matching the given filter (backward-compatible, no pagination info).
 func (s *TaskService) List(ctx context.Context, filter ListTasksFilter) ([]Task, error) {
+	result, err := s.ListWithCount(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	return result.Tasks, nil
+}
+
+// ListWithCount returns tasks with pagination metadata.
+func (s *TaskService) ListWithCount(ctx context.Context, filter ListTasksFilter) (ListResult, error) {
 	if filter.Limit <= 0 {
 		filter.Limit = 50
 	}
-
-	var rows []generated.Task
-	var err error
-
-	switch {
-	case filter.Status != nil && filter.Type != nil:
-		rows, err = s.queries.ListTasksByStatusAndType(ctx, generated.ListTasksByStatusAndTypeParams{
-			Status: string(*filter.Status),
-			Type:   string(*filter.Type),
-			Limit:  filter.Limit,
-		})
-	case filter.Status != nil:
-		rows, err = s.queries.ListTasksByStatus(ctx, generated.ListTasksByStatusParams{
-			Status: string(*filter.Status),
-			Limit:  filter.Limit,
-		})
-	case filter.Type != nil:
-		rows, err = s.queries.ListTasksByType(ctx, generated.ListTasksByTypeParams{
-			Type:  string(*filter.Type),
-			Limit: filter.Limit,
-		})
-	default:
-		rows, err = s.queries.ListTasks(ctx, filter.Limit)
+	if filter.Offset < 0 {
+		filter.Offset = 0
 	}
 
+	params := s.buildFilterParams(filter)
+
+	countParams := generated.CountTasksFilteredParams{
+		Status:        params.Status,
+		Type:          params.Type,
+		MinPriority:   params.MinPriority,
+		CreatedAfter:  params.CreatedAfter,
+		CreatedBefore: params.CreatedBefore,
+	}
+
+	total, err := s.queries.CountTasksFiltered(ctx, countParams)
 	if err != nil {
-		return nil, fmt.Errorf("listing tasks: %w", err)
+		return ListResult{}, fmt.Errorf("counting tasks: %w", err)
+	}
+
+	rows, err := s.queries.ListTasksFiltered(ctx, params)
+	if err != nil {
+		return ListResult{}, fmt.Errorf("listing tasks: %w", err)
 	}
 
 	tasks := make([]Task, len(rows))
 	for i, row := range rows {
 		tasks[i] = taskFromRow(row)
 	}
-	return tasks, nil
+
+	totalPages := (total + filter.Limit - 1) / filter.Limit
+	page := filter.Offset/filter.Limit + 1
+
+	return ListResult{
+		Tasks:      tasks,
+		Total:      total,
+		Limit:      filter.Limit,
+		Offset:     filter.Offset,
+		TotalPages: totalPages,
+		Page:       page,
+	}, nil
+}
+
+func (s *TaskService) buildFilterParams(filter ListTasksFilter) generated.ListTasksFilteredParams {
+	params := generated.ListTasksFilteredParams{
+		Lim: filter.Limit,
+		Off: filter.Offset,
+	}
+	if filter.Status != nil {
+		params.Status = string(*filter.Status)
+	}
+	if filter.Type != nil {
+		params.Type = string(*filter.Type)
+	}
+	if filter.MinPriority != nil {
+		params.MinPriority = *filter.MinPriority
+	}
+	if filter.CreatedAfter != nil {
+		params.CreatedAfter = *filter.CreatedAfter
+	}
+	if filter.CreatedBefore != nil {
+		params.CreatedBefore = *filter.CreatedBefore
+	}
+	return params
 }
 
 // Update updates an existing task with partial input.

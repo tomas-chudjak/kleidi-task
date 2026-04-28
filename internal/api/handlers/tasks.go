@@ -59,14 +59,30 @@ func (h *TaskHandler) ListByProject(w http.ResponseWriter, r *http.Request) {
 			filter.Limit = limit
 		}
 	}
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if offset, err := strconv.ParseInt(o, 10, 64); err == nil {
+			filter.Offset = offset
+		}
+	}
+	if p := r.URL.Query().Get("min_priority"); p != "" {
+		if pri, err := strconv.ParseInt(p, 10, 64); err == nil {
+			filter.MinPriority = &pri
+		}
+	}
+	if v := r.URL.Query().Get("created_after"); v != "" {
+		filter.CreatedAfter = &v
+	}
+	if v := r.URL.Query().Get("created_before"); v != "" {
+		filter.CreatedBefore = &v
+	}
 
-	tasks, err := svc.List(r.Context(), filter)
+	result, err := svc.ListWithCount(r.Context(), filter)
 	if err != nil {
 		respondError(w, err)
 		return
 	}
 
-	respondJSON(w, http.StatusOK, tasks)
+	respondJSON(w, http.StatusOK, result)
 }
 
 // Create adds a new task to a project.

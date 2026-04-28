@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/ahoylog/kvik-tasks/internal/db"
@@ -83,8 +84,12 @@ func TestDetectTypeFromTitle(t *testing.T) {
 		{"HOTFIX: crash fix", TypeHotfix, "crash fix"},
 		{"hotfix: crash fix", TypeHotfix, "crash fix"},
 		{"TASK: normal work", TypeTask, "normal work"},
+		{"todo: buy milk", TypeTask, "buy milk"},
+		{"TODO: buy milk", TypeTask, "buy milk"},
+		{"todo buy milk", TypeTask, "buy milk"},
 		{"just a normal title", TypeTask, "just a normal title"},
 		{"buggy behavior", TypeTask, "buggy behavior"}, // "buggy" != "bug "
+		{"todolist app", TypeTask, "todolist app"},       // "todolist" != "todo "
 	}
 
 	for _, tt := range tests {
@@ -127,6 +132,91 @@ func TestGetTask(t *testing.T) {
 	}
 	if found.Title != "Find me" {
 		t.Errorf("expected 'Find me', got '%s'", found.Title)
+	}
+}
+
+func TestListWithPagination(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	for i := 0; i < 5; i++ {
+		svc.Create(ctx, CreateTaskInput{Title: fmt.Sprintf("Task %d", i+1), Source: SourceCLI})
+	}
+
+	// Page 1 of 2
+	result, err := svc.ListWithCount(ctx, ListTasksFilter{Limit: 3, Offset: 0})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Total != 5 {
+		t.Errorf("expected total 5, got %d", result.Total)
+	}
+	if len(result.Tasks) != 3 {
+		t.Errorf("expected 3 tasks on page 1, got %d", len(result.Tasks))
+	}
+	if result.TotalPages != 2 {
+		t.Errorf("expected 2 total pages, got %d", result.TotalPages)
+	}
+	if result.Page != 1 {
+		t.Errorf("expected page 1, got %d", result.Page)
+	}
+
+	// Page 2
+	result2, _ := svc.ListWithCount(ctx, ListTasksFilter{Limit: 3, Offset: 3})
+	if len(result2.Tasks) != 2 {
+		t.Errorf("expected 2 tasks on page 2, got %d", len(result2.Tasks))
+	}
+	if result2.Page != 2 {
+		t.Errorf("expected page 2, got %d", result2.Page)
+	}
+}
+
+func TestListWithPriorityFilter(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	svc.Create(ctx, CreateTaskInput{Title: "Low", Source: SourceCLI, Priority: 1})
+	svc.Create(ctx, CreateTaskInput{Title: "Med", Source: SourceCLI, Priority: 5})
+	svc.Create(ctx, CreateTaskInput{Title: "High", Source: SourceCLI, Priority: 10})
+
+	minPri := int64(5)
+	result, err := svc.ListWithCount(ctx, ListTasksFilter{MinPriority: &minPri})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Total != 2 {
+		t.Errorf("expected 2 tasks with priority >= 5, got %d", result.Total)
+	}
+	if len(result.Tasks) != 2 {
+		t.Errorf("expected 2 tasks, got %d", len(result.Tasks))
+	}
+}
+
+func TestListWithDateFilter(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	svc.Create(ctx, CreateTaskInput{Title: "Task A", Source: SourceCLI})
+	svc.Create(ctx, CreateTaskInput{Title: "Task B", Source: SourceCLI})
+
+	// Filter with a future date — should return all tasks
+	after := "2020-01-01T00:00:00Z"
+	result, err := svc.ListWithCount(ctx, ListTasksFilter{CreatedAfter: &after})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Total != 2 {
+		t.Errorf("expected 2 tasks after 2020, got %d", result.Total)
+	}
+
+	// Filter with a past date — should return nothing
+	before := "2020-01-01T00:00:00Z"
+	result2, _ := svc.ListWithCount(ctx, ListTasksFilter{CreatedBefore: &before})
+	if result2.Total != 0 {
+		t.Errorf("expected 0 tasks before 2020, got %d", result2.Total)
 	}
 }
 

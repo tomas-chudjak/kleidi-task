@@ -61,7 +61,7 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filter := core.ListTasksFilter{Limit: 100}
+	filter := core.ListTasksFilter{Limit: 20}
 	if s := r.URL.Query().Get("status"); s != "" {
 		status := core.TaskStatus(s)
 		filter.Status = &status
@@ -70,8 +70,24 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 		taskType := core.TaskType(t)
 		filter.Type = &taskType
 	}
+	if p := r.URL.Query().Get("min_priority"); p != "" {
+		if pri, err := strconv.ParseInt(p, 10, 64); err == nil {
+			filter.MinPriority = &pri
+		}
+	}
+	if v := r.URL.Query().Get("created_after"); v != "" {
+		filter.CreatedAfter = &v
+	}
+	if v := r.URL.Query().Get("created_before"); v != "" {
+		filter.CreatedBefore = &v
+	}
+	if pg := r.URL.Query().Get("page"); pg != "" {
+		if page, err := strconv.ParseInt(pg, 10, 64); err == nil && page > 1 {
+			filter.Offset = (page - 1) * filter.Limit
+		}
+	}
 
-	tasks, err := taskService.List(r.Context(), filter)
+	result, err := taskService.ListWithCount(r.Context(), filter)
 	if err != nil {
 		slog.Error("listing tasks", "err", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -86,12 +102,18 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pf := templates.ProjectFilter{
-		Status: r.URL.Query().Get("status"),
-		Type:   r.URL.Query().Get("type"),
+		Status:        r.URL.Query().Get("status"),
+		Type:          r.URL.Query().Get("type"),
+		MinPriority:   r.URL.Query().Get("min_priority"),
+		CreatedAfter:  r.URL.Query().Get("created_after"),
+		CreatedBefore: r.URL.Query().Get("created_before"),
+		Page:          result.Page,
+		TotalPages:    result.TotalPages,
+		Total:         result.Total,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ProjectPage(project, tasks, stats, pf).Render(r.Context(), w)
+	templates.ProjectPage(project, result.Tasks, stats, pf).Render(r.Context(), w)
 }
 
 // TaskDetail renders a single task page.
@@ -143,7 +165,8 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var input struct {
-		Title string `json:"title"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
@@ -153,9 +176,10 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	taskType, title := core.DetectTypeFromTitle(input.Title, core.TypeTask)
 
 	_, err = taskService.Create(r.Context(), core.CreateTaskInput{
-		Title:  title,
-		Type:   taskType,
-		Source: core.SourceUI,
+		Title:       title,
+		Description: input.Description,
+		Type:        taskType,
+		Source:      core.SourceUI,
 	})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
