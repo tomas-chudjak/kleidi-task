@@ -62,8 +62,10 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filter := core.ListTasksFilter{Limit: 20}
-	if s := r.URL.Query().Get("status"); s != "" {
-		filter.Status = s
+	if r.URL.Query().Has("status") {
+		filter.Status = r.URL.Query().Get("status") // explicit empty = all
+	} else {
+		filter.Status = "todo" // default view
 	}
 	if t := r.URL.Query().Get("type"); t != "" {
 		filter.Type = t

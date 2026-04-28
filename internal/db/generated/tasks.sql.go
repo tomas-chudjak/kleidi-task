@@ -14,7 +14,7 @@ const completeTask = `-- name: CompleteTask :one
 UPDATE tasks
 SET status = 'done'
 WHERE id = ?
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category
 `
 
 func (q *Queries) CompleteTask(ctx context.Context, id int64) (Task, error) {
@@ -34,6 +34,7 @@ func (q *Queries) CompleteTask(ctx context.Context, id int64) (Task, error) {
 		&i.Priority,
 		&i.Source,
 		&i.Metadata,
+		&i.Category,
 	)
 	return i, err
 }
@@ -85,14 +86,16 @@ const countTasksFiltered = `-- name: CountTasksFiltered :one
 SELECT count(*) FROM tasks
 WHERE (?1 IS NULL OR instr(',' || ?1 || ',', ',' || status || ',') > 0)
   AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || type || ',') > 0)
-  AND (?3 IS NULL OR priority >= ?3)
-  AND (?4 IS NULL OR created_at >= ?4)
-  AND (?5 IS NULL OR created_at <= ?5)
+  AND (?3 IS NULL OR instr(',' || ?3 || ',', ',' || category || ',') > 0)
+  AND (?4 IS NULL OR priority >= ?4)
+  AND (?5 IS NULL OR created_at >= ?5)
+  AND (?6 IS NULL OR created_at <= ?6)
 `
 
 type CountTasksFilteredParams struct {
 	Status        interface{} `json:"status"`
 	Type          interface{} `json:"type"`
+	Category      interface{} `json:"category"`
 	MinPriority   interface{} `json:"min_priority"`
 	CreatedAfter  interface{} `json:"created_after"`
 	CreatedBefore interface{} `json:"created_before"`
@@ -102,6 +105,7 @@ func (q *Queries) CountTasksFiltered(ctx context.Context, arg CountTasksFiltered
 	row := q.db.QueryRowContext(ctx, countTasksFiltered,
 		arg.Status,
 		arg.Type,
+		arg.Category,
 		arg.MinPriority,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
@@ -112,9 +116,9 @@ func (q *Queries) CountTasksFiltered(ctx context.Context, arg CountTasksFiltered
 }
 
 const createTask = `-- name: CreateTask :one
-INSERT INTO tasks (type, title, description, status, priority, source, created_by)
-VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata
+INSERT INTO tasks (type, title, description, status, priority, source, created_by, category)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category
 `
 
 type CreateTaskParams struct {
@@ -125,6 +129,7 @@ type CreateTaskParams struct {
 	Priority    int64          `json:"priority"`
 	Source      string         `json:"source"`
 	CreatedBy   int64          `json:"created_by"`
+	Category    sql.NullString `json:"category"`
 }
 
 func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
@@ -136,6 +141,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		arg.Priority,
 		arg.Source,
 		arg.CreatedBy,
+		arg.Category,
 	)
 	var i Task
 	err := row.Scan(
@@ -152,6 +158,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.Priority,
 		&i.Source,
 		&i.Metadata,
+		&i.Category,
 	)
 	return i, err
 }
@@ -166,7 +173,7 @@ func (q *Queries) DeleteTask(ctx context.Context, id int64) error {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata FROM tasks WHERE id = ?
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category FROM tasks WHERE id = ?
 `
 
 func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
@@ -186,24 +193,27 @@ func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
 		&i.Priority,
 		&i.Source,
 		&i.Metadata,
+		&i.Category,
 	)
 	return i, err
 }
 
 const listTasksFiltered = `-- name: ListTasksFiltered :many
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata FROM tasks
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category FROM tasks
 WHERE (?1 IS NULL OR instr(',' || ?1 || ',', ',' || status || ',') > 0)
   AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || type || ',') > 0)
-  AND (?3 IS NULL OR priority >= ?3)
-  AND (?4 IS NULL OR created_at >= ?4)
-  AND (?5 IS NULL OR created_at <= ?5)
+  AND (?3 IS NULL OR instr(',' || ?3 || ',', ',' || category || ',') > 0)
+  AND (?4 IS NULL OR priority >= ?4)
+  AND (?5 IS NULL OR created_at >= ?5)
+  AND (?6 IS NULL OR created_at <= ?6)
 ORDER BY priority DESC, created_at DESC
-LIMIT ?7 OFFSET ?6
+LIMIT ?8 OFFSET ?7
 `
 
 type ListTasksFilteredParams struct {
 	Status        interface{} `json:"status"`
 	Type          interface{} `json:"type"`
+	Category      interface{} `json:"category"`
 	MinPriority   interface{} `json:"min_priority"`
 	CreatedAfter  interface{} `json:"created_after"`
 	CreatedBefore interface{} `json:"created_before"`
@@ -215,6 +225,7 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 	rows, err := q.db.QueryContext(ctx, listTasksFiltered,
 		arg.Status,
 		arg.Type,
+		arg.Category,
 		arg.MinPriority,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
@@ -242,6 +253,7 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 			&i.Priority,
 			&i.Source,
 			&i.Metadata,
+			&i.Category,
 		); err != nil {
 			return nil, err
 		}
@@ -258,9 +270,9 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 
 const updateTask = `-- name: UpdateTask :one
 UPDATE tasks
-SET title = ?, description = ?, status = ?, type = ?, priority = ?
+SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?
 WHERE id = ?
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category
 `
 
 type UpdateTaskParams struct {
@@ -269,6 +281,7 @@ type UpdateTaskParams struct {
 	Status      string         `json:"status"`
 	Type        string         `json:"type"`
 	Priority    int64          `json:"priority"`
+	Category    sql.NullString `json:"category"`
 	ID          int64          `json:"id"`
 }
 
@@ -279,6 +292,7 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 		arg.Status,
 		arg.Type,
 		arg.Priority,
+		arg.Category,
 		arg.ID,
 	)
 	var i Task
@@ -296,6 +310,7 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 		&i.Priority,
 		&i.Source,
 		&i.Metadata,
+		&i.Category,
 	)
 	return i, err
 }

@@ -43,6 +43,7 @@ func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, 
 		Priority:    input.Priority,
 		Source:      string(input.Source),
 		CreatedBy:   1, // default local user
+		Category:    toNullString(input.Category),
 	})
 	if err != nil {
 		return Task{}, fmt.Errorf("creating task: %w", err)
@@ -130,6 +131,9 @@ func (s *TaskService) buildFilterParams(filter ListTasksFilter) generated.ListTa
 	if filter.Type != "" {
 		params.Type = filter.Type
 	}
+	if filter.Category != "" {
+		params.Category = filter.Category
+	}
 	if filter.MinPriority != nil {
 		params.MinPriority = *filter.MinPriority
 	}
@@ -159,6 +163,7 @@ func (s *TaskService) Update(ctx context.Context, id int64, input UpdateTaskInpu
 		Status:      existing.Status,
 		Type:        existing.Type,
 		Priority:    existing.Priority,
+		Category:    existing.Category,
 	}
 
 	if input.Title != nil {
@@ -175,6 +180,9 @@ func (s *TaskService) Update(ctx context.Context, id int64, input UpdateTaskInpu
 	}
 	if input.Priority != nil {
 		params.Priority = *input.Priority
+	}
+	if input.Category != nil {
+		params.Category = toNullString(*input.Category)
 	}
 
 	row, err := s.queries.UpdateTask(ctx, params)
@@ -253,7 +261,8 @@ func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT tasks.id, tasks.type, tasks.title, tasks.description, tasks.status,
 		        tasks.created_at, tasks.updated_at, tasks.completed_at,
-		        tasks.created_by, tasks.assigned_to, tasks.priority, tasks.source, tasks.metadata
+		        tasks.created_by, tasks.assigned_to, tasks.priority, tasks.source, tasks.metadata,
+		        tasks.category
 		 FROM tasks
 		 JOIN tasks_fts ON tasks.id = tasks_fts.rowid
 		 WHERE tasks_fts MATCH ?
@@ -271,6 +280,7 @@ func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]
 			&row.ID, &row.Type, &row.Title, &row.Description, &row.Status,
 			&row.CreatedAt, &row.UpdatedAt, &row.CompletedAt,
 			&row.CreatedBy, &row.AssignedTo, &row.Priority, &row.Source, &row.Metadata,
+			&row.Category,
 		); err != nil {
 			return nil, fmt.Errorf("scanning search result: %w", err)
 		}
@@ -295,6 +305,9 @@ func taskFromRow(row generated.Task) Task {
 
 	if row.Description.Valid {
 		t.Description = row.Description.String
+	}
+	if row.Category.Valid {
+		t.Category = row.Category.String
 	}
 	if row.CompletedAt.Valid {
 		t.CompletedAt = &row.CompletedAt.Time

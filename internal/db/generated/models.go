@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+type Category struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
 type Meta struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -28,6 +34,7 @@ type Task struct {
 	Priority    int64          `json:"priority"`
 	Source      string         `json:"source"`
 	Metadata    sql.NullString `json:"metadata"`
+	Category    sql.NullString `json:"category"`
 }
 
 type TasksFt struct {

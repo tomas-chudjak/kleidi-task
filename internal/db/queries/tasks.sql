@@ -1,6 +1,6 @@
 -- name: CreateTask :one
-INSERT INTO tasks (type, title, description, status, priority, source, created_by)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO tasks (type, title, description, status, priority, source, created_by, category)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetTask :one
@@ -10,6 +10,7 @@ SELECT * FROM tasks WHERE id = ?;
 SELECT * FROM tasks
 WHERE (sqlc.narg('status') IS NULL OR instr(',' || sqlc.narg('status') || ',', ',' || status || ',') > 0)
   AND (sqlc.narg('type') IS NULL OR instr(',' || sqlc.narg('type') || ',', ',' || type || ',') > 0)
+  AND (sqlc.narg('category') IS NULL OR instr(',' || sqlc.narg('category') || ',', ',' || category || ',') > 0)
   AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
   AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
   AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'))
@@ -20,13 +21,14 @@ LIMIT sqlc.arg('lim') OFFSET sqlc.arg('off');
 SELECT count(*) FROM tasks
 WHERE (sqlc.narg('status') IS NULL OR instr(',' || sqlc.narg('status') || ',', ',' || status || ',') > 0)
   AND (sqlc.narg('type') IS NULL OR instr(',' || sqlc.narg('type') || ',', ',' || type || ',') > 0)
+  AND (sqlc.narg('category') IS NULL OR instr(',' || sqlc.narg('category') || ',', ',' || category || ',') > 0)
   AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
   AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
   AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'));
 
 -- name: UpdateTask :one
 UPDATE tasks
-SET title = ?, description = ?, status = ?, type = ?, priority = ?
+SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?
 WHERE id = ?
 RETURNING *;
 

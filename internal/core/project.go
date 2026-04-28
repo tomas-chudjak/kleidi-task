@@ -135,6 +135,15 @@ func (s *ProjectService) TaskServiceFor(projectPath string) (*TaskService, error
 	return NewTaskService(db), nil
 }
 
+// CategoryServiceFor returns a CategoryService for the given project path.
+func (s *ProjectService) CategoryServiceFor(projectPath string) (*CategoryService, error) {
+	db, err := s.manager.ProjectDB(projectPath)
+	if err != nil {
+		return nil, fmt.Errorf("getting project database: %w", err)
+	}
+	return NewCategoryService(db), nil
+}
+
 // slugFromPath generates a slug from a directory path.
 func slugFromPath(absPath string) string {
 	base := filepath.Base(absPath)

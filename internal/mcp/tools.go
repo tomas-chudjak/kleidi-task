@@ -19,12 +19,14 @@ type TaskCreateInput struct {
 	Type        string `json:"type,omitempty" jsonschema:"work item type,enum=task,enum=bug,enum=feature,enum=hotfix"`
 	Description string `json:"description,omitempty" jsonschema:"task description"`
 	Priority    int64  `json:"priority,omitempty" jsonschema:"higher number means higher priority"`
+	Category    string `json:"category,omitempty" jsonschema:"category/area of work (e.g. backend, frontend, design)"`
 }
 
 type TaskListInput struct {
 	Project       string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	Status        string `json:"status,omitempty" jsonschema:"filter by status,enum=todo,enum=doing,enum=done"`
 	Type          string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Category      string `json:"category,omitempty" jsonschema:"filter by category (comma-separated for multi-select)"`
 	MinPriority   *int64 `json:"min_priority,omitempty" jsonschema:"minimum priority filter"`
 	CreatedAfter  string `json:"created_after,omitempty" jsonschema:"filter tasks created after this date (ISO 8601)"`
 	CreatedBefore string `json:"created_before,omitempty" jsonschema:"filter tasks created before this date (ISO 8601)"`
@@ -61,6 +63,24 @@ type TaskSearchInput struct {
 	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	Query   string `json:"query" jsonschema:"search query (FTS5 syntax)"`
 	Limit   int64  `json:"limit,omitempty" jsonschema:"max results (default 20)"`
+}
+
+type CategoryListInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+}
+
+type CategoryCreateInput struct {
+	Project string `json:"project" jsonschema:"project slug or 'current'"`
+	Name    string `json:"name" jsonschema:"category name (e.g. backend, frontend, design)"`
+	Color   string `json:"color,omitempty" jsonschema:"hex color (default: #8a8dab)"`
+}
+
+type CategoryListOutput struct {
+	Categories []core.Category `json:"categories"`
+}
+
+type CategoryOutput struct {
+	Category core.Category `json:"category"`
 }
 
 type ProjectStatsInput struct {
@@ -132,6 +152,16 @@ func (s *Server) registerTools() {
 	}, s.taskDelete)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "category_list",
+		Description: "List all categories for a project",
+	}, s.categoryList)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "category_create",
+		Description: "Create a new category (area of work like backend, frontend, design)",
+	}, s.categoryCreate)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "project_list",
 		Description: "List all registered projects",
 	}, s.projectList)
@@ -167,6 +197,7 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 		Description: input.Description,
 		Type:        taskType,
 		Priority:    input.Priority,
+		Category:    input.Category,
 		Source:      core.SourceMCP,
 	})
 	if err != nil {
@@ -188,6 +219,9 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 	}
 	if input.Type != "" {
 		filter.Type = input.Type
+	}
+	if input.Category != "" {
+		filter.Category = input.Category
 	}
 	if input.MinPriority != nil {
 		filter.MinPriority = input.MinPriority
@@ -406,6 +440,69 @@ func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
 	}
 
 	return s.projectService.TaskServiceFor(projectPath)
+}
+
+func (s *Server) categoryList(ctx context.Context, req *mcp.CallToolRequest, input CategoryListInput) (*mcp.CallToolResult, CategoryListOutput, error) {
+	catService, err := s.resolveCategoryService(input.Project)
+	if err != nil {
+		return nil, CategoryListOutput{}, err
+	}
+
+	categories, err := catService.List(ctx)
+	if err != nil {
+		return nil, CategoryListOutput{}, err
+	}
+
+	text := fmt.Sprintf("Found %d category(ies):\n", len(categories))
+	for _, c := range categories {
+		text += fmt.Sprintf("  %s (%s)\n", c.Name, c.Color)
+	}
+	return textResult(text), CategoryListOutput{Categories: categories}, nil
+}
+
+func (s *Server) categoryCreate(ctx context.Context, req *mcp.CallToolRequest, input CategoryCreateInput) (*mcp.CallToolResult, CategoryOutput, error) {
+	catService, err := s.resolveCategoryService(input.Project)
+	if err != nil {
+		return nil, CategoryOutput{}, err
+	}
+
+	cat, err := catService.Create(ctx, input.Name, input.Color)
+	if err != nil {
+		return nil, CategoryOutput{}, err
+	}
+
+	return textResult(fmt.Sprintf("Created category: %s (%s)", cat.Name, cat.Color)), CategoryOutput{Category: cat}, nil
+}
+
+func (s *Server) resolveCategoryService(project string) (*core.CategoryService, error) {
+	var projectPath string
+
+	if project != "" && project != "current" {
+		p, err := s.projectService.GetBySlug(project)
+		if err != nil {
+			return nil, err
+		}
+		projectPath = p.Path
+	} else {
+		cwd, err := os.Getwd()
+		if err == nil {
+			projectPath, err = s.projectService.DetectProject(cwd)
+		}
+		if err != nil || projectPath == "" {
+			cfg := config.LoadGlobal()
+			if cfg.DefaultProject != "" {
+				p, slugErr := s.projectService.GetBySlug(cfg.DefaultProject)
+				if slugErr == nil {
+					projectPath = p.Path
+				}
+			}
+			if projectPath == "" {
+				return nil, core.ErrNoProject
+			}
+		}
+	}
+
+	return s.projectService.CategoryServiceFor(projectPath)
 }
 
 func textResult(text string) *mcp.CallToolResult {

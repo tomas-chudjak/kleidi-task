@@ -90,7 +90,12 @@ func hasFilter(current, value string) bool {
 
 func statusURL(slug, status string, f ProjectFilter) string {
 	if status == "" {
-		return buildFilterURL(slug, f, map[string]string{"status": ""})
+		// "All" — explicit empty status param to override default
+		base := "/p/" + slug + "?status="
+		if f.Type != "" {
+			base += "&type=" + f.Type
+		}
+		return base
 	}
 	return buildFilterURL(slug, f, map[string]string{"status": toggleFilter(f.Status, status)})
 }
@@ -339,6 +344,11 @@ templ TaskRow(task core.Task, slug string) {
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
+		if task.Category != "" {
+			<span class="kvt-category-tag">{ task.Category }</span>
+		} else {
+			<span class="kvt-category-tag kvt-category-tag--empty"></span>
+		}
 		<span class={ "kvt-task-status kvt-task-status--" + string(task.Status) }>{ string(task.Status) }</span>
 		<span class="kvt-task-priority">
 			if task.Priority > 0 {

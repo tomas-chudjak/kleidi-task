@@ -346,7 +346,7 @@ input, select, textarea {
 
 .kvt-task-row {
   display: grid;
-  grid-template-columns: 3rem 5.5rem 1fr 5.5rem 2.5rem 4.5rem;
+  grid-template-columns: 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
@@ -380,6 +380,20 @@ input, select, textarea {
   font-family: var(--k-font-mono);
   text-align: center;
 }
+/* Category tag in task row */
+.kvt-category-tag {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--kvt-fg-muted);
+  background: var(--kvt-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.kvt-category-tag--empty { visibility: hidden; }
+
 /* Status text in task row */
 .kvt-task-status {
   font-size: 0.75rem;

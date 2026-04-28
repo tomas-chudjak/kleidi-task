@@ -42,6 +42,7 @@ type Task struct {
 	Description string     `json:"description,omitempty"`
 	Status      TaskStatus `json:"status"`
 	Priority    int64      `json:"priority"`
+	Category    string     `json:"category,omitempty"`
 	Source      Source     `json:"source"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
@@ -56,6 +57,7 @@ type CreateTaskInput struct {
 	Description string     `json:"description,omitempty"`
 	Type        TaskType   `json:"type"`
 	Priority    int64      `json:"priority"`
+	Category    string     `json:"category,omitempty"`
 	Source      Source     `json:"source"` // required, set by entry point
 }
 
@@ -67,6 +69,7 @@ type UpdateTaskInput struct {
 	Status      *TaskStatus `json:"status,omitempty"`
 	Type        *TaskType   `json:"type,omitempty"`
 	Priority    *int64      `json:"priority,omitempty"`
+	Category    *string     `json:"category,omitempty"`
 }
 
 // ListTasksFilter holds filter parameters for listing tasks.
@@ -74,6 +77,7 @@ type UpdateTaskInput struct {
 type ListTasksFilter struct {
 	Status        string  `json:"status,omitempty"`         // comma-separated: "todo", "todo,doing"
 	Type          string  `json:"type,omitempty"`           // comma-separated: "bug", "bug,feature"
+	Category      string  `json:"category,omitempty"`       // comma-separated: "backend", "backend,frontend"
 	MinPriority   *int64  `json:"min_priority,omitempty"`
 	CreatedAfter  *string `json:"created_after,omitempty"`  // ISO 8601 datetime
 	CreatedBefore *string `json:"created_before,omitempty"` // ISO 8601 datetime
@@ -89,6 +93,13 @@ type ListResult struct {
 	Offset     int64  `json:"offset"`
 	TotalPages int64  `json:"total_pages"`
 	Page       int64  `json:"page"`
+}
+
+// Category represents a custom label/area of work for tasks.
+type Category struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
 }
 
 // Project represents a registered project in the global registry.

@@ -113,9 +113,14 @@ templ BoardCard(task core.Task, slug string) {
 			<span class="kvt-board-card-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		</div>
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-board-card-title">{ task.Title }</a>
-		if task.Priority > 0 {
+		if task.Priority > 0 || task.Category != "" {
 			<div class="kvt-board-card-meta">
-				<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
+				if task.Category != "" {
+					<span class="kvt-category-tag">{ task.Category }</span>
+				}
+				if task.Priority > 0 {
+					<span class="kvt-task-priority">P{ fmt.Sprintf("%d", task.Priority) }</span>
+				}
 			</div>
 		}
 	</div>
