@@ -19,7 +19,7 @@ type GlobalStats struct {
 }
 
 templ Dashboard(projects []DashboardProject, global GlobalStats) {
-	@Layout("Dashboard") {
+	@LayoutMinimal("Dashboard") {
 		<h2 class="kvt-title">Dashboard</h2>
 
 		if len(projects) == 0 {

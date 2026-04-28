@@ -116,7 +116,7 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 }
 
 templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category) {
-	@Layout(project.Name) {
+	@Layout(project.Name, project.Slug) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
 			<div class="kvt-view-toggle">
@@ -384,16 +384,15 @@ templ TaskRow(task core.Task, slug string) {
 					<i class="icon icon-check"></i>
 				</button>
 			}
-			<button
-				class="kvt-btn-delete"
-				hx-delete={ fmt.Sprintf("/p/%s/tasks/%d", slug, task.ID) }
-				hx-target={ fmt.Sprintf("#task-%d", task.ID) }
-				hx-swap="outerHTML"
-				hx-confirm="Delete this task?"
-				title="Delete"
-			>
-				<i class="icon icon-trash-2"></i>
-			</button>
+			if task.Status == core.StatusDone {
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/archive", slug, task.ID)) }
+					class="kvt-btn-archive"
+					title="Archive"
+				>
+					<i class="icon icon-archive"></i>
+				</a>
+			}
 		</div>
 	</div>
 }

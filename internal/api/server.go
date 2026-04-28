@@ -43,6 +43,8 @@ func NewRouter(projectService *core.ProjectService) http.Handler {
 		r.Patch("/projects/{slug}/tasks/{id}", taskHandler.Update)
 		r.Delete("/projects/{slug}/tasks/{id}", taskHandler.Delete)
 		r.Post("/projects/{slug}/tasks/{id}/complete", taskHandler.Complete)
+		r.Post("/projects/{slug}/tasks/{id}/archive", taskHandler.Archive)
+		r.Post("/projects/{slug}/tasks/{id}/unarchive", taskHandler.Unarchive)
 	})
 
 	return r

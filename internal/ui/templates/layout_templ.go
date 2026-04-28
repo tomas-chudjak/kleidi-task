@@ -8,7 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(title string) templ.Component {
+// layoutHead renders the common <head> content.
+func layoutHead(title string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,28 +30,223 @@ func Layout(title string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 9, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 7, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script></head><body><div class=\"kvt-app\"><aside class=\"kvt-sidebar\"><a href=\"/\" class=\"kvt-sidebar-logo\">kvt</a><nav class=\"kvt-sidebar-nav\"><a href=\"/\" class=\"kvt-sidebar-link\" title=\"Dashboard\"><i class=\"icon icon-layout-dashboard\"></i></a> <a href=\"#\" class=\"kvt-sidebar-link\" title=\"Settings\" onclick=\"var m=location.pathname.match(/^\\/p\\/([^/]+)/);if(m){location.href='/p/'+m[1]+'/settings'}\"><i class=\"icon icon-settings\"></i></a></nav><button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"toggleTheme()\" title=\"Toggle theme\"><i class=\"icon icon-sun\" id=\"theme-icon-light\" style=\"display:none;\"></i> <i class=\"icon icon-moon\" id=\"theme-icon-dark\" style=\"display:none;\"></i></button></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"/\">Dashboard</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+		return nil
+	})
+}
+
+// layoutScripts renders the common scripts.
+func layoutScripts() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script>\n\tdocument.body.addEventListener('htmx:afterRequest', function(e) {\n\t\tvar el = document.getElementById('save-indicator');\n\t\tif (el && e.detail.elt.closest && e.detail.elt.closest('.kvt-task-layout, .kvt-toolbar')) {\n\t\t\tel.textContent = 'Saved';\n\t\t\tel.classList.add('kvt-save-indicator--visible');\n\t\t\tclearTimeout(el._t);\n\t\t\tel._t = setTimeout(function() {\n\t\t\t\tel.classList.remove('kvt-save-indicator--visible');\n\t\t\t}, 2000);\n\t\t}\n\t});\n\t// Theme toggle\n\tfunction initTheme() {\n\t\tvar saved = localStorage.getItem('kvt-theme');\n\t\tif (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n\t\tdocument.documentElement.setAttribute('data-theme', saved);\n\t\tupdateThemeIcon(saved);\n\t}\n\tfunction toggleTheme() {\n\t\tvar current = document.documentElement.getAttribute('data-theme') || 'light';\n\t\tvar next = current === 'dark' ? 'light' : 'dark';\n\t\tdocument.documentElement.setAttribute('data-theme', next);\n\t\tlocalStorage.setItem('kvt-theme', next);\n\t\tupdateThemeIcon(next);\n\t}\n\tfunction updateThemeIcon(theme) {\n\t\tvar li = document.getElementById('theme-icon-light');\n\t\tvar dk = document.getElementById('theme-icon-dark');\n\t\tif (li) li.style.display = theme === 'dark' ? 'block' : 'none';\n\t\tif (dk) dk.style.display = theme === 'light' ? 'block' : 'none';\n\t}\n\tinitTheme();\n\tfunction applyAdvancedFilters(btn) {\n\t\tvar container = btn.closest('.kvt-advanced-filters');\n\t\tvar url = new URL(window.location.href);\n\t\tvar pri = container.querySelector('[name=\"min_priority\"]');\n\t\tif (pri) { pri.value ? url.searchParams.set('min_priority', pri.value) : url.searchParams.delete('min_priority'); }\n\t\tvar after = container.querySelector('[name=\"created_after\"]');\n\t\tif (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }\n\t\tvar before = container.querySelector('[name=\"created_before\"]');\n\t\tif (before) { before.value ? url.searchParams.set('created_before', before.value) : url.searchParams.delete('created_before'); }\n\t\turl.searchParams.delete('page');\n\t\twindow.location.href = url.toString();\n\t}\n\tfunction applyArchiveFilters(btn) {\n\t\tvar container = btn.closest('.kvt-advanced-filters');\n\t\tvar url = new URL(window.location.href);\n\t\tvar after = container.querySelector('[name=\"created_after\"]');\n\t\tif (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }\n\t\tvar before = container.querySelector('[name=\"created_before\"]');\n\t\tif (before) { before.value ? url.searchParams.set('created_before', before.value) : url.searchParams.delete('created_before'); }\n\t\turl.searchParams.delete('page');\n\t\twindow.location.href = url.toString();\n\t}\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main></div></div><script>\n\tdocument.body.addEventListener('htmx:afterRequest', function(e) {\n\t\tvar el = document.getElementById('save-indicator');\n\t\tif (el && e.detail.elt.closest && e.detail.elt.closest('.kvt-task-layout, .kvt-toolbar')) {\n\t\t\tel.textContent = 'Saved';\n\t\t\tel.classList.add('kvt-save-indicator--visible');\n\t\t\tclearTimeout(el._t);\n\t\t\tel._t = setTimeout(function() {\n\t\t\t\tel.classList.remove('kvt-save-indicator--visible');\n\t\t\t}, 2000);\n\t\t}\n\t});\n\t// Theme toggle\n\tfunction initTheme() {\n\t\tvar saved = localStorage.getItem('kvt-theme');\n\t\tif (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n\t\tdocument.documentElement.setAttribute('data-theme', saved);\n\t\tupdateThemeIcon(saved);\n\t}\n\tfunction toggleTheme() {\n\t\tvar current = document.documentElement.getAttribute('data-theme') || 'light';\n\t\tvar next = current === 'dark' ? 'light' : 'dark';\n\t\tdocument.documentElement.setAttribute('data-theme', next);\n\t\tlocalStorage.setItem('kvt-theme', next);\n\t\tupdateThemeIcon(next);\n\t}\n\tfunction updateThemeIcon(theme) {\n\t\tdocument.getElementById('theme-icon-light').style.display = theme === 'dark' ? 'block' : 'none';\n\t\tdocument.getElementById('theme-icon-dark').style.display = theme === 'light' ? 'block' : 'none';\n\t}\n\tinitTheme();\n\tfunction applyAdvancedFilters(btn) {\n\t\tvar container = btn.closest('.kvt-advanced-filters');\n\t\tvar url = new URL(window.location.href);\n\t\tvar pri = container.querySelector('[name=\"min_priority\"]');\n\t\tif (pri) { pri.value ? url.searchParams.set('min_priority', pri.value) : url.searchParams.delete('min_priority'); }\n\t\tvar after = container.querySelector('[name=\"created_after\"]');\n\t\tif (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }\n\t\tvar before = container.querySelector('[name=\"created_before\"]');\n\t\tif (before) { before.value ? url.searchParams.set('created_before', before.value) : url.searchParams.delete('created_before'); }\n\t\turl.searchParams.delete('page');\n\t\twindow.location.href = url.toString();\n\t}\n\t</script></body></html>")
+		return nil
+	})
+}
+
+// LayoutMinimal is the layout for the project selector page — sidebar with logo and theme toggle only, no project nav.
+func LayoutMinimal(title string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!doctype html><html lang=\"en\"><head>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = layoutHead(title).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</head><body><div class=\"kvt-app\"><aside class=\"kvt-sidebar\"><a href=\"/\" class=\"kvt-sidebar-logo\">kvt</a><nav class=\"kvt-sidebar-nav\"></nav><button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"toggleTheme()\" title=\"Toggle theme\"><i class=\"icon icon-sun\" id=\"theme-icon-light\" style=\"display:none;\"></i> <i class=\"icon icon-moon\" id=\"theme-icon-dark\" style=\"display:none;\"></i></button></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"/\">All projects</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var4.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</main></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = layoutScripts().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+// Layout is the project-scoped layout with sidebar navigation.
+func Layout(title string, slug string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!doctype html><html lang=\"en\"><head>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = layoutHead(title).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</head><body><div class=\"kvt-app\"><aside class=\"kvt-sidebar\"><a href=\"/\" class=\"kvt-sidebar-logo\">kvt</a><nav class=\"kvt-sidebar-nav\"><a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 templ.SafeURL
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 121, Col: 42}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"kvt-sidebar-link\" title=\"Dashboard\"><i class=\"icon icon-layout-dashboard\"></i></a> <a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 templ.SafeURL
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/board"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 122, Col: 53}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"kvt-sidebar-link\" title=\"Board\"><i class=\"icon icon-columns-3\"></i></a> <a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 templ.SafeURL
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/archive"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 123, Col: 55}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"kvt-sidebar-link\" title=\"Archive\"><i class=\"icon icon-archive\"></i></a> <a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 templ.SafeURL
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/settings"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 124, Col: 56}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"kvt-sidebar-link\" title=\"Settings\"><i class=\"icon icon-settings\"></i></a></nav><button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"toggleTheme()\" title=\"Toggle theme\"><i class=\"icon icon-sun\" id=\"theme-icon-light\" style=\"display:none;\"></i> <i class=\"icon icon-moon\" id=\"theme-icon-dark\" style=\"display:none;\"></i></button></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 templ.SafeURL
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 134, Col: 43}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">Dashboard</a> <span class=\"kvt-topbar-sep\">·</span> <a href=\"/\" class=\"kvt-topbar-link--secondary\">All projects</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var5.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</main></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = layoutScripts().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

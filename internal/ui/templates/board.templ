@@ -15,7 +15,7 @@ func boardTypeURL(slug, typ, current string) string {
 }
 
 templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats, typeFilter string) {
-	@Layout(project.Name + " — Board") {
+	@Layout(project.Name+" — Board", project.Slug) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
 			<div class="kvt-view-toggle">

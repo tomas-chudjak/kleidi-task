@@ -296,10 +296,10 @@ func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]
 		`SELECT tasks.id, tasks.type, tasks.title, tasks.description, tasks.status,
 		        tasks.created_at, tasks.updated_at, tasks.completed_at,
 		        tasks.created_by, tasks.assigned_to, tasks.priority, tasks.source, tasks.metadata,
-		        tasks.category
+		        tasks.category, tasks.is_archived
 		 FROM tasks
 		 JOIN tasks_fts ON tasks.id = tasks_fts.rowid
-		 WHERE tasks_fts MATCH ?
+		 WHERE tasks_fts MATCH ? AND tasks.is_archived = 0
 		 ORDER BY rank
 		 LIMIT ?`, query, limit)
 	if err != nil {
@@ -314,7 +314,7 @@ func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]
 			&row.ID, &row.Type, &row.Title, &row.Description, &row.Status,
 			&row.CreatedAt, &row.UpdatedAt, &row.CompletedAt,
 			&row.CreatedBy, &row.AssignedTo, &row.Priority, &row.Source, &row.Metadata,
-			&row.Category,
+			&row.Category, &row.IsArchived,
 		); err != nil {
 			return nil, fmt.Errorf("scanning search result: %w", err)
 		}
@@ -323,18 +323,108 @@ func (s *TaskService) Search(ctx context.Context, query string, limit int64) ([]
 	return tasks, nil
 }
 
+// Archive marks a completed task as archived.
+func (s *TaskService) Archive(ctx context.Context, id int64) (Task, error) {
+	row, err := s.queries.ArchiveTask(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Task{}, fmt.Errorf("task %d: %w (must be done to archive)", id, ErrNotFound)
+		}
+		return Task{}, fmt.Errorf("archiving task %d: %w", id, err)
+	}
+	return taskFromRow(row), nil
+}
+
+// Unarchive restores an archived task back to done status.
+func (s *TaskService) Unarchive(ctx context.Context, id int64) (Task, error) {
+	row, err := s.queries.UnarchiveTask(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Task{}, fmt.Errorf("task %d: %w (not archived)", id, ErrNotFound)
+		}
+		return Task{}, fmt.Errorf("unarchiving task %d: %w", id, err)
+	}
+	return taskFromRow(row), nil
+}
+
+// ListArchived returns archived tasks with pagination.
+func (s *TaskService) ListArchived(ctx context.Context, filter ListTasksFilter) (ListResult, error) {
+	if filter.Limit <= 0 {
+		filter.Limit = 50
+	}
+	if filter.Offset < 0 {
+		filter.Offset = 0
+	}
+
+	params := generated.ListArchivedFilteredParams{
+		Lim: filter.Limit,
+		Off: filter.Offset,
+	}
+	countParams := generated.CountArchivedFilteredParams{}
+
+	if filter.Type != "" {
+		params.Type = filter.Type
+		countParams.Type = filter.Type
+	}
+	if filter.Category != "" {
+		params.Category = filter.Category
+		countParams.Category = filter.Category
+	}
+	if filter.CreatedAfter != nil {
+		params.CreatedAfter = *filter.CreatedAfter
+		countParams.CreatedAfter = *filter.CreatedAfter
+	}
+	if filter.CreatedBefore != nil {
+		params.CreatedBefore = *filter.CreatedBefore
+		countParams.CreatedBefore = *filter.CreatedBefore
+	}
+
+	total, err := s.queries.CountArchivedFiltered(ctx, countParams)
+	if err != nil {
+		return ListResult{}, fmt.Errorf("counting archived tasks: %w", err)
+	}
+
+	rows, err := s.queries.ListArchivedFiltered(ctx, params)
+	if err != nil {
+		return ListResult{}, fmt.Errorf("listing archived tasks: %w", err)
+	}
+
+	tasks := make([]Task, len(rows))
+	for i, row := range rows {
+		tasks[i] = taskFromRow(row)
+	}
+
+	totalPages := (total + filter.Limit - 1) / filter.Limit
+	page := filter.Offset/filter.Limit + 1
+
+	return ListResult{
+		Tasks:      tasks,
+		Total:      total,
+		Limit:      filter.Limit,
+		Offset:     filter.Offset,
+		TotalPages: totalPages,
+		Page:       page,
+	}, nil
+}
+
+// CountArchived returns the total number of archived tasks.
+func (s *TaskService) CountArchived(ctx context.Context) (int64, error) {
+	return s.queries.CountArchived(ctx)
+}
+
 // taskFromRow converts a generated.Task to a domain Task.
 func taskFromRow(row generated.Task) Task {
 	t := Task{
-		ID:        row.ID,
-		Type:      TaskType(row.Type),
-		Title:     row.Title,
-		Status:    TaskStatus(row.Status),
-		Priority:  row.Priority,
-		Source:    Source(row.Source),
-		CreatedAt: row.CreatedAt,
-		UpdatedAt: row.UpdatedAt,
-		CreatedBy: row.CreatedBy,
+		ID:         row.ID,
+		Type:       TaskType(row.Type),
+		Title:      row.Title,
+		Status:     TaskStatus(row.Status),
+		Priority:   row.Priority,
+		IsArchived: row.IsArchived != 0,
+		Source:     Source(row.Source),
+		CreatedAt:  row.CreatedAt,
+		UpdatedAt:  row.UpdatedAt,
+		CreatedBy:  row.CreatedBy,
 	}
 
 	if row.Description.Valid {

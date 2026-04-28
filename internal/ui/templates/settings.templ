@@ -4,7 +4,7 @@ import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
 templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats) {
-	@Layout(project.Name + " — Settings") {
+	@Layout(project.Name+" — Settings", project.Slug) {
 		<div class="kvt-board-header">
 			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
 			<h2 class="kvt-title">Settings</h2>

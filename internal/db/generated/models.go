@@ -35,6 +35,7 @@ type Task struct {
 	Source      string         `json:"source"`
 	Metadata    sql.NullString `json:"metadata"`
 	Category    sql.NullString `json:"category"`
+	IsArchived  int64          `json:"is_archived"`
 }
 
 type TasksFt struct {

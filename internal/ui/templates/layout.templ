@@ -1,43 +1,19 @@
 package templates
 
-templ Layout(title string) {
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>{ title } — kvik-tasks</title>
-		<link rel="stylesheet" href="/static/css/kviky.css"/>
-		<link rel="stylesheet" href="/static/css/lucide.css"/>
-		<link rel="stylesheet" href="/static/css/style.css"/>
-		<script src="/static/js/htmx.min.js"></script>
-		<script src="/static/js/json-enc.js"></script>
-	</head>
-	<body>
-		<div class="kvt-app">
-			<aside class="kvt-sidebar">
-				<a href="/" class="kvt-sidebar-logo">kvt</a>
-				<nav class="kvt-sidebar-nav">
-					<a href="/" class="kvt-sidebar-link" title="Dashboard"><i class="icon icon-layout-dashboard"></i></a>
-					<a href="#" class="kvt-sidebar-link" title="Settings" onclick="var m=location.pathname.match(/^\/p\/([^/]+)/);if(m){location.href='/p/'+m[1]+'/settings'}"><i class="icon icon-settings"></i></a>
-				</nav>
-				<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
-					<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
-					<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
-				</button>
-			</aside>
-			<div class="kvt-main">
-				<header class="kvt-topbar">
-					<div class="kvt-topbar-actions">
-						<a href="/">Dashboard</a>
-					</div>
-					<div class="kvt-topbar-title">kvik-tasks</div>
-				</header>
-				<main class="kvt-content">
-					{ children... }
-				</main>
-			</div>
-		</div>
+// layoutHead renders the common <head> content.
+templ layoutHead(title string) {
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>{ title } — kvik-tasks</title>
+	<link rel="stylesheet" href="/static/css/kviky.css"/>
+	<link rel="stylesheet" href="/static/css/lucide.css"/>
+	<link rel="stylesheet" href="/static/css/style.css"/>
+	<script src="/static/js/htmx.min.js"></script>
+	<script src="/static/js/json-enc.js"></script>
+}
+
+// layoutScripts renders the common scripts.
+templ layoutScripts() {
 	<script>
 	document.body.addEventListener('htmx:afterRequest', function(e) {
 		var el = document.getElementById('save-indicator');
@@ -65,8 +41,10 @@ templ Layout(title string) {
 		updateThemeIcon(next);
 	}
 	function updateThemeIcon(theme) {
-		document.getElementById('theme-icon-light').style.display = theme === 'dark' ? 'block' : 'none';
-		document.getElementById('theme-icon-dark').style.display = theme === 'light' ? 'block' : 'none';
+		var li = document.getElementById('theme-icon-light');
+		var dk = document.getElementById('theme-icon-dark');
+		if (li) li.style.display = theme === 'dark' ? 'block' : 'none';
+		if (dk) dk.style.display = theme === 'light' ? 'block' : 'none';
 	}
 	initTheme();
 	function applyAdvancedFilters(btn) {
@@ -81,7 +59,90 @@ templ Layout(title string) {
 		url.searchParams.delete('page');
 		window.location.href = url.toString();
 	}
+	function applyArchiveFilters(btn) {
+		var container = btn.closest('.kvt-advanced-filters');
+		var url = new URL(window.location.href);
+		var after = container.querySelector('[name="created_after"]');
+		if (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }
+		var before = container.querySelector('[name="created_before"]');
+		if (before) { before.value ? url.searchParams.set('created_before', before.value) : url.searchParams.delete('created_before'); }
+		url.searchParams.delete('page');
+		window.location.href = url.toString();
+	}
 	</script>
+}
+
+// LayoutMinimal is the layout for the project selector page — sidebar with logo and theme toggle only, no project nav.
+templ LayoutMinimal(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		@layoutHead(title)
+	</head>
+	<body>
+		<div class="kvt-app">
+			<aside class="kvt-sidebar">
+				<a href="/" class="kvt-sidebar-logo">kvt</a>
+				<nav class="kvt-sidebar-nav"></nav>
+				<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+					<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
+					<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
+				</button>
+			</aside>
+			<div class="kvt-main">
+				<header class="kvt-topbar">
+					<div class="kvt-topbar-actions">
+						<a href="/">All projects</a>
+					</div>
+					<div class="kvt-topbar-title">kvik-tasks</div>
+				</header>
+				<main class="kvt-content">
+					{ children... }
+				</main>
+			</div>
+		</div>
+		@layoutScripts()
+	</body>
+	</html>
+}
+
+// Layout is the project-scoped layout with sidebar navigation.
+templ Layout(title string, slug string) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		@layoutHead(title)
+	</head>
+	<body>
+		<div class="kvt-app">
+			<aside class="kvt-sidebar">
+				<a href="/" class="kvt-sidebar-logo">kvt</a>
+				<nav class="kvt-sidebar-nav">
+					<a href={ templ.SafeURL("/p/" + slug) } class="kvt-sidebar-link" title="Dashboard"><i class="icon icon-layout-dashboard"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/board") } class="kvt-sidebar-link" title="Board"><i class="icon icon-columns-3"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/archive") } class="kvt-sidebar-link" title="Archive"><i class="icon icon-archive"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/settings") } class="kvt-sidebar-link" title="Settings"><i class="icon icon-settings"></i></a>
+				</nav>
+				<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+					<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
+					<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
+				</button>
+			</aside>
+			<div class="kvt-main">
+				<header class="kvt-topbar">
+					<div class="kvt-topbar-actions">
+						<a href={ templ.SafeURL("/p/" + slug) }>Dashboard</a>
+						<span class="kvt-topbar-sep">·</span>
+						<a href="/" class="kvt-topbar-link--secondary">All projects</a>
+					</div>
+					<div class="kvt-topbar-title">kvik-tasks</div>
+				</header>
+				<main class="kvt-content">
+					{ children... }
+				</main>
+			</div>
+		</div>
+		@layoutScripts()
 	</body>
 	</html>
 }

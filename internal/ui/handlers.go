@@ -636,6 +636,120 @@ func (h *UIHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	templates.CategoryList(categories, slug).Render(r.Context(), w)
 }
 
+// ArchivePage renders the archive page for a project.
+func (h *UIHandler) ArchivePage(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	filter := core.ListTasksFilter{Limit: 20}
+	if t := r.URL.Query().Get("type"); t != "" {
+		filter.Type = t
+	}
+	if v := r.URL.Query().Get("category"); v != "" {
+		filter.Category = v
+	}
+	if v := r.URL.Query().Get("created_after"); v != "" {
+		filter.CreatedAfter = &v
+	}
+	if v := r.URL.Query().Get("created_before"); v != "" {
+		filter.CreatedBefore = &v
+	}
+	if pg := r.URL.Query().Get("page"); pg != "" {
+		if page, err := strconv.ParseInt(pg, 10, 64); err == nil && page > 1 {
+			filter.Offset = (page - 1) * filter.Limit
+		}
+	}
+
+	result, err := taskService.ListArchived(r.Context(), filter)
+	if err != nil {
+		slog.Error("listing archived tasks", "err", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	af := templates.ArchiveFilter{
+		Type:          r.URL.Query().Get("type"),
+		Category:      r.URL.Query().Get("category"),
+		CreatedAfter:  r.URL.Query().Get("created_after"),
+		CreatedBefore: r.URL.Query().Get("created_before"),
+		Page:          result.Page,
+		TotalPages:    result.TotalPages,
+		Total:         result.Total,
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.ArchivePage(project, result.Tasks, af).Render(r.Context(), w)
+}
+
+// ArchiveTaskRedirect archives a task and redirects back.
+func (h *UIHandler) ArchiveTaskRedirect(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	taskService.Archive(r.Context(), id)
+
+	// Redirect to referer or project page
+	ref := r.Referer()
+	if ref == "" {
+		ref = "/p/" + slug
+	}
+	http.Redirect(w, r, ref, http.StatusSeeOther)
+}
+
+// UnarchiveTaskRedirect unarchives a task and redirects back to archive page.
+func (h *UIHandler) UnarchiveTaskRedirect(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	taskService.Unarchive(r.Context(), id)
+	http.Redirect(w, r, "/p/"+slug+"/archive", http.StatusSeeOther)
+}
+
 // DeleteTaskRedirect handles task deletion from detail page — deletes and redirects to project.
 func (h *UIHandler) DeleteTaskRedirect(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

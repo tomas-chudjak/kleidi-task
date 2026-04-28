@@ -226,6 +226,54 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
+// Archive marks a completed task as archived.
+func (h *TaskHandler) Archive(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	svc, err := h.taskServiceForSlug(slug)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	id, err := h.parseID(r)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	task, err := svc.Archive(r.Context(), id)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, task)
+}
+
+// Unarchive restores an archived task back to done.
+func (h *TaskHandler) Unarchive(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	svc, err := h.taskServiceForSlug(slug)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	id, err := h.parseID(r)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	task, err := svc.Unarchive(r.Context(), id)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, task)
+}
+
 // Complete marks a task as done.
 func (h *TaskHandler) Complete(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

@@ -128,6 +128,11 @@ input, select, textarea {
   border-radius: 0 3px 3px 0;
 }
 
+/* Topbar secondary link */
+.kvt-topbar-sep { color: var(--kvt-fg-muted); margin: 0 4px; }
+.kvt-topbar-link--secondary { color: var(--kvt-fg-muted); text-decoration: none; font-size: 0.8rem; }
+.kvt-topbar-link--secondary:hover { color: var(--kvt-accent); }
+
 /* ── Main area ── */
 .kvt-main {
   flex: 1;

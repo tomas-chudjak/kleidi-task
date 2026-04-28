@@ -59,6 +59,11 @@ type TaskDeleteInput struct {
 	ID      int64  `json:"id" jsonschema:"task ID"`
 }
 
+type TaskArchiveInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID"`
+}
+
 type TaskSearchInput struct {
 	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	Query   string `json:"query" jsonschema:"search query (FTS5 syntax)"`
@@ -173,6 +178,16 @@ func (s *Server) registerTools() {
 		Name:        "task_delete",
 		Description: "Permanently delete a task",
 	}, s.taskDelete)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_archive",
+		Description: "Archive a completed task (removes it from active views)",
+	}, s.taskArchive)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_unarchive",
+		Description: "Unarchive a task (restore it back to done status)",
+	}, s.taskUnarchive)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "category_list",
@@ -370,6 +385,34 @@ func (s *Server) taskDelete(ctx context.Context, req *mcp.CallToolRequest, input
 	}
 
 	return textResult(fmt.Sprintf("Deleted task #%d", input.ID)), DeleteOutput{Success: true}, nil
+}
+
+func (s *Server) taskArchive(ctx context.Context, req *mcp.CallToolRequest, input TaskArchiveInput) (*mcp.CallToolResult, TaskOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TaskOutput{}, err
+	}
+
+	task, err := taskService.Archive(ctx, input.ID)
+	if err != nil {
+		return nil, TaskOutput{}, err
+	}
+
+	return textResult(fmt.Sprintf("Archived task #%d: %s", task.ID, task.Title)), TaskOutput{Task: task}, nil
+}
+
+func (s *Server) taskUnarchive(ctx context.Context, req *mcp.CallToolRequest, input TaskArchiveInput) (*mcp.CallToolResult, TaskOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TaskOutput{}, err
+	}
+
+	task, err := taskService.Unarchive(ctx, input.ID)
+	if err != nil {
+		return nil, TaskOutput{}, err
+	}
+
+	return textResult(fmt.Sprintf("Unarchived task #%d: %s (back to done)", task.ID, task.Title)), TaskOutput{Task: task}, nil
 }
 
 func (s *Server) projectList(ctx context.Context, req *mcp.CallToolRequest, input struct{}) (*mcp.CallToolResult, ProjectListOutput, error) {

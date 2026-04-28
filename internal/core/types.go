@@ -43,6 +43,7 @@ type Task struct {
 	Status      TaskStatus `json:"status"`
 	Priority    int64      `json:"priority"`
 	Category    string     `json:"category,omitempty"`
+	IsArchived  bool       `json:"is_archived"`
 	Source      Source     `json:"source"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
