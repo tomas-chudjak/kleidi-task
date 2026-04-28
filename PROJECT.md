@@ -155,7 +155,7 @@ To stay focused:
 | **Migrations** | `goose` | v3+ | Embedded migrations via `go:embed` |
 | **HTTP router** | `chi` | v5 | Lightweight, idiomatic Go |
 | **CLI framework** | `cobra` | latest | De facto standard (kubectl, gh, hugo) |
-| **MCP server** | `mark3labs/mcp-go` | latest | Currently the most popular Go MCP implementation |
+| **MCP server** | `modelcontextprotocol/go-sdk` | latest | Official Go MCP SDK |
 | **Config** | `koanf` | v2 | Modern alternative to Viper |
 | **Logging** | `slog` (stdlib) | - | In Go stdlib since 1.21 |
 | **Validation** | `go-playground/validator` | v10 | Standard for struct validation |
@@ -174,7 +174,7 @@ To stay focused:
 
 | Component | Technology | Rationale |
 |---|---|---|
-| **Build orchestration** | `Makefile` | Universal, readable |
+| **Build orchestration** | `Taskfile` (go-task) | Modern, readable YAML |
 | **Multi-platform builds** | `goreleaser` | Standard for Go OSS projects |
 | **CI/CD** | GitHub Actions | Free, good Go support |
 | **Test framework** | stdlib `testing` + `testify` | Idiomatic Go |
@@ -715,55 +715,59 @@ kvik-tasks/
 
 ## 11. Roadmap
 
-### v0.1 — MVP (target: 2-3 weeks)
+### v0.1 — MVP ✅ Complete
 
 **Scope:** Functional CLI + MCP server with SQLite backend.
 
-- [ ] Schema + migrations (per-project + registry)
-- [ ] DB Manager with multi-DB routing
-- [ ] sqlc setup, generated queries
-- [ ] Service layer: TaskService, ProjectService
-- [ ] CLI: `init`, `add`, `list`, `done`, `show`
-- [ ] MCP server (stdio) with 6 basic tools
-- [ ] Project detection (walk-up logic)
-- [ ] Single binary build (Makefile + goreleaser)
-- [ ] README with installation guide
-- [ ] Pre-built Claude skill in `claude-skill/`
+- [x] Schema + migrations (per-project + registry)
+- [x] DB Manager with multi-DB routing
+- [x] sqlc setup, generated queries
+- [x] Service layer: TaskService, ProjectService
+- [x] CLI: `init`, `add`, `list`, `done`, `show`, `update`, `delete`
+- [x] MCP server (stdio) with 9 tools (task CRUD + project management)
+- [x] Project detection (walk-up logic)
+- [x] Single binary build (Taskfile + symlink install)
+- [x] Pre-built Claude skill in `claude-skill/` with auto-parse title/description
+- [x] `todo:` prefix support for task creation
+- [x] Dev setup task (`task setup` installs all tools)
 
-**Acceptance criteria:**
-- User can install the binary, run `kvt init` in a project, add and list tasks via CLI
-- Claude Desktop configuration works and Claude can call MCP tools
-- `kvt list --all` shows tasks from all registered projects
-
-### v0.2 — UI (target: +2 weeks)
+### v0.2 — UI ✅ Complete
 
 **Scope:** Web UI + REST API.
 
-- [ ] REST API (chi + OpenAPI spec)
-- [ ] HTMX UI with dashboard, project view, task detail
-- [ ] ahoylog-css additions (badge, modal, dropdown, toast, spinner, empty)
-- [ ] Templ templates for all pages
+- [x] REST API (chi router) with full task CRUD + project endpoints
+- [x] HTMX UI with dashboard, project view, task detail
+- [x] Templ templates for all pages
+- [x] Velocity-inspired design with Plus Jakarta Sans, Lucide icons
+- [x] ahoylog-css design system integration (k-grid, badges, cards)
+- [x] Inline task editing on detail page with auto-save
+- [x] OOB stats updates on task actions
 - [ ] Light/dark mode toggle
 - [ ] Settings page (API tokens management)
 
-**Acceptance criteria:**
-- `kvt serve` launches UI accessible in browser
-- User can create/edit tasks via UI
-- API token authentication works
-
-### v0.3 — Polish (target: +2 weeks)
+### v0.3 — Polish (in progress)
 
 **Scope:** Quality of life features.
 
-- [ ] Kanban board with drag & drop (SortableJS)
+- [x] Kanban board with drag & drop (SortableJS)
+- [x] Filtering UI (multi-select status and type, toggle logic)
+- [x] Pagination with page count and navigation
+- [x] Priority filtering (min_priority)
+- [x] Date range filtering (created_after/created_before)
+- [x] Collapsible advanced filters panel
+- [x] Sidebar task creation form with expandable description
+- [x] View toggle (List/Board) with history-aware back navigation
+- [x] Type filter on kanban board
+- [x] Unified dynamic SQL query (single query with sqlc.narg replaces 4 separate queries)
 - [ ] FTS5 full-text search
-- [ ] Filtering UI (multi-select tags, status, type)
 - [ ] Bulk operations (select multiple → mark done)
 - [ ] Keyboard shortcuts (vim-like: j/k navigate, x complete)
 - [ ] Export/import (JSON, Markdown)
 - [ ] Stats dashboard (per-project, global)
+- [ ] Markdown editor for task description
+- [ ] Archive/cleanup strategy for completed tasks
 
-### v0.4 — AI-native features (target: +3 weeks)
+### v0.4 — AI-native features
 
 **Scope:** Advanced AI integration.
 
@@ -772,8 +776,9 @@ kvik-tasks/
 - [ ] Git integration (commit message → task reference, branch → project)
 - [ ] AI suggested tasks (based on git diff, file patterns)
 - [ ] Task templates
+- [ ] Task workflows (phase-based with auto skill triggers)
 
-### v1.0 — Production ready (target: +1 month)
+### v1.0 — Production ready
 
 **Scope:** Stabilization, multi-user.
 
@@ -1070,8 +1075,15 @@ After v1.0 release we'll measure:
 | 2026-04-27 | Rename .tasky → .tasks, tasky:// → tasks:// | ✅ Approved |
 | 2026-04-27 | All code, comments, and docs in English | ✅ Approved |
 | 2026-04-27 | 4 task types: task, bug, feature, hotfix + title prefix auto-detection | ✅ Approved |
+| 2026-04-28 | Unified dynamic SQL query with sqlc.narg() (replaces 4 separate list queries) | ✅ Approved |
+| 2026-04-28 | Multi-select filters via comma-separated values + SQL instr() | ✅ Approved |
+| 2026-04-28 | Kanban board with SortableJS drag & drop | ✅ Approved |
+| 2026-04-28 | Pagination with offset/limit + total count | ✅ Approved |
+| 2026-04-28 | Symlink install instead of binary copy (avoids "Text file busy") | ✅ Approved |
+| 2026-04-28 | `task setup` for dev environment bootstrapping | ✅ Approved |
+| 2026-04-28 | MCP skill auto-parse: prefix triggers task creation before any work | ✅ Approved |
 | TBD | Timezone strategy | ⏳ Open |
-| TBD | Soft delete in MVP? | ⏳ Open |
+| TBD | Soft delete / archive strategy for completed tasks | ⏳ Open |
 | TBD | Cross-project UX (switching vs. aggregation) | ⏳ Open |
 
 ---
