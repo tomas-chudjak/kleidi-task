@@ -102,7 +102,7 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pf := templates.ProjectFilter{
-		Status:        r.URL.Query().Get("status"),
+		Status:        filter.Status,
 		Type:          r.URL.Query().Get("type"),
 		MinPriority:   r.URL.Query().Get("min_priority"),
 		CreatedAfter:  r.URL.Query().Get("created_after"),
