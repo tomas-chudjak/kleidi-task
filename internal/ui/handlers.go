@@ -25,22 +25,30 @@ func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Compute live stats for each project
+	// Compute extended stats for each project + global aggregates
 	var items []templates.DashboardProject
+	var global templates.GlobalStats
 	for _, p := range projects {
 		dp := templates.DashboardProject{Project: p}
 		taskService, err := h.projectService.TaskServiceFor(p.Path)
 		if err == nil {
-			stats, err := taskService.Stats(r.Context())
+			ext, err := taskService.ExtendedStats(r.Context())
 			if err == nil {
-				dp.Stats = stats
+				dp.ExtStats = ext
+				dp.Stats = ext.ProjectStats
+				global.Todo += ext.Todo
+				global.Doing += ext.Doing
+				global.Done += ext.Done
+				global.BugsOpen += ext.BugsOpen
+				global.CompletedThisWeek += ext.CompletedThisWeek
+				global.Total += ext.Total
 			}
 		}
 		items = append(items, dp)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.Dashboard(items).Render(r.Context(), w)
+	templates.Dashboard(items, global).Render(r.Context(), w)
 }
 
 // Project renders the project page with tasks.
@@ -481,8 +489,15 @@ func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	stats, _ := taskService.Stats(r.Context())
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.SettingsPage(project, categories).Render(r.Context(), w)
+	templates.SettingsPage(project, categories, stats).Render(r.Context(), w)
 }
 
 // ListCategories returns the category management HTML fragment.

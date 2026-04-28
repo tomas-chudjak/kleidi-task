@@ -50,6 +50,49 @@ func (q *Queries) CountBugsOpen(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const countByType = `-- name: CountByType :many
+SELECT type, COUNT(*) as count FROM tasks GROUP BY type
+`
+
+type CountByTypeRow struct {
+	Type  string `json:"type"`
+	Count int64  `json:"count"`
+}
+
+func (q *Queries) CountByType(ctx context.Context) ([]CountByTypeRow, error) {
+	rows, err := q.db.QueryContext(ctx, countByType)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CountByTypeRow{}
+	for rows.Next() {
+		var i CountByTypeRow
+		if err := rows.Scan(&i.Type, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const countCompletedSince = `-- name: CountCompletedSince :one
+SELECT COUNT(*) as count FROM tasks WHERE status = 'done' AND completed_at >= ?
+`
+
+func (q *Queries) CountCompletedSince(ctx context.Context, completedAt sql.NullTime) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countCompletedSince, completedAt)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countTasksByStatus = `-- name: CountTasksByStatus :many
 SELECT status, COUNT(*) as count FROM tasks GROUP BY status
 `
@@ -232,6 +275,48 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 		arg.Off,
 		arg.Lim,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Task{}
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.Type,
+			&i.Title,
+			&i.Description,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CompletedAt,
+			&i.CreatedBy,
+			&i.AssignedTo,
+			&i.Priority,
+			&i.Source,
+			&i.Metadata,
+			&i.Category,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const recentCompleted = `-- name: RecentCompleted :many
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category FROM tasks WHERE status = 'done' ORDER BY completed_at DESC LIMIT ?
+`
+
+func (q *Queries) RecentCompleted(ctx context.Context, limit int64) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, recentCompleted, limit)
 	if err != nil {
 		return nil, err
 	}

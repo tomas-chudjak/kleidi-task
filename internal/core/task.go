@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/ahoylog/kvik-tasks/internal/db/generated"
 )
@@ -247,6 +248,39 @@ func (s *TaskService) Stats(ctx context.Context) (ProjectStats, error) {
 	}
 
 	return stats, nil
+}
+
+// ExtendedStats returns detailed project statistics including velocity and type breakdown.
+func (s *TaskService) ExtendedStats(ctx context.Context) (ExtendedStats, error) {
+	basic, err := s.Stats(ctx)
+	if err != nil {
+		return ExtendedStats{}, err
+	}
+
+	weekAgo := sql.NullTime{Time: time.Now().AddDate(0, 0, -7), Valid: true}
+	completedWeek, _ := s.queries.CountCompletedSince(ctx, weekAgo)
+
+	typeRows, _ := s.queries.CountByType(ctx)
+	var types []TypeCount
+	var total int64
+	for _, r := range typeRows {
+		types = append(types, TypeCount{Type: TaskType(r.Type), Count: r.Count})
+		total += r.Count
+	}
+
+	recentRows, _ := s.queries.RecentCompleted(ctx, 5)
+	recent := make([]Task, len(recentRows))
+	for i, r := range recentRows {
+		recent[i] = taskFromRow(r)
+	}
+
+	return ExtendedStats{
+		ProjectStats:      basic,
+		CompletedThisWeek: completedWeek,
+		TypeBreakdown:     types,
+		RecentCompleted:   recent,
+		Total:             total,
+	}, nil
 }
 
 // Search performs full-text search across task titles and descriptions.

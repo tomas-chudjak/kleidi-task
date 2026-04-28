@@ -47,3 +47,12 @@ SELECT status, COUNT(*) as count FROM tasks GROUP BY status;
 -- name: CountBugsOpen :one
 SELECT COUNT(*) as count FROM tasks WHERE type = 'bug' AND status != 'done';
 
+-- name: CountCompletedSince :one
+SELECT COUNT(*) as count FROM tasks WHERE status = 'done' AND completed_at >= ?;
+
+-- name: CountByType :many
+SELECT type, COUNT(*) as count FROM tasks GROUP BY type;
+
+-- name: RecentCompleted :many
+SELECT * FROM tasks WHERE status = 'done' ORDER BY completed_at DESC LIMIT ?;
+

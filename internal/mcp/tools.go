@@ -83,6 +83,29 @@ type CategoryOutput struct {
 	Category core.Category `json:"category"`
 }
 
+type TaskBulkUpdateInput struct {
+	Project  string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	IDs      []int64 `json:"ids" jsonschema:"list of task IDs to update"`
+	Status   string `json:"status,omitempty" jsonschema:"new status for all,enum=todo,enum=doing,enum=done"`
+	Type     string `json:"type,omitempty" jsonschema:"new type for all,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Priority *int64 `json:"priority,omitempty" jsonschema:"new priority for all"`
+	Category string `json:"category,omitempty" jsonschema:"new category for all"`
+}
+
+type TaskBulkCompleteInput struct {
+	Project string  `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	IDs     []int64 `json:"ids" jsonschema:"list of task IDs to mark as done"`
+}
+
+type BulkOutput struct {
+	Updated int      `json:"updated"`
+	Errors  []string `json:"errors,omitempty"`
+}
+
+type ExtendedStatsOutput struct {
+	Stats core.ExtendedStats `json:"stats"`
+}
+
 type ProjectStatsInput struct {
 	Slug string `json:"slug,omitempty" jsonschema:"project slug (default: current)"`
 }
@@ -160,6 +183,21 @@ func (s *Server) registerTools() {
 		Name:        "category_create",
 		Description: "Create a new category (area of work like backend, frontend, design)",
 	}, s.categoryCreate)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_bulk_update",
+		Description: "Update multiple tasks at once (change status, type, priority, or category for a list of task IDs)",
+	}, s.taskBulkUpdate)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_bulk_complete",
+		Description: "Mark multiple tasks as done at once",
+	}, s.taskBulkComplete)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "project_stats_extended",
+		Description: "Get extended project statistics: velocity (completed this week), type breakdown, recent completions",
+	}, s.projectStatsExtended)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "project_list",
@@ -440,6 +478,121 @@ func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
 	}
 
 	return s.projectService.TaskServiceFor(projectPath)
+}
+
+func (s *Server) taskBulkUpdate(ctx context.Context, req *mcp.CallToolRequest, input TaskBulkUpdateInput) (*mcp.CallToolResult, BulkOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, BulkOutput{}, err
+	}
+
+	var updated int
+	var errors []string
+	for _, id := range input.IDs {
+		upd := core.UpdateTaskInput{}
+		if input.Status != "" {
+			s := core.TaskStatus(input.Status)
+			upd.Status = &s
+		}
+		if input.Type != "" {
+			t := core.TaskType(input.Type)
+			upd.Type = &t
+		}
+		if input.Priority != nil {
+			upd.Priority = input.Priority
+		}
+		if input.Category != "" {
+			upd.Category = &input.Category
+		}
+		_, err := taskService.Update(ctx, id, upd)
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("#%d: %v", id, err))
+		} else {
+			updated++
+		}
+	}
+
+	text := fmt.Sprintf("Updated %d/%d tasks.", updated, len(input.IDs))
+	if len(errors) > 0 {
+		text += fmt.Sprintf(" Errors: %d", len(errors))
+	}
+	return textResult(text), BulkOutput{Updated: updated, Errors: errors}, nil
+}
+
+func (s *Server) taskBulkComplete(ctx context.Context, req *mcp.CallToolRequest, input TaskBulkCompleteInput) (*mcp.CallToolResult, BulkOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, BulkOutput{}, err
+	}
+
+	var updated int
+	var errors []string
+	for _, id := range input.IDs {
+		_, err := taskService.Complete(ctx, id)
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("#%d: %v", id, err))
+		} else {
+			updated++
+		}
+	}
+
+	text := fmt.Sprintf("Completed %d/%d tasks.", updated, len(input.IDs))
+	return textResult(text), BulkOutput{Updated: updated, Errors: errors}, nil
+}
+
+func (s *Server) projectStatsExtended(ctx context.Context, req *mcp.CallToolRequest, input ProjectStatsInput) (*mcp.CallToolResult, ExtendedStatsOutput, error) {
+	var projectPath string
+	if input.Slug != "" && input.Slug != "current" {
+		project, err := s.projectService.GetBySlug(input.Slug)
+		if err != nil {
+			return nil, ExtendedStatsOutput{}, err
+		}
+		projectPath = project.Path
+	} else {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return nil, ExtendedStatsOutput{}, fmt.Errorf("getting working directory: %w", err)
+		}
+		projectPath, err = s.projectService.DetectProject(cwd)
+		if err != nil {
+			return nil, ExtendedStatsOutput{}, err
+		}
+	}
+
+	taskService, err := s.projectService.TaskServiceFor(projectPath)
+	if err != nil {
+		return nil, ExtendedStatsOutput{}, err
+	}
+
+	stats, err := taskService.ExtendedStats(ctx)
+	if err != nil {
+		return nil, ExtendedStatsOutput{}, err
+	}
+
+	text := fmt.Sprintf("Todo: %d | Doing: %d | Done: %d | Bugs: %d\n", stats.Todo, stats.Doing, stats.Done, stats.BugsOpen)
+	text += fmt.Sprintf("Completed this week: %d | Total: %d\n", stats.CompletedThisWeek, stats.Total)
+	if len(stats.TypeBreakdown) > 0 {
+		text += "Type breakdown: "
+		for i, tc := range stats.TypeBreakdown {
+			if i > 0 {
+				text += ", "
+			}
+			text += fmt.Sprintf("%s=%d", tc.Type, tc.Count)
+		}
+		text += "\n"
+	}
+	if len(stats.RecentCompleted) > 0 {
+		text += "Recent completions:\n"
+		for _, t := range stats.RecentCompleted {
+			text += fmt.Sprintf("  #%d %s", t.ID, t.Title)
+			if t.CompletedAt != nil {
+				text += fmt.Sprintf(" (%s)", t.CompletedAt.Format("Jan 2 15:04"))
+			}
+			text += "\n"
+		}
+	}
+
+	return textResult(text), ExtendedStatsOutput{Stats: stats}, nil
 }
 
 func (s *Server) categoryList(ctx context.Context, req *mcp.CallToolRequest, input CategoryListInput) (*mcp.CallToolResult, CategoryListOutput, error) {

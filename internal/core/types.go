@@ -111,6 +111,21 @@ type Commit struct {
 	Date      time.Time `json:"date"`
 }
 
+// TypeCount holds a count per task type.
+type TypeCount struct {
+	Type  TaskType `json:"type"`
+	Count int64    `json:"count"`
+}
+
+// ExtendedStats holds detailed statistics for a project.
+type ExtendedStats struct {
+	ProjectStats
+	CompletedThisWeek int64      `json:"completed_this_week"`
+	TypeBreakdown     []TypeCount `json:"type_breakdown"`
+	RecentCompleted   []Task     `json:"recent_completed"`
+	Total             int64      `json:"total"`
+}
+
 // Project represents a registered project in the global registry.
 type Project struct {
 	ID               int64     `json:"id"`
