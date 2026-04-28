@@ -346,7 +346,7 @@ input, select, textarea {
   display: grid;
   grid-template-columns: 3rem 5.5rem 1fr 5.5rem 2.5rem 4.5rem;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   padding: 10px 20px;
   border-bottom: 1px solid var(--kvt-border);
   transition: background 0.1s;
@@ -366,7 +366,7 @@ input, select, textarea {
   font-weight: 500;
   color: var(--kvt-fg);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -398,10 +398,11 @@ input, select, textarea {
 .kvt-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 11px;
+  justify-content: center;
+  padding: 3px 8px;
   border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
