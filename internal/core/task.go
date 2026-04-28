@@ -122,11 +122,11 @@ func (s *TaskService) buildFilterParams(filter ListTasksFilter) generated.ListTa
 		Lim: filter.Limit,
 		Off: filter.Offset,
 	}
-	if filter.Status != nil {
-		params.Status = string(*filter.Status)
+	if filter.Status != "" {
+		params.Status = filter.Status
 	}
-	if filter.Type != nil {
-		params.Type = string(*filter.Type)
+	if filter.Type != "" {
+		params.Type = filter.Type
 	}
 	if filter.MinPriority != nil {
 		params.MinPriority = *filter.MinPriority

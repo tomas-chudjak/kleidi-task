@@ -220,6 +220,54 @@ func TestListWithDateFilter(t *testing.T) {
 	}
 }
 
+func TestListWithMultiSelectStatus(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	t1, _ := svc.Create(ctx, CreateTaskInput{Title: "Todo task", Source: SourceCLI})
+	t2, _ := svc.Create(ctx, CreateTaskInput{Title: "Doing task", Source: SourceCLI})
+	svc.Update(ctx, t2.ID, UpdateTaskInput{Status: func() *TaskStatus { s := StatusDoing; return &s }()})
+	t3, _ := svc.Create(ctx, CreateTaskInput{Title: "Done task", Source: SourceCLI})
+	svc.Complete(ctx, t3.ID)
+
+	// Multi-select: todo + doing
+	tasks, err := svc.List(ctx, ListTasksFilter{Status: "todo,doing"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tasks) != 2 {
+		t.Errorf("expected 2 tasks (todo+doing), got %d", len(tasks))
+	}
+
+	// Single select still works
+	tasks2, _ := svc.List(ctx, ListTasksFilter{Status: "done"})
+	if len(tasks2) != 1 {
+		t.Errorf("expected 1 done task, got %d", len(tasks2))
+	}
+
+	_ = t1
+}
+
+func TestListWithMultiSelectType(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	ctx := context.Background()
+
+	svc.Create(ctx, CreateTaskInput{Title: "Task 1", Source: SourceCLI})
+	svc.Create(ctx, CreateTaskInput{Title: "Bug 1", Type: TypeBug, Source: SourceCLI})
+	svc.Create(ctx, CreateTaskInput{Title: "Feature 1", Type: TypeFeature, Source: SourceCLI})
+
+	// Multi-select: bug + feature
+	tasks, err := svc.List(ctx, ListTasksFilter{Type: "bug,feature"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(tasks) != 2 {
+		t.Errorf("expected 2 tasks (bug+feature), got %d", len(tasks))
+	}
+}
+
 func TestGetTaskNotFound(t *testing.T) {
 	testDB := db.NewTestProjectDB(t)
 	svc := NewTaskService(testDB)
@@ -266,8 +314,7 @@ func TestListTasksFilterByType(t *testing.T) {
 	svc.Create(ctx, CreateTaskInput{Title: "Task 1", Source: SourceCLI})
 	svc.Create(ctx, CreateTaskInput{Title: "Bug 1", Type: TypeBug, Source: SourceCLI})
 
-	bugType := TypeBug
-	tasks, err := svc.List(ctx, ListTasksFilter{Type: &bugType})
+	tasks, err := svc.List(ctx, ListTasksFilter{Type: "bug"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -289,8 +336,7 @@ func TestListTasksFilterByStatus(t *testing.T) {
 	svc.Create(ctx, CreateTaskInput{Title: "Also todo", Source: SourceCLI})
 	svc.Complete(ctx, t1.ID)
 
-	todoStatus := StatusTodo
-	tasks, err := svc.List(ctx, ListTasksFilter{Status: &todoStatus})
+	tasks, err := svc.List(ctx, ListTasksFilter{Status: "todo"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

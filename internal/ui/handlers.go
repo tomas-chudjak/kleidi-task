@@ -63,12 +63,10 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 
 	filter := core.ListTasksFilter{Limit: 20}
 	if s := r.URL.Query().Get("status"); s != "" {
-		status := core.TaskStatus(s)
-		filter.Status = &status
+		filter.Status = s
 	}
 	if t := r.URL.Query().Get("type"); t != "" {
-		taskType := core.TaskType(t)
-		filter.Type = &taskType
+		filter.Type = t
 	}
 	if p := r.URL.Query().Get("min_priority"); p != "" {
 		if pri, err := strconv.ParseInt(p, 10, 64); err == nil {
@@ -338,18 +336,15 @@ func (h *UIHandler) Board(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fetch tasks for each column
-	todoStatus := core.StatusTodo
-	doingStatus := core.StatusDoing
-	doneStatus := core.StatusDone
-
-	todoTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &todoStatus, Limit: 100})
-	doingTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &doingStatus, Limit: 100})
-	doneTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: &doneStatus, Limit: 100})
+	// Fetch tasks for each column with optional type filter
+	typeFilter := r.URL.Query().Get("type")
+	todoTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: string(core.StatusTodo), Type: typeFilter, Limit: 100})
+	doingTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: string(core.StatusDoing), Type: typeFilter, Limit: 100})
+	doneTasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Status: string(core.StatusDone), Type: typeFilter, Limit: 100})
 	stats, _ := taskService.Stats(r.Context())
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.BoardPage(project, todoTasks, doingTasks, doneTasks, stats).Render(r.Context(), w)
+	templates.BoardPage(project, todoTasks, doingTasks, doneTasks, stats, typeFilter).Render(r.Context(), w)
 }
 
 // MoveTask handles drag & drop status change from kanban board.

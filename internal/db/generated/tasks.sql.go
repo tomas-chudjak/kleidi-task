@@ -83,8 +83,8 @@ func (q *Queries) CountTasksByStatus(ctx context.Context) ([]CountTasksByStatusR
 
 const countTasksFiltered = `-- name: CountTasksFiltered :one
 SELECT count(*) FROM tasks
-WHERE (?1 IS NULL OR status = ?1)
-  AND (?2 IS NULL OR type = ?2)
+WHERE (?1 IS NULL OR instr(',' || ?1 || ',', ',' || status || ',') > 0)
+  AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || type || ',') > 0)
   AND (?3 IS NULL OR priority >= ?3)
   AND (?4 IS NULL OR created_at >= ?4)
   AND (?5 IS NULL OR created_at <= ?5)
@@ -192,8 +192,8 @@ func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
 
 const listTasksFiltered = `-- name: ListTasksFiltered :many
 SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata FROM tasks
-WHERE (?1 IS NULL OR status = ?1)
-  AND (?2 IS NULL OR type = ?2)
+WHERE (?1 IS NULL OR instr(',' || ?1 || ',', ',' || status || ',') > 0)
+  AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || type || ',') > 0)
   AND (?3 IS NULL OR priority >= ?3)
   AND (?4 IS NULL OR created_at >= ?4)
   AND (?5 IS NULL OR created_at <= ?5)

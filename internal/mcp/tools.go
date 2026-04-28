@@ -173,12 +173,10 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 
 	filter := core.ListTasksFilter{Limit: input.Limit, Offset: input.Offset}
 	if input.Status != "" {
-		status := core.TaskStatus(input.Status)
-		filter.Status = &status
+		filter.Status = input.Status
 	}
 	if input.Type != "" {
-		taskType := core.TaskType(input.Type)
-		filter.Type = &taskType
+		filter.Type = input.Type
 	}
 	if input.MinPriority != nil {
 		filter.MinPriority = input.MinPriority

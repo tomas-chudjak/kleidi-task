@@ -70,14 +70,15 @@ type UpdateTaskInput struct {
 }
 
 // ListTasksFilter holds filter parameters for listing tasks.
+// Status and Type support comma-separated multi-select (e.g. "todo,doing").
 type ListTasksFilter struct {
-	Status       *TaskStatus `json:"status,omitempty"`
-	Type         *TaskType   `json:"type,omitempty"`
-	MinPriority  *int64      `json:"min_priority,omitempty"`
-	CreatedAfter  *string    `json:"created_after,omitempty"`  // ISO 8601 datetime
-	CreatedBefore *string    `json:"created_before,omitempty"` // ISO 8601 datetime
-	Limit        int64       `json:"limit"`
-	Offset       int64       `json:"offset"`
+	Status        string  `json:"status,omitempty"`         // comma-separated: "todo", "todo,doing"
+	Type          string  `json:"type,omitempty"`           // comma-separated: "bug", "bug,feature"
+	MinPriority   *int64  `json:"min_priority,omitempty"`
+	CreatedAfter  *string `json:"created_after,omitempty"`  // ISO 8601 datetime
+	CreatedBefore *string `json:"created_before,omitempty"` // ISO 8601 datetime
+	Limit         int64   `json:"limit"`
+	Offset        int64   `json:"offset"`
 }
 
 // ListResult holds paginated task results.

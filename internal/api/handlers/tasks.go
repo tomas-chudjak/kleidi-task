@@ -47,12 +47,10 @@ func (h *TaskHandler) ListByProject(w http.ResponseWriter, r *http.Request) {
 	filter := core.ListTasksFilter{Limit: 50}
 
 	if s := r.URL.Query().Get("status"); s != "" {
-		status := core.TaskStatus(s)
-		filter.Status = &status
+		filter.Status = s
 	}
 	if t := r.URL.Query().Get("type"); t != "" {
-		taskType := core.TaskType(t)
-		filter.Type = &taskType
+		filter.Type = t
 	}
 	if l := r.URL.Query().Get("limit"); l != "" {
 		if limit, err := strconv.ParseInt(l, 10, 64); err == nil {

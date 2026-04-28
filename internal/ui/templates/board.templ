@@ -3,7 +3,18 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats) {
+func boardTypeURL(slug, typ, current string) string {
+	if typ == "" {
+		return "/p/" + slug + "/board"
+	}
+	toggled := toggleFilter(current, typ)
+	if toggled == "" {
+		return "/p/" + slug + "/board"
+	}
+	return "/p/" + slug + "/board?type=" + toggled
+}
+
+templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats, typeFilter string) {
 	@Layout(project.Name + " — Board") {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
@@ -18,6 +29,15 @@ templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done 
 		</div>
 
 		@StatsBar(stats)
+
+		<!-- Type filter for board -->
+		<div class="kvt-filters" style="margin-bottom: 12px;">
+			<a href={ templ.SafeURL(boardTypeURL(project.Slug, "", typeFilter)) } class={ filterClass(typeFilter == "") }>All types</a>
+			<a href={ templ.SafeURL(boardTypeURL(project.Slug, "task", typeFilter)) } class={ filterClass(hasFilter(typeFilter, "task")) }>Tasks</a>
+			<a href={ templ.SafeURL(boardTypeURL(project.Slug, "bug", typeFilter)) } class={ filterClass(hasFilter(typeFilter, "bug")) }>Bugs</a>
+			<a href={ templ.SafeURL(boardTypeURL(project.Slug, "feature", typeFilter)) } class={ filterClass(hasFilter(typeFilter, "feature")) }>Features</a>
+			<a href={ templ.SafeURL(boardTypeURL(project.Slug, "hotfix", typeFilter)) } class={ filterClass(hasFilter(typeFilter, "hotfix")) }>Hotfixes</a>
+		</div>
 
 		<div class="k-grid k-grid--3 kvt-board">
 			@BoardColumn("Todo", "todo", todo, project.Slug)

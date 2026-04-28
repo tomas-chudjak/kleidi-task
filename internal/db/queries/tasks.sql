@@ -8,8 +8,8 @@ SELECT * FROM tasks WHERE id = ?;
 
 -- name: ListTasksFiltered :many
 SELECT * FROM tasks
-WHERE (sqlc.narg('status') IS NULL OR status = sqlc.narg('status'))
-  AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+WHERE (sqlc.narg('status') IS NULL OR instr(',' || sqlc.narg('status') || ',', ',' || status || ',') > 0)
+  AND (sqlc.narg('type') IS NULL OR instr(',' || sqlc.narg('type') || ',', ',' || type || ',') > 0)
   AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
   AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
   AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'))
@@ -18,8 +18,8 @@ LIMIT sqlc.arg('lim') OFFSET sqlc.arg('off');
 
 -- name: CountTasksFiltered :one
 SELECT count(*) FROM tasks
-WHERE (sqlc.narg('status') IS NULL OR status = sqlc.narg('status'))
-  AND (sqlc.narg('type') IS NULL OR type = sqlc.narg('type'))
+WHERE (sqlc.narg('status') IS NULL OR instr(',' || sqlc.narg('status') || ',', ',' || status || ',') > 0)
+  AND (sqlc.narg('type') IS NULL OR instr(',' || sqlc.narg('type') || ',', ',' || type || ',') > 0)
   AND (sqlc.narg('min_priority') IS NULL OR priority >= sqlc.narg('min_priority'))
   AND (sqlc.narg('created_after') IS NULL OR created_at >= sqlc.narg('created_after'))
   AND (sqlc.narg('created_before') IS NULL OR created_at <= sqlc.narg('created_before'));

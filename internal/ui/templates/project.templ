@@ -2,6 +2,7 @@ package templates
 
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
+import "strings"
 
 type ProjectFilter struct {
 	Status        string
@@ -53,12 +54,52 @@ func buildFilterURL(slug string, f ProjectFilter, overrides map[string]string) s
 	return base + q
 }
 
+// toggleFilter adds or removes a value from a comma-separated list.
+func toggleFilter(current, value string) string {
+	if current == "" {
+		return value
+	}
+	parts := strings.Split(current, ",")
+	var result []string
+	found := false
+	for _, p := range parts {
+		if p == value {
+			found = true
+		} else {
+			result = append(result, p)
+		}
+	}
+	if !found {
+		result = append(result, value)
+	}
+	return strings.Join(result, ",")
+}
+
+// hasFilter checks if a value is in a comma-separated list.
+func hasFilter(current, value string) bool {
+	if current == "" {
+		return false
+	}
+	for _, p := range strings.Split(current, ",") {
+		if p == value {
+			return true
+		}
+	}
+	return false
+}
+
 func statusURL(slug, status string, f ProjectFilter) string {
-	return buildFilterURL(slug, f, map[string]string{"status": status})
+	if status == "" {
+		return buildFilterURL(slug, f, map[string]string{"status": ""})
+	}
+	return buildFilterURL(slug, f, map[string]string{"status": toggleFilter(f.Status, status)})
 }
 
 func typeURL(slug, typ string, f ProjectFilter) string {
-	return buildFilterURL(slug, f, map[string]string{"type": typ})
+	if typ == "" {
+		return buildFilterURL(slug, f, map[string]string{"type": ""})
+	}
+	return buildFilterURL(slug, f, map[string]string{"type": toggleFilter(f.Type, typ)})
 }
 
 func pageURL(slug string, page int64, f ProjectFilter) string {
@@ -89,15 +130,15 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 		<div class="kvt-filters-row">
 			<div class="kvt-filters">
 				<a href={ templ.SafeURL(statusURL(project.Slug, "", filter)) } class={ filterClass(filter.Status == "") }>All</a>
-				<a href={ templ.SafeURL(statusURL(project.Slug, "todo", filter)) } class={ filterClass(filter.Status == "todo") }>Todo</a>
-				<a href={ templ.SafeURL(statusURL(project.Slug, "doing", filter)) } class={ filterClass(filter.Status == "doing") }>Doing</a>
-				<a href={ templ.SafeURL(statusURL(project.Slug, "done", filter)) } class={ filterClass(filter.Status == "done") }>Done</a>
+				<a href={ templ.SafeURL(statusURL(project.Slug, "todo", filter)) } class={ filterClass(hasFilter(filter.Status, "todo")) }>Todo</a>
+				<a href={ templ.SafeURL(statusURL(project.Slug, "doing", filter)) } class={ filterClass(hasFilter(filter.Status, "doing")) }>Doing</a>
+				<a href={ templ.SafeURL(statusURL(project.Slug, "done", filter)) } class={ filterClass(hasFilter(filter.Status, "done")) }>Done</a>
 				<span class="kvt-filter-sep">|</span>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "", filter)) } class={ filterClass(filter.Type == "") }>All types</a>
-				<a href={ templ.SafeURL(typeURL(project.Slug, "task", filter)) } class={ filterClass(filter.Type == "task") }>Tasks</a>
-				<a href={ templ.SafeURL(typeURL(project.Slug, "bug", filter)) } class={ filterClass(filter.Type == "bug") }>Bugs</a>
-				<a href={ templ.SafeURL(typeURL(project.Slug, "feature", filter)) } class={ filterClass(filter.Type == "feature") }>Features</a>
-				<a href={ templ.SafeURL(typeURL(project.Slug, "hotfix", filter)) } class={ filterClass(filter.Type == "hotfix") }>Hotfixes</a>
+				<a href={ templ.SafeURL(typeURL(project.Slug, "task", filter)) } class={ filterClass(hasFilter(filter.Type, "task")) }>Tasks</a>
+				<a href={ templ.SafeURL(typeURL(project.Slug, "bug", filter)) } class={ filterClass(hasFilter(filter.Type, "bug")) }>Bugs</a>
+				<a href={ templ.SafeURL(typeURL(project.Slug, "feature", filter)) } class={ filterClass(hasFilter(filter.Type, "feature")) }>Features</a>
+				<a href={ templ.SafeURL(typeURL(project.Slug, "hotfix", filter)) } class={ filterClass(hasFilter(filter.Type, "hotfix")) }>Hotfixes</a>
 			</div>
 			<button type="button" class="kvt-advanced-btn" onclick="document.getElementById('advanced-filters').toggleAttribute('open')">
 				<i class="icon icon-sliders-horizontal"></i>

@@ -44,12 +44,10 @@ var listCmd = &cobra.Command{
 
 		filter := core.ListTasksFilter{Limit: limit}
 		if status != "" {
-			s := core.TaskStatus(status)
-			filter.Status = &s
+			filter.Status = status
 		}
 		if taskType != "" {
-			t := core.TaskType(taskType)
-			filter.Type = &t
+			filter.Type = taskType
 		}
 
 		tasks, err := taskService.List(cmd.Context(), filter)

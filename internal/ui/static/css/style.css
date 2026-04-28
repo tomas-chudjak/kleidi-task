@@ -160,7 +160,8 @@ input, select, textarea {
 /* ── Content ── */
 .kvt-content {
   padding: 28px 32px;
-  /* no max-width — use full available space */
+  max-width: 1800px;
+  margin: 0 auto;
 }
 
 /* ── Page title ── */
@@ -895,7 +896,7 @@ input, select, textarea {
 .kvt-board-column {
   background: var(--kvt-bg);
   border-radius: var(--kvt-card-radius);
-  padding: 12px;
+  padding: 12px 0;
   min-height: 200px;
 }
 .kvt-board-column-header {
