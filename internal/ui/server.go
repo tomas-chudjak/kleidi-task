@@ -25,6 +25,7 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Get("/", h.Dashboard)
 	r.Get("/p/{slug}", h.Project)
 	r.Get("/p/{slug}/board", h.Board)
+	r.Get("/p/{slug}/settings", h.Settings)
 	r.Get("/p/{slug}/t/{id}", h.TaskDetail)
 
 	// HTMX fragment endpoints (accept JSON, return HTML)
@@ -35,4 +36,10 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Delete("/p/{slug}/tasks/{id}", h.DeleteTask)
 	r.Patch("/p/{slug}/tasks/{id}/field", h.UpdateTaskField)
 	r.Get("/p/{slug}/tasks/{id}/delete", h.DeleteTaskRedirect)
+
+	// Category management
+	r.Get("/p/{slug}/categories", h.ListCategories)
+	r.Post("/p/{slug}/categories", h.CreateCategory)
+	r.Patch("/p/{slug}/categories/{catID}", h.UpdateCategory)
+	r.Delete("/p/{slug}/categories/{catID}", h.DeleteCategory)
 }

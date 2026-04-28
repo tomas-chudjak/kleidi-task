@@ -112,8 +112,15 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 		Total:         result.Total,
 	}
 
+	// Fetch categories for the sidebar
+	catService, _ := h.projectService.CategoryServiceFor(project.Path)
+	var categories []core.Category
+	if catService != nil {
+		categories, _ = catService.List(r.Context())
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ProjectPage(project, result.Tasks, stats, pf).Render(r.Context(), w)
+	templates.ProjectPage(project, result.Tasks, stats, pf, categories).Render(r.Context(), w)
 }
 
 // TaskDetail renders a single task page.
@@ -144,8 +151,17 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	catService, _ := h.projectService.CategoryServiceFor(project.Path)
+	var categories []core.Category
+	if catService != nil {
+		categories, _ = catService.List(r.Context())
+	}
+
+	gitService := &core.GitService{}
+	commits, _ := gitService.CommitsForTask(r.Context(), project.Path, id)
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
 }
 
 // CreateTask handles HTMX task creation — accepts JSON, returns HTML task list.
@@ -167,6 +183,7 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title       string `json:"title"`
 		Description string `json:"description"`
+		Category    string `json:"category"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
@@ -178,6 +195,7 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	_, err = taskService.Create(r.Context(), core.CreateTaskInput{
 		Title:       title,
 		Description: input.Description,
+		Category:    input.Category,
 		Type:        taskType,
 		Source:      core.SourceUI,
 	})
@@ -309,6 +327,9 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	if v, ok := input["description"].(string); ok {
 		updateInput.Description = &v
 	}
+	if v, ok := input["category"].(string); ok {
+		updateInput.Category = &v
+	}
 
 	task, err := taskService.Update(r.Context(), id, updateInput)
 	if err != nil {
@@ -316,8 +337,17 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	catService, _ := h.projectService.CategoryServiceFor(project.Path)
+	var categories []core.Category
+	if catService != nil {
+		categories, _ = catService.List(r.Context())
+	}
+
+	gitService := &core.GitService{}
+	commits, _ := gitService.CommitsForTask(r.Context(), project.Path, id)
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
 }
 
 // SearchTasks handles search via HTMX — returns task list HTML fragment.
@@ -427,6 +457,168 @@ func (h *UIHandler) MoveTask(w http.ResponseWriter, r *http.Request) {
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
+}
+
+// Settings renders the project settings page.
+func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, err := h.projectService.CategoryServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	categories, err := catService.List(r.Context())
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.SettingsPage(project, categories).Render(r.Context(), w)
+}
+
+// ListCategories returns the category management HTML fragment.
+func (h *UIHandler) ListCategories(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, err := h.projectService.CategoryServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	categories, err := catService.List(r.Context())
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.CategoryList(categories, slug).Render(r.Context(), w)
+}
+
+// CreateCategory handles HTMX category creation.
+func (h *UIHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, err := h.projectService.CategoryServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Name  string `json:"name"`
+		Color string `json:"color"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	_, err = catService.Create(r.Context(), input.Name, input.Color)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	categories, _ := catService.List(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.CategoryList(categories, slug).Render(r.Context(), w)
+}
+
+// UpdateCategory handles HTMX category update.
+func (h *UIHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "catID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid category ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, err := h.projectService.CategoryServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Name  string `json:"name"`
+		Color string `json:"color"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	_, err = catService.Update(r.Context(), id, input.Name, input.Color)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	categories, _ := catService.List(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.CategoryList(categories, slug).Render(r.Context(), w)
+}
+
+// DeleteCategory handles HTMX category deletion.
+func (h *UIHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "catID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid category ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, err := h.projectService.CategoryServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if err := catService.DeleteByID(r.Context(), id); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	categories, _ := catService.List(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.CategoryList(categories, slug).Render(r.Context(), w)
 }
 
 // DeleteTaskRedirect handles task deletion from detail page — deletes and redirects to project.

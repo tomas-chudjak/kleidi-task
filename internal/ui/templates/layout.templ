@@ -19,8 +19,12 @@ templ Layout(title string) {
 				<a href="/" class="kvt-sidebar-logo">kvt</a>
 				<nav class="kvt-sidebar-nav">
 					<a href="/" class="kvt-sidebar-link" title="Dashboard"><i class="icon icon-layout-dashboard"></i></a>
-					<a href="/" class="kvt-sidebar-link" title="Settings"><i class="icon icon-settings"></i></a>
+					<a href="#" class="kvt-sidebar-link" title="Settings" onclick="var m=location.pathname.match(/^\/p\/([^/]+)/);if(m){location.href='/p/'+m[1]+'/settings'}"><i class="icon icon-settings"></i></a>
 				</nav>
+				<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+					<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
+					<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
+				</button>
 			</aside>
 			<div class="kvt-main">
 				<header class="kvt-topbar">
@@ -46,6 +50,25 @@ templ Layout(title string) {
 			}, 2000);
 		}
 	});
+	// Theme toggle
+	function initTheme() {
+		var saved = localStorage.getItem('kvt-theme');
+		if (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		document.documentElement.setAttribute('data-theme', saved);
+		updateThemeIcon(saved);
+	}
+	function toggleTheme() {
+		var current = document.documentElement.getAttribute('data-theme') || 'light';
+		var next = current === 'dark' ? 'light' : 'dark';
+		document.documentElement.setAttribute('data-theme', next);
+		localStorage.setItem('kvt-theme', next);
+		updateThemeIcon(next);
+	}
+	function updateThemeIcon(theme) {
+		document.getElementById('theme-icon-light').style.display = theme === 'dark' ? 'block' : 'none';
+		document.getElementById('theme-icon-dark').style.display = theme === 'light' ? 'block' : 'none';
+	}
+	initTheme();
 	function applyAdvancedFilters(btn) {
 		var container = btn.closest('.kvt-advanced-filters');
 		var url = new URL(window.location.href);

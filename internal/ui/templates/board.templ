@@ -25,6 +25,9 @@ templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done 
 				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn kvt-view-btn--active">
 					<i class="icon icon-columns-3"></i> Board
 				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings") } class="kvt-view-btn">
+					<i class="icon icon-settings"></i> Settings
+				</a>
 			</div>
 		</div>
 

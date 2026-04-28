@@ -115,7 +115,7 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 	return buildFilterURL(slug, f, map[string]string{"page": p})
 }
 
-templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter) {
+templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category) {
 	@Layout(project.Name) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
@@ -125,6 +125,9 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 				</a>
 				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
 					<i class="icon icon-columns-3"></i> Board
+				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings") } class="kvt-view-btn">
+					<i class="icon icon-settings"></i> Settings
 				</a>
 			</div>
 		</div>
@@ -228,12 +231,27 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 					>
 						<input type="text" name="title" placeholder="Title (BUG:, FEAT:, HOTFIX:)" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 						<details id="add-details" class="kvt-add-details">
-							<summary class="kvt-add-details-toggle">+ Description</summary>
-							<textarea name="description" class="kvt-add-textarea" placeholder="Add details..." rows="4"></textarea>
+							<summary class="kvt-add-details-toggle">+ Details</summary>
+							<textarea name="description" class="kvt-add-textarea" placeholder="Add description..." rows="4"></textarea>
+							if len(categories) > 0 {
+								<div class="kvt-field" style="margin-top:8px;">
+									<label class="kvt-field-label" for="new-task-cat">Category</label>
+									<div class="kvt-select-wrap">
+										<select name="category" id="new-task-cat" class="kvt-select">
+											<option value="">None</option>
+											for _, c := range categories {
+												<option value={ c.Name }>{ c.Name }</option>
+											}
+										</select>
+										<i class="icon icon-chevron-down kvt-select-icon"></i>
+									</div>
+								</div>
+							}
 						</details>
 						<button type="submit" class="kvt-add-btn">Add task</button>
 					</form>
 				</div>
+
 			</aside>
 		</div>
 	}

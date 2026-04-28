@@ -56,7 +56,44 @@ func (s *CategoryService) Create(ctx context.Context, name, color string) (Categ
 	return Category{ID: row.ID, Name: row.Name, Color: row.Color}, nil
 }
 
-// Delete removes a category.
+// Get returns a single category by ID.
+func (s *CategoryService) Get(ctx context.Context, id int64) (Category, error) {
+	row, err := s.queries.GetCategory(ctx, id)
+	if err != nil {
+		return Category{}, fmt.Errorf("getting category: %w", err)
+	}
+	return Category{ID: row.ID, Name: row.Name, Color: row.Color}, nil
+}
+
+// Update modifies an existing category.
+func (s *CategoryService) Update(ctx context.Context, id int64, name, color string) (Category, error) {
+	if name == "" {
+		return Category{}, fmt.Errorf("%w: category name is required", ErrInvalidInput)
+	}
+	if color == "" {
+		color = "#8a8dab"
+	}
+
+	row, err := s.queries.UpdateCategory(ctx, generated.UpdateCategoryParams{
+		Name:  name,
+		Color: color,
+		ID:    id,
+	})
+	if err != nil {
+		return Category{}, fmt.Errorf("updating category: %w", err)
+	}
+	return Category{ID: row.ID, Name: row.Name, Color: row.Color}, nil
+}
+
+// DeleteByID removes a category by ID.
+func (s *CategoryService) DeleteByID(ctx context.Context, id int64) error {
+	if err := s.queries.DeleteCategoryByID(ctx, id); err != nil {
+		return fmt.Errorf("deleting category: %w", err)
+	}
+	return nil
+}
+
+// Delete removes a category by name.
 func (s *CategoryService) Delete(ctx context.Context, name string) error {
 	if err := s.queries.DeleteCategory(ctx, name); err != nil {
 		return fmt.Errorf("deleting category: %w", err)

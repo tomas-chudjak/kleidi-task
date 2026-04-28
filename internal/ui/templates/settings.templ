@@ -1,0 +1,103 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ SettingsPage(project core.Project, categories []core.Category) {
+	@Layout(project.Name + " — Settings") {
+		<div class="kvt-board-header">
+			<h2 class="kvt-title">{ project.Name }</h2>
+			<div class="kvt-view-toggle">
+				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn">
+					<i class="icon icon-list"></i> List
+				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
+					<i class="icon icon-columns-3"></i> Board
+				</a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings") } class="kvt-view-btn kvt-view-btn--active">
+					<i class="icon icon-settings"></i> Settings
+				</a>
+			</div>
+		</div>
+
+		<div class="kvt-settings">
+			<!-- Categories section -->
+			<section class="kvt-settings-section">
+				<h3 class="kvt-settings-heading"><i class="icon icon-tag"></i> Categories</h3>
+				<p class="kvt-settings-desc">Manage custom categories for tasks in this project. Categories help organize tasks by area of work (backend, frontend, design, etc.).</p>
+
+				<div id="category-list" class="kvt-cat-list">
+					@CategoryList(categories, project.Slug)
+				</div>
+
+				<form
+					hx-post={ "/p/" + project.Slug + "/categories" }
+					hx-target="#category-list"
+					hx-swap="innerHTML"
+					hx-on::after-request="this.reset();"
+					hx-ext="json-enc"
+					class="kvt-cat-form"
+				>
+					<div class="kvt-cat-form-row">
+						<input type="text" name="name" placeholder="New category name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
+						<input type="color" name="color" value="#8a8dab" class="kvt-cat-color"/>
+						<button type="submit" class="kvt-cat-add-btn" title="Add category"><i class="icon icon-plus"></i></button>
+					</div>
+				</form>
+			</section>
+		</div>
+	}
+}
+
+templ CategoryList(categories []core.Category, slug string) {
+	if len(categories) == 0 {
+		<div class="kvt-empty" style="font-size:0.85rem;">No categories yet. Add one below.</div>
+	} else {
+		for _, c := range categories {
+			@CategoryRow(c, slug)
+		}
+	}
+}
+
+templ CategoryRow(cat core.Category, slug string) {
+	<div class="kvt-cat-row" id={ fmt.Sprintf("cat-%d", cat.ID) }>
+		<!-- Display mode -->
+		<div class="kvt-cat-display">
+			<span class="kvt-cat-dot" style={ fmt.Sprintf("background:%s", cat.Color) }></span>
+			<span class="kvt-cat-name">{ cat.Name }</span>
+			<button
+				class="kvt-cat-edit-btn"
+				onclick="this.closest('.kvt-cat-row').querySelector('.kvt-cat-display').style.display='none';this.closest('.kvt-cat-row').querySelector('.kvt-cat-edit').style.display='flex';"
+				title="Edit"
+			>
+				<i class="icon icon-pencil"></i>
+			</button>
+			<button
+				class="kvt-cat-del-btn"
+				hx-delete={ fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID) }
+				hx-target="#category-list"
+				hx-swap="innerHTML"
+				hx-confirm={ fmt.Sprintf("Delete category '%s'?", cat.Name) }
+				title="Delete"
+			>
+				<i class="icon icon-trash-2"></i>
+			</button>
+		</div>
+		<!-- Edit mode (hidden by default) -->
+		<form
+			class="kvt-cat-edit"
+			style="display:none;"
+			hx-patch={ fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID) }
+			hx-target="#category-list"
+			hx-swap="innerHTML"
+			hx-ext="json-enc"
+		>
+			<input type="text" name="name" value={ cat.Name } required class="kvt-cat-input" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+			<input type="color" name="color" value={ cat.Color } class="kvt-cat-color"/>
+			<button type="submit" class="kvt-cat-add-btn" title="Save"><i class="icon icon-check"></i></button>
+			<button type="button" class="kvt-cat-del-btn" title="Cancel"
+				onclick="this.closest('.kvt-cat-row').querySelector('.kvt-cat-display').style.display='';this.closest('.kvt-cat-row').querySelector('.kvt-cat-edit').style.display='none';"
+			><i class="icon icon-x"></i></button>
+		</form>
+	</div>
+}

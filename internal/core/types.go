@@ -102,6 +102,15 @@ type Category struct {
 	Color string `json:"color"`
 }
 
+// Commit represents a git commit linked to a task.
+type Commit struct {
+	Hash      string    `json:"hash"`
+	ShortHash string    `json:"short_hash"`
+	Message   string    `json:"message"`
+	Author    string    `json:"author"`
+	Date      time.Time `json:"date"`
+}
+
 // Project represents a registered project in the global registry.
 type Project struct {
 	ID               int64     `json:"id"`

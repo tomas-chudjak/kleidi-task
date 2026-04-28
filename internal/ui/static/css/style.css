@@ -28,20 +28,18 @@
   --kvt-label: #9ea0b5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --kvt-bg: #13141f;
-    --kvt-sidebar-bg: #1a1b2e;
-    --kvt-card-bg: #1e2035;
-    --kvt-card-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    --kvt-accent: #7b8cff;
-    --kvt-accent-light: #252845;
-    --kvt-fg: #e8e9f4;
-    --kvt-fg-muted: #7c7f9a;
-    --kvt-fg-subtle: #5c5f7a;
-    --kvt-border: #2a2c42;
-    --kvt-label: #6b6e8a;
-  }
+[data-theme="dark"] {
+  --kvt-bg: #13141f;
+  --kvt-sidebar-bg: #1a1b2e;
+  --kvt-card-bg: #1e2035;
+  --kvt-card-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  --kvt-accent: #7b8cff;
+  --kvt-accent-light: #252845;
+  --kvt-fg: #e8e9f4;
+  --kvt-fg-muted: #7c7f9a;
+  --kvt-fg-subtle: #5c5f7a;
+  --kvt-border: #2a2c42;
+  --kvt-label: #6b6e8a;
 }
 
 html { font-size: 100%; }
@@ -109,6 +107,13 @@ input, select, textarea {
   transition: color 0.15s;
 }
 .kvt-sidebar-link:hover { color: var(--kvt-accent); }
+.kvt-theme-toggle {
+  margin-top: auto;
+  margin-bottom: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 .kvt-sidebar-link--active {
   color: var(--kvt-accent);
 }
@@ -394,6 +399,117 @@ input, select, textarea {
 }
 .kvt-category-tag--empty { visibility: hidden; }
 
+/* Category manager */
+.kvt-cat-manager-toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+}
+.kvt-cat-manager-toggle::-webkit-details-marker { display: none; }
+.kvt-cat-manager-toggle::marker { display: none; content: ''; }
+.kvt-cat-manager > div,
+.kvt-cat-manager > form { margin-top: 10px; }
+.kvt-cat-row {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--kvt-border);
+}
+.kvt-cat-row:last-child { border-bottom: none; }
+.kvt-cat-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kvt-cat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.kvt-cat-name {
+  flex: 1;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kvt-cat-edit-btn,
+.kvt-cat-del-btn {
+  background: none;
+  border: none;
+  color: var(--kvt-fg-muted);
+  cursor: pointer;
+  padding: 2px;
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+.kvt-cat-edit-btn:hover { opacity: 1; color: var(--kvt-accent); }
+.kvt-cat-del-btn:hover { opacity: 1; color: var(--kvt-danger); }
+.kvt-cat-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.kvt-cat-form { margin-top: 8px; }
+.kvt-cat-form-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.kvt-cat-input {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 4px 6px;
+  border: 1px solid var(--kvt-border);
+  border-radius: 4px;
+  background: var(--kvt-bg);
+  color: var(--kvt-fg);
+}
+.kvt-cat-color {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--kvt-border);
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+.kvt-cat-add-btn {
+  background: var(--kvt-accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.kvt-cat-add-btn:hover { opacity: 0.85; }
+
+/* Settings page */
+.kvt-settings { max-width: 640px; }
+.kvt-settings-section {
+  background: var(--kvt-card-bg);
+  border: 1px solid var(--kvt-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.kvt-settings-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px 0;
+}
+.kvt-settings-desc {
+  font-size: 0.8rem;
+  color: var(--kvt-fg-muted);
+  margin: 0 0 16px 0;
+}
+.kvt-cat-list { margin-bottom: 12px; }
+
 /* Status text in task row */
 .kvt-task-status {
   font-size: 0.75rem;
@@ -574,6 +690,39 @@ input, select, textarea {
   border-radius: var(--kvt-card-radius);
   box-shadow: var(--kvt-card-shadow);
   padding: 20px 24px;
+}
+.kvt-detail-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--kvt-fg-muted);
+}
+/* Git activity */
+.kvt-commit-list { display: flex; flex-direction: column; gap: 8px; }
+.kvt-commit-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+.kvt-commit-hash {
+  font-family: var(--k-font-mono);
+  font-size: 0.75rem;
+  color: var(--kvt-accent);
+  background: var(--kvt-bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.kvt-commit-msg { flex: 1; min-width: 0; }
+.kvt-commit-meta {
+  font-size: 0.7rem;
+  color: var(--kvt-fg-muted);
+  white-space: nowrap;
 }
 .kvt-back-link {
   color: var(--kvt-fg-muted);
