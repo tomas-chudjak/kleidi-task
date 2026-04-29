@@ -156,3 +156,22 @@ type ProjectStats struct {
 	Done     int64 `json:"done"`
 	BugsOpen int64 `json:"bugs_open"`
 }
+
+// SuggestionKind classifies the source pattern of a suggestion.
+type SuggestionKind string
+
+const (
+	SuggestTodo  SuggestionKind = "todo"
+	SuggestFixme SuggestionKind = "fixme"
+	SuggestHack  SuggestionKind = "hack"
+	SuggestXXX   SuggestionKind = "xxx"
+)
+
+// Suggestion represents a task suggestion derived from source code analysis.
+type Suggestion struct {
+	Kind           SuggestionKind `json:"kind"`
+	Text           string         `json:"text"`
+	File           string         `json:"file"`
+	Line           int            `json:"line"`
+	ExistingTaskID *int64         `json:"existing_task_id,omitempty"`
+}

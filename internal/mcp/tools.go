@@ -155,6 +155,17 @@ type ProjectCurrentOutput struct {
 	Path    string        `json:"path,omitempty"`
 }
 
+type TaskSuggestInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+}
+
+type TaskSuggestOutput struct {
+	Suggestions []core.Suggestion `json:"suggestions"`
+	Count       int               `json:"count"`
+	New         int               `json:"new"`
+	Duplicates  int               `json:"duplicates"`
+}
+
 func (s *Server) registerTools() {
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_create",
@@ -245,6 +256,11 @@ func (s *Server) registerTools() {
 		Name:        "project_stats",
 		Description: "Get task statistics for a project (todo/doing/done counts, open bugs)",
 	}, s.projectStats)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_suggest",
+		Description: "Scan source code for TODO/FIXME/HACK/XXX comments and suggest new tasks. Checks for duplicates against existing tasks.",
+	}, s.taskSuggest)
 }
 
 func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input TaskCreateInput) (*mcp.CallToolResult, TaskOutput, error) {
@@ -539,34 +555,37 @@ func (s *Server) projectStats(ctx context.Context, req *mcp.CallToolRequest, inp
 
 // Helper methods
 
-func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
-	var projectPath string
-
+func (s *Server) resolveProjectPath(project string) (string, error) {
 	if project != "" && project != "current" {
 		p, err := s.projectService.GetBySlug(project)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		projectPath = p.Path
-	} else {
-		// Try cwd first
-		cwd, err := os.Getwd()
-		if err == nil {
-			projectPath, err = s.projectService.DetectProject(cwd)
+		return p.Path, nil
+	}
+	// Try cwd first
+	cwd, err := os.Getwd()
+	if err == nil {
+		projectPath, err := s.projectService.DetectProject(cwd)
+		if err == nil && projectPath != "" {
+			return projectPath, nil
 		}
-		// Fall back to default project from config
-		if err != nil || projectPath == "" {
-			cfg := config.LoadGlobal()
-			if cfg.DefaultProject != "" {
-				p, slugErr := s.projectService.GetBySlug(cfg.DefaultProject)
-				if slugErr == nil {
-					projectPath = p.Path
-				}
-			}
-			if projectPath == "" {
-				return nil, core.ErrNoProject
-			}
+	}
+	// Fall back to default project from config
+	cfg := config.LoadGlobal()
+	if cfg.DefaultProject != "" {
+		p, slugErr := s.projectService.GetBySlug(cfg.DefaultProject)
+		if slugErr == nil {
+			return p.Path, nil
 		}
+	}
+	return "", core.ErrNoProject
+}
+
+func (s *Server) resolveTaskService(project string) (*core.TaskService, error) {
+	projectPath, err := s.resolveProjectPath(project)
+	if err != nil {
+		return nil, err
 	}
 
 	return s.projectService.TaskServiceFor(projectPath)
@@ -777,4 +796,48 @@ func formatTaskList(tasks []core.Task) string {
 func formatTask(t core.Task) string {
 	data, _ := json.MarshalIndent(t, "", "  ")
 	return string(data)
+}
+
+func (s *Server) taskSuggest(ctx context.Context, req *mcp.CallToolRequest, input TaskSuggestInput) (*mcp.CallToolResult, TaskSuggestOutput, error) {
+	projectPath, err := s.resolveProjectPath(input.Project)
+	if err != nil {
+		return nil, TaskSuggestOutput{}, err
+	}
+
+	taskService, err := s.projectService.TaskServiceFor(projectPath)
+	if err != nil {
+		return nil, TaskSuggestOutput{}, err
+	}
+
+	suggestService := core.NewSuggestService(projectPath, taskService)
+	suggestions, err := suggestService.Scan(ctx)
+	if err != nil {
+		return nil, TaskSuggestOutput{}, fmt.Errorf("scanning: %w", err)
+	}
+
+	var newCount, dupCount int
+	for _, sg := range suggestions {
+		if sg.ExistingTaskID != nil {
+			dupCount++
+		} else {
+			newCount++
+		}
+	}
+
+	var text string
+	if len(suggestions) == 0 {
+		text = "No suggestions found."
+	} else {
+		text = fmt.Sprintf("Found %d suggestion(s) (%d new, %d matching existing tasks)\n\n", len(suggestions), newCount, dupCount)
+		for i, sg := range suggestions {
+			text += core.FormatSuggestion(sg, i) + "\n"
+		}
+	}
+
+	return textResult(text), TaskSuggestOutput{
+		Suggestions: suggestions,
+		Count:       len(suggestions),
+		New:         newCount,
+		Duplicates:  dupCount,
+	}, nil
 }
