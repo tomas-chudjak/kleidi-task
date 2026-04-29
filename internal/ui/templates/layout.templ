@@ -71,6 +71,16 @@ templ layoutScripts() {
 		url.searchParams.delete('page');
 		window.location.href = url.toString();
 	}
+	// Show saved toast on HX-Trigger: showSaved
+	document.body.addEventListener('showSaved', function() {
+		var el = document.getElementById('save-indicator');
+		if (el) {
+			el.textContent = 'Saved';
+			el.classList.add('kvt-save-indicator--visible');
+			clearTimeout(el._t);
+			el._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);
+		}
+	});
 	// Bulk selection manager
 	var kvtBulk = (function() {
 		var selected = new Set();

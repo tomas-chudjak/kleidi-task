@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig) {
+templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate) {
 	@Layout(project.Name+" — Settings", project.Slug) {
 		<div class="kvt-board-header">
 			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
@@ -16,6 +16,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 				<a href="#project-info" class="kvt-settings-nav-link"><i class="icon icon-folder"></i> Project</a>
 				<a href="#categories" class="kvt-settings-nav-link"><i class="icon icon-tag"></i> Categories</a>
 				<a href="#configuration" class="kvt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
+					<a href="#templates" class="kvt-settings-nav-link"><i class="icon icon-file-text"></i> Templates</a>
 					<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
 			</nav>
 
@@ -123,6 +124,36 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 						</form>
 					</section>
 
+					<!-- Templates -->
+					<section class="kvt-settings-section" id="templates">
+						<h3 class="kvt-settings-heading"><i class="icon icon-file-text"></i> Templates</h3>
+						<p class="kvt-settings-desc">Predefined templates for quick task creation.</p>
+
+						<div id="template-list" class="kvt-cat-list">
+							@TemplateList(taskTemplates, project.Slug)
+						</div>
+
+						<form
+							hx-post={ "/p/" + project.Slug + "/templates" }
+							hx-target="#template-list"
+							hx-swap="innerHTML"
+							hx-on::after-request="this.reset();"
+							hx-ext="json-enc"
+							class="kvt-cat-form"
+						>
+							<div class="kvt-cat-form-row">
+								<input type="text" name="name" placeholder="Template name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
+								<select name="type" class="kvt-cat-input" style="max-width:100px;">
+									<option value="task">Task</option>
+									<option value="bug">Bug</option>
+									<option value="feature">Feature</option>
+									<option value="hotfix">Hotfix</option>
+								</select>
+								<button type="submit" class="kvt-cat-add-btn" title="Add template"><i class="icon icon-plus"></i></button>
+							</div>
+						</form>
+					</section>
+
 					<!-- Danger zone -->
 				<section class="kvt-settings-section kvt-settings-section--danger" id="danger">
 					<h3 class="kvt-settings-heading kvt-settings-heading--danger"><i class="icon icon-alert-triangle"></i> Danger zone</h3>
@@ -188,4 +219,30 @@ templ CategoryRow(cat core.Category, slug string) {
 			><i class="icon icon-x"></i></button>
 		</form>
 	</div>
+}
+
+templ TemplateList(tpls []core.TaskTemplate, slug string) {
+	if len(tpls) == 0 {
+		<div class="kvt-empty" style="font-size:0.85rem;">No templates yet.</div>
+	} else {
+		for _, t := range tpls {
+			<div class="kvt-cat-row" id={ fmt.Sprintf("tpl-%d", t.ID) }>
+				<div class="kvt-cat-display">
+					<span class={ "kvt-badge kvt-badge-" + t.Type } style="font-size:0.6rem;">{ t.Type }</span>
+					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">{ t.Name }</a>
+					<span style="font-size:0.65rem;color:var(--kvt-fg-muted);">P{ fmt.Sprintf("%d", t.Priority) }</span>
+					<button
+						class="kvt-cat-del-btn"
+						hx-delete={ fmt.Sprintf("/p/%s/templates/%d", slug, t.ID) }
+						hx-target="#template-list"
+						hx-swap="innerHTML"
+						hx-confirm={ fmt.Sprintf("Delete template '%s'?", t.Name) }
+						title="Delete"
+					>
+						<i class="icon icon-trash-2"></i>
+					</button>
+				</div>
+			</div>
+		}
+	}
 }

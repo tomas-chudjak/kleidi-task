@@ -278,6 +278,19 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 		taskType, title = core.DetectTypeFromTitle(title, core.TypeTask)
 	}
 
+	// Look up template for this type to provide as AI instruction
+	var templateHint string
+	projectPath, _ := s.resolveProjectPath(input.Project)
+	if projectPath != "" && input.Description == "" {
+		tplService, err := s.projectService.TemplateServiceFor(projectPath)
+		if err == nil {
+			tpl, err := tplService.GetByType(ctx, string(taskType))
+			if err == nil && tpl.Description != "" {
+				templateHint = tpl.Description
+			}
+		}
+	}
+
 	task, err := taskService.Create(ctx, core.CreateTaskInput{
 		Title:          title,
 		Description:    input.Description,
@@ -292,7 +305,12 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 		return nil, TaskOutput{}, err
 	}
 
-	return textResult(fmt.Sprintf("Created %s #%d: %s", task.Type, task.ID, task.Title)), TaskOutput{Task: task}, nil
+	text := fmt.Sprintf("Created %s #%d: %s", task.Type, task.ID, task.Title)
+	if templateHint != "" {
+		text += fmt.Sprintf("\n\nTemplate for %s — please generate a description following this structure and update the task:\n%s", taskType, templateHint)
+	}
+
+	return textResult(text), TaskOutput{Task: task}, nil
 }
 
 func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input TaskListInput) (*mcp.CallToolResult, TaskListOutput, error) {

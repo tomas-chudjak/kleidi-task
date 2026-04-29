@@ -194,8 +194,14 @@ func (h *UIHandler) TaskNewPage(w http.ResponseWriter, r *http.Request) {
 		config, _ = configService.Get(r.Context())
 	}
 
+	tplService, _ := h.projectService.TemplateServiceFor(project.Path)
+	var taskTemplates []core.TaskTemplate
+	if tplService != nil {
+		taskTemplates, _ = tplService.List(r.Context())
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskNewPage(project, categories, config).Render(r.Context(), w)
+	templates.TaskNewPage(project, categories, config, taskTemplates).Render(r.Context(), w)
 }
 
 // CreateDetailedTask handles the detailed task creation form — creates task and redirects to detail.
@@ -638,7 +644,13 @@ func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.SettingsPage(project, categories, stats, config).Render(r.Context(), w)
+	tplService, _ := h.projectService.TemplateServiceFor(project.Path)
+	var taskTemplates []core.TaskTemplate
+	if tplService != nil {
+		taskTemplates, _ = tplService.List(r.Context())
+	}
+
+	templates.SettingsPage(project, categories, stats, config, taskTemplates).Render(r.Context(), w)
 }
 
 // SaveConfig handles HTMX config save from settings page.
@@ -955,4 +967,176 @@ func (h *UIHandler) DeleteTaskRedirect(w http.ResponseWriter, r *http.Request) {
 
 	taskService.Delete(r.Context(), id)
 	http.Redirect(w, r, "/p/"+slug, http.StatusSeeOther)
+}
+
+// CreateTemplate handles HTMX template creation.
+func (h *UIHandler) CreateTemplate(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	tplService, err := h.projectService.TemplateServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Name string `json:"name"`
+		Type string `json:"type"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	tplService.Create(r.Context(), input.Name, input.Type, 0, "")
+
+	h.renderTemplateList(w, r, tplService, slug)
+}
+
+// DeleteTemplate handles HTMX template deletion.
+func (h *UIHandler) DeleteTemplate(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "tplID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid template ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	tplService, err := h.projectService.TemplateServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	tplService.Delete(r.Context(), id)
+
+	h.renderTemplateList(w, r, tplService, slug)
+}
+
+// TemplateDetail renders the template edit page.
+func (h *UIHandler) TemplateDetail(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "tplID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid template ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	tplService, err := h.projectService.TemplateServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	tpl, err := tplService.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, "Template not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TemplateDetailPage(project, tpl).Render(r.Context(), w)
+}
+
+// UpdateTemplate handles template update from detail page.
+func (h *UIHandler) UpdateTemplate(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "tplID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid template ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	tplService, err := h.projectService.TemplateServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input map[string]any
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	name, _ := input["name"].(string)
+	typ, _ := input["type"].(string)
+	desc, _ := input["description"].(string)
+	var priority int64
+	switch v := input["priority"].(type) {
+	case float64:
+		priority = int64(v)
+	case string:
+		priority, _ = strconv.ParseInt(v, 10, 64)
+	}
+
+	_, err = tplService.Update(r.Context(), id, name, typ, priority, desc)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Trigger", "showSaved")
+	w.WriteHeader(http.StatusOK)
+}
+
+// DeleteTemplateRedirect deletes a template and redirects to settings.
+func (h *UIHandler) DeleteTemplateRedirect(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "tplID")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid template ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	tplService, err := h.projectService.TemplateServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	tplService.Delete(r.Context(), id)
+	http.Redirect(w, r, "/p/"+slug+"/settings#templates", http.StatusSeeOther)
+}
+
+func (h *UIHandler) renderTemplateList(w http.ResponseWriter, r *http.Request, tplService *core.TemplateService, slug string) {
+	tpls, _ := tplService.List(r.Context())
+
+	project, _ := h.projectService.GetBySlug(slug)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TemplateList(tpls, project.Slug).Render(r.Context(), w)
 }

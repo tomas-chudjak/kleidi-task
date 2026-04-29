@@ -46,6 +46,13 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	// Project configuration
 	r.Post("/p/{slug}/settings/config", h.SaveConfig)
 
+	// Template management
+	r.Get("/p/{slug}/templates/{tplID}", h.TemplateDetail)
+	r.Post("/p/{slug}/templates", h.CreateTemplate)
+	r.Patch("/p/{slug}/templates/{tplID}", h.UpdateTemplate)
+	r.Delete("/p/{slug}/templates/{tplID}", h.DeleteTemplate)
+	r.Get("/p/{slug}/templates/{tplID}/delete", h.DeleteTemplateRedirect)
+
 	// Category management
 	r.Get("/p/{slug}/categories", h.ListCategories)
 	r.Post("/p/{slug}/categories", h.CreateCategory)

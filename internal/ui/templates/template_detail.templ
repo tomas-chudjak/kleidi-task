@@ -1,0 +1,110 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate) {
+	@Layout(tpl.Name+" — Template", project.Slug) {
+		<div data-slug={ project.Slug }></div>
+		<!-- Toolbar -->
+		<div class="kvt-toolbar">
+			<div class="kvt-toolbar-left">
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#templates") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+				<span class={ "kvt-badge kvt-badge-" + tpl.Type }>{ tpl.Type }</span>
+				<span class="kvt-toolbar-id">Template: { tpl.Name }</span>
+			</div>
+			<div class="kvt-toolbar-right">
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d/delete", project.Slug, tpl.ID)) }
+					class="kvt-toolbar-btn kvt-toolbar-btn--danger"
+					onclick="return confirm('Delete this template?')"
+				>
+					<i class="icon icon-trash-2"></i> Delete
+				</a>
+			</div>
+		</div>
+
+		<!-- Save indicator -->
+		<div id="save-indicator" class="kvt-save-indicator"></div>
+
+		<!-- Two-column layout -->
+		<form
+			id="tpl-form"
+			hx-patch={ fmt.Sprintf("/p/%s/templates/%d", project.Slug, tpl.ID) }
+			hx-ext="json-enc"
+			hx-swap="none"
+		>
+		<div class="kvt-task-layout">
+			<!-- Main content -->
+			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
+					<div class="kvt-detail-card">
+						<div class="kvt-field" style="margin-bottom:16px;">
+							<label class="kvt-field-label" for="tpl-name">Name</label>
+							<input type="text" class="kvt-input kvt-input--title" id="tpl-name" name="name" value={ tpl.Name } required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label" for="tpl-desc-editor">Description template</label>
+							<textarea
+								class="kvt-textarea"
+								id="tpl-desc-editor"
+								name="description"
+								rows="10"
+								placeholder="Template description content..."
+							>{ tpl.Description }</textarea>
+							<script>
+								(function() {
+									var ta = document.getElementById('tpl-desc-editor');
+									if (ta && typeof EasyMDE !== 'undefined') {
+										var mde = new EasyMDE({
+											element: ta,
+											spellChecker: false,
+											status: false,
+											placeholder: 'Template description content...',
+											toolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],
+											sideBySideFullscreen: false,
+											minHeight: '200px',
+										});
+										document.getElementById('tpl-form').addEventListener('htmx:configRequest', function(e) {
+											e.detail.parameters.description = mde.value();
+										});
+									}
+								})();
+							</script>
+						</div>
+					</div>
+			</div>
+
+			<!-- Sidebar -->
+			<div class="kvt-task-sidebar">
+				<button type="submit" class="kvt-add-btn" style="width:100%;">
+					<i class="icon icon-check"></i> Save template
+				</button>
+				<div class="kvt-detail-card">
+					<div class="kvt-detail-fields">
+						<div class="kvt-field">
+							<label class="kvt-field-label">Type</label>
+							<div class="kvt-select-wrap">
+								<select class="kvt-select" id="tpl-type" name="type">
+									<option value="task" selected?={ tpl.Type == "task" }>Task</option>
+									<option value="bug" selected?={ tpl.Type == "bug" }>Bug</option>
+									<option value="feature" selected?={ tpl.Type == "feature" }>Feature</option>
+									<option value="hotfix" selected?={ tpl.Type == "hotfix" }>Hotfix</option>
+								</select>
+								<i class="icon icon-chevron-down kvt-select-icon"></i>
+							</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Default priority</label>
+							<input type="number" class="kvt-input" name="priority" value={ fmt.Sprintf("%d", tpl.Priority) } min="0"/>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Created</label>
+							<div class="kvt-field-value kvt-field-value--mono">{ tpl.CreatedAt.Format("2006-01-02 15:04") }</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	}
+}

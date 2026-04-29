@@ -43,6 +43,15 @@ type Task struct {
 	IsArchived  int64          `json:"is_archived"`
 }
 
+type TaskTemplate struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Type        string    `json:"type"`
+	Priority    int64     `json:"priority"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
 type TasksFt struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`

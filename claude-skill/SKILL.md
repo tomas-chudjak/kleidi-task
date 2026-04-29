@@ -78,6 +78,30 @@ description: "dark mode"
 type: feature
 ```
 
+## Template-based description generation
+
+When you create a task via `task_create` without a description, the response may include a **template** — a structured outline for that task type (e.g. Bug has "Steps to reproduce / Expected / Actual", Feature has "Problem / Proposed solution / Acceptance criteria").
+
+**When you receive a template, you MUST:**
+1. Read the template structure
+2. Fill in each section based on what you know from the user's message and conversation context
+3. Call `task_update` to set the generated description on the task
+
+**Rules for filling templates:**
+- Fill every section you have information for — even partial info is better than empty
+- If you don't have enough info for a section, leave the heading with a brief placeholder (e.g. "To be determined" or a question)
+- Always write in English regardless of the user's language — all task content must be in English
+- Keep it concise but specific — the description should be actionable
+- Do NOT leave the template empty or just echo it back unchanged
+
+**Example flow:**
+1. User: "task: Aktualizujme layout pre login page"
+2. You call `task_create(title="Aktualizujme layout pre login page")`
+3. Response includes template: "## Objective\n\n## Acceptance criteria\n- [ ]\n..."
+4. You generate description filling in the sections based on context
+5. You call `task_update(id=X, description="## Objective\nPrepracovať layout login stránky...")
+6. Confirm: "Created task #X: Aktualizujme layout pre login page (description generated from template)"
+
 ## Available tools
 
 | Tool | Description |
@@ -91,6 +115,10 @@ type: feature
 | `project_list` | List all registered projects |
 | `project_current` | Get current project (based on cwd) |
 | `project_stats` | Get todo/doing/done/bugs counts |
+| `task_suggest` | Scan code for TODO/FIXME comments and suggest tasks |
+| `task_archive` | Archive a completed task |
+| `task_bulk_update` | Update multiple tasks at once |
+| `task_bulk_complete` | Complete multiple tasks at once |
 
 ## Example workflows
 

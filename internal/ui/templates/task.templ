@@ -35,6 +35,13 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 						<i class="icon icon-archive"></i> Archive
 					</a>
 				}
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/delete", project.Slug, task.ID)) }
+					class="kvt-toolbar-btn kvt-toolbar-btn--danger"
+					onclick="return confirm('Delete this task? This cannot be undone.')"
+				>
+					<i class="icon icon-trash-2"></i> Delete
+				</a>
 			</div>
 		</div>
 

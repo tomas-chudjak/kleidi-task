@@ -145,6 +145,15 @@ func (s *ProjectService) CategoryServiceFor(projectPath string) (*CategoryServic
 	return NewCategoryService(db), nil
 }
 
+// TemplateServiceFor returns a TemplateService for the given project path.
+func (s *ProjectService) TemplateServiceFor(projectPath string) (*TemplateService, error) {
+	db, err := s.manager.ProjectDB(projectPath)
+	if err != nil {
+		return nil, fmt.Errorf("getting project database: %w", err)
+	}
+	return NewTemplateService(db), nil
+}
+
 // ConfigServiceFor returns a ConfigService for the given project path.
 func (s *ProjectService) ConfigServiceFor(projectPath string) (*ConfigService, error) {
 	db, err := s.manager.ProjectDB(projectPath)

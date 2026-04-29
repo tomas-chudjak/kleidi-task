@@ -550,7 +550,7 @@ input, select, textarea {
 .kvt-cat-manager > div,
 .kvt-cat-manager > form { margin-top: 10px; }
 .kvt-cat-row {
-  padding: 4px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--kvt-border);
 }
 .kvt-cat-row:last-child { border-bottom: none; }

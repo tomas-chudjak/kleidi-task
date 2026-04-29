@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ TaskNewPage(project core.Project, categories []core.Category, config core.ProjectConfig) {
+templ TaskNewPage(project core.Project, categories []core.Category, config core.ProjectConfig, taskTemplates []core.TaskTemplate) {
 	@Layout("New task — "+project.Name, project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Toolbar -->
@@ -20,6 +20,26 @@ templ TaskNewPage(project core.Project, categories []core.Category, config core.
 			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
 				<form id="new-task-form" hx-post={ "/p/" + project.Slug + "/tasks/new" } hx-ext="json-enc" hx-target="body">
 					<div class="kvt-detail-card">
+						if len(taskTemplates) > 0 {
+							<div class="kvt-field" style="margin-bottom:16px;">
+								<label class="kvt-field-label">Template</label>
+								<div class="kvt-select-wrap">
+									<select class="kvt-select" id="template-select" onchange="applyTemplate(this)">
+										<option value="">No template</option>
+										for _, t := range taskTemplates {
+											<option
+												value={ fmt.Sprintf("%d", t.ID) }
+												data-type={ t.Type }
+												data-priority={ fmt.Sprintf("%d", t.Priority) }
+												data-description={ t.Description }
+												selected?={ t.Type == config.DefaultType }
+											>{ t.Name }</option>
+										}
+									</select>
+									<i class="icon icon-chevron-down kvt-select-icon"></i>
+								</div>
+							</div>
+						}
 						<div class="kvt-field" style="margin-bottom:16px;">
 							<label class="kvt-field-label" for="new-title">Title</label>
 							<input
@@ -61,6 +81,19 @@ templ TaskNewPage(project core.Project, categories []core.Category, config core.
 										document.getElementById('new-task-form').addEventListener('htmx:configRequest', function(e) {
 											e.detail.parameters.description = mde.value();
 										});
+										// applyTemplate function
+										window.applyTemplate = function(sel) {
+											var opt = sel.options[sel.selectedIndex];
+											if (!opt.value) { mde.value(''); return; }
+											mde.value(opt.getAttribute('data-description') || '');
+											var typeEl = document.querySelector('.kvt-task-sidebar select');
+											if (typeEl) { typeEl.value = opt.getAttribute('data-type'); typeEl.dispatchEvent(new Event('change')); }
+											var priEl = document.querySelector('.kvt-task-sidebar input[type="number"]');
+											if (priEl) { priEl.value = opt.getAttribute('data-priority'); priEl.dispatchEvent(new Event('change')); }
+										};
+										// Auto-apply default template on load
+										var tplSel = document.getElementById('template-select');
+										if (tplSel && tplSel.selectedIndex > 0) { window.applyTemplate(tplSel); }
 									}
 								})();
 							</script>
