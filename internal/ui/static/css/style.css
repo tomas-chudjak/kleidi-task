@@ -352,6 +352,23 @@ input, select, textarea {
   font-family: var(--k-font-sans);
 }
 .kvt-add-btn:hover { opacity: 0.9; }
+.kvt-add-btn--outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  background: var(--kvt-card-bg);
+  color: var(--kvt-accent);
+  border: 1px solid var(--kvt-accent);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.kvt-add-btn--outline:hover {
+  background: var(--kvt-accent-light);
+  color: var(--kvt-accent);
+  opacity: 1;
+}
 
 /* ── Task list ── */
 .kvt-task-list {
@@ -390,6 +407,7 @@ input, select, textarea {
 .kvt-task-header {
   display: grid;
   grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4rem;
+  background: var(--kvt-card-bg);
   align-items: center;
   gap: 12px;
   padding: 8px 20px;
@@ -1492,6 +1510,36 @@ input, select, textarea {
   .kvt-add-card { position: static; }
   .kvt-advanced-filters { flex-direction: column; align-items: stretch; }
   .kvt-pagination { flex-wrap: wrap; }
+}
+
+/* ── EasyMDE overrides ── */
+.editor-toolbar button i,
+.editor-toolbar button {
+  color: var(--kvt-fg-muted) !important;
+}
+.editor-toolbar button:hover,
+.editor-toolbar button:hover i {
+  color: var(--kvt-accent) !important;
+  background: transparent !important;
+}
+.editor-toolbar button.active,
+.editor-toolbar button.active i {
+  color: var(--kvt-accent) !important;
+}
+.editor-toolbar {
+  border-color: var(--kvt-border) !important;
+}
+.CodeMirror {
+  border-color: var(--kvt-border) !important;
+  background: var(--kvt-card-bg) !important;
+  color: var(--kvt-fg) !important;
+}
+.editor-preview {
+  background: var(--kvt-card-bg) !important;
+  color: var(--kvt-fg) !important;
+}
+.editor-toolbar.disabled-for-preview button:not(.no-disable) {
+  opacity: 0.4 !important;
 }
 
 /* ── Keyboard help overlay ── */

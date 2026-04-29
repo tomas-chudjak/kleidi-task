@@ -43,7 +43,7 @@ func layoutHead(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/json-enc.js\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " — kvik-tasks</title><link rel=\"stylesheet\" href=\"/static/css/kviky.css\"><link rel=\"stylesheet\" href=\"/static/css/lucide.css\"><link rel=\"stylesheet\" href=\"/static/css/style.css\"><link rel=\"stylesheet\" href=\"/static/css/easymde.min.css\"><script src=\"/static/js/htmx.min.js\"></script><script src=\"/static/js/easymde.min.js\"></script><script src=\"/static/js/json-enc.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -172,7 +172,7 @@ func Layout(title string, slug string) templ.Component {
 		var templ_7745c5c3_Var6 templ.SafeURL
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 320, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 322, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -185,7 +185,7 @@ func Layout(title string, slug string) templ.Component {
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/board"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 321, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 323, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -198,7 +198,7 @@ func Layout(title string, slug string) templ.Component {
 		var templ_7745c5c3_Var8 templ.SafeURL
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/archive"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 322, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 324, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -211,7 +211,7 @@ func Layout(title string, slug string) templ.Component {
 		var templ_7745c5c3_Var9 templ.SafeURL
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/settings"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 323, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 325, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -224,7 +224,7 @@ func Layout(title string, slug string) templ.Component {
 		var templ_7745c5c3_Var10 templ.SafeURL
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 338, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 340, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

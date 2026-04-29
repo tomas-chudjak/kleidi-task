@@ -5,6 +5,7 @@ import "fmt"
 
 templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit) {
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title), project.Slug) {
+		<div data-slug={ project.Slug }></div>
 		<!-- Task toolbar -->
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
@@ -63,15 +64,47 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 						<label class="kvt-field-label">Description</label>
 						<textarea
 							class="kvt-textarea"
-							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
-							hx-target="body"
-							hx-swap="outerHTML"
-							hx-ext="json-enc"
+							id="desc-editor"
 							name="description"
-							hx-trigger="change"
 							rows="6"
 							placeholder="Add a description..."
 						>{ task.Description }</textarea>
+						<script>
+							(function() {
+								var ta = document.getElementById('desc-editor');
+								if (ta && typeof EasyMDE !== 'undefined') {
+									var mde = new EasyMDE({
+										element: ta,
+										spellChecker: false,
+										status: false,
+										placeholder: 'Add a description...',
+										toolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],
+										sideBySideFullscreen: false,
+										minHeight: '150px',
+									});
+									var patchUrl = ta.closest('.kvt-detail-card').querySelector('input[name="title"]')
+										? '/p/' + document.querySelector('[data-slug]').getAttribute('data-slug') + '/tasks/' + window.location.pathname.split('/').pop() + '/field'
+										: '';
+									mde.codemirror.on('blur', function() {
+										if (patchUrl) {
+											fetch(patchUrl, {
+												method: 'PATCH',
+												headers: {'Content-Type': 'application/json'},
+												body: JSON.stringify({description: mde.value()})
+											}).then(function() {
+												var el = document.getElementById('save-indicator');
+												if (el) {
+													el.textContent = 'Saved';
+													el.classList.add('kvt-save-indicator--visible');
+													clearTimeout(el._t);
+													el._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);
+												}
+											});
+										}
+									});
+								}
+							})();
+						</script>
 					</div>
 				</div>
 

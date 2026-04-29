@@ -172,6 +172,85 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
 }
 
+// TaskNewPage renders the detailed task creation page.
+func (h *UIHandler) TaskNewPage(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	catService, _ := h.projectService.CategoryServiceFor(project.Path)
+	var categories []core.Category
+	if catService != nil {
+		categories, _ = catService.List(r.Context())
+	}
+
+	configService, _ := h.projectService.ConfigServiceFor(project.Path)
+	var config core.ProjectConfig
+	if configService != nil {
+		config, _ = configService.Get(r.Context())
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskNewPage(project, categories, config).Render(r.Context(), w)
+}
+
+// CreateDetailedTask handles the detailed task creation form — creates task and redirects to detail.
+func (h *UIHandler) CreateDetailedTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		Type        string `json:"type"`
+		Priority    int64  `json:"priority"`
+		Category    string `json:"category"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	taskType := core.TaskType(input.Type)
+	if input.Type == "" {
+		taskType = core.TypeTask
+	}
+	// Auto-detect type from title prefix
+	detectedType, cleanTitle := core.DetectTypeFromTitle(input.Title, taskType)
+
+	task, err := taskService.Create(r.Context(), core.CreateTaskInput{
+		Title:       cleanTitle,
+		Description: input.Description,
+		Type:        detectedType,
+		Priority:    input.Priority,
+		Category:    input.Category,
+		Source:      core.SourceUI,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Redirect to the new task's detail page
+	w.Header().Set("HX-Redirect", fmt.Sprintf("/p/%s/t/%d", slug, task.ID))
+	w.WriteHeader(http.StatusOK)
+}
+
 // CreateTask handles HTMX task creation — accepts JSON, returns HTML task list.
 func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

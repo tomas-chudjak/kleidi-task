@@ -44,197 +44,197 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Task toolbar --> <div class=\"kvt-toolbar\"><div class=\"kvt-toolbar-left\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-slug=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 templ.SafeURL
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + project.Slug))
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(project.Slug)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 11, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 8, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" onclick=\"if(document.referrer){event.preventDefault();history.back()}\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><!-- Task toolbar --> <div class=\"kvt-toolbar\"><div class=\"kvt-toolbar-left\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 = []any{"kvt-badge kvt-badge-" + string(task.Type)}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
+			var templ_7745c5c3_Var4 templ.SafeURL
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + project.Slug))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 12, Col: 49}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" onclick=\"if(document.referrer){event.preventDefault();history.back()}\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var4).String())
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 1, Col: 0}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			var templ_7745c5c3_Var5 = []any{"kvt-badge kvt-badge-" + string(task.Type)}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(string(task.Type))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var5).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 12, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 1, Col: 0}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span> <span class=\"kvt-toolbar-id\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", task.ID))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(string(task.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 13, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 13, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span class=\"kvt-toolbar-id\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 = []any{"kvt-badge kvt-badge-" + string(task.Status)}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", task.ID))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 14, Col: 62}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var8).String())
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 1, Col: 0}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			var templ_7745c5c3_Var9 = []any{"kvt-badge kvt-badge-" + string(task.Status)}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(string(task.Status))
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var9).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 14, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 1, Col: 0}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span></div><div class=\"kvt-toolbar-right\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(string(task.Status))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 15, Col: 86}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></div><div class=\"kvt-toolbar-right\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if task.Status != core.StatusDone {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"kvt-toolbar-btn kvt-toolbar-btn--success\" hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<button class=\"kvt-toolbar-btn kvt-toolbar-btn--success\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/complete", project.Slug, task.ID))
+				var templ_7745c5c3_Var12 string
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/complete", project.Slug, task.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 20, Col: 77}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-push-url=\"false\"><i class=\"icon icon-check-circle\"></i> Done</button> ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			if task.Status == core.StatusDone {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a href=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var12 templ.SafeURL
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/archive", project.Slug, task.ID)))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 30, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 21, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"kvt-toolbar-btn\" onclick=\"return confirm('Archive this task?')\"><i class=\"icon icon-archive\"></i> Archive</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-push-url=\"false\"><i class=\"icon icon-check-circle\"></i> Done</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"kvt-task-layout\"><!-- Main content (left) --><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\">Title</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if task.Status == core.StatusDone {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var13 templ.SafeURL
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/archive", project.Slug, task.ID)))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 31, Col: 88}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"kvt-toolbar-btn\" onclick=\"return confirm('Archive this task?')\"><i class=\"icon icon-archive\"></i> Archive</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 53, Col: 25}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"kvt-task-layout\"><!-- Main content (left) --><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\">Title</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
-			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 54, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 54, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"title\" hx-trigger=\"change\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Description</label> <textarea class=\"kvt-textarea\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 66, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 55, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"description\" hx-trigger=\"change\" rows=\"6\" placeholder=\"Add a description...\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"title\" hx-trigger=\"change\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Description</label> <textarea class=\"kvt-textarea\" id=\"desc-editor\" name=\"description\" rows=\"6\" placeholder=\"Add a description...\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(task.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 74, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 71, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</textarea></div></div><!-- Git Activity --><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-git-commit-horizontal\"></i> Git Activity</h4>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</textarea><script>\n\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\tvar ta = document.getElementById('desc-editor');\n\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\tplaceholder: 'Add a description...',\n\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\tminHeight: '150px',\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\tvar patchUrl = ta.closest('.kvt-detail-card').querySelector('input[name=\"title\"]')\n\t\t\t\t\t\t\t\t\t\t? '/p/' + document.querySelector('[data-slug]').getAttribute('data-slug') + '/tasks/' + window.location.pathname.split('/').pop() + '/field'\n\t\t\t\t\t\t\t\t\t\t: '';\n\t\t\t\t\t\t\t\t\tmde.codemirror.on('blur', function() {\n\t\t\t\t\t\t\t\t\t\tif (patchUrl) {\n\t\t\t\t\t\t\t\t\t\t\tfetch(patchUrl, {\n\t\t\t\t\t\t\t\t\t\t\t\tmethod: 'PATCH',\n\t\t\t\t\t\t\t\t\t\t\t\theaders: {'Content-Type': 'application/json'},\n\t\t\t\t\t\t\t\t\t\t\t\tbody: JSON.stringify({description: mde.value()})\n\t\t\t\t\t\t\t\t\t\t\t}).then(function() {\n\t\t\t\t\t\t\t\t\t\t\t\tvar el = document.getElementById('save-indicator');\n\t\t\t\t\t\t\t\t\t\t\t\tif (el) {\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.textContent = 'Saved';\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.classList.add('kvt-save-indicator--visible');\n\t\t\t\t\t\t\t\t\t\t\t\t\tclearTimeout(el._t);\n\t\t\t\t\t\t\t\t\t\t\t\t\tel._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);\n\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t</script></div></div><!-- Git Activity --><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-git-commit-horizontal\"></i> Git Activity</h4>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -246,7 +246,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", task.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 82, Col: 126}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 115, Col: 126}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -269,7 +269,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(c.ShortHash)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 87, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 120, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -282,7 +282,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(c.Message)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 88, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 121, Col: 49}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -295,7 +295,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(c.Author)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 89, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 122, Col: 49}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -308,7 +308,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(c.Date.Format("Jan 2 15:04"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 89, Col: 85}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 122, Col: 85}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -331,7 +331,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 106, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 139, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -374,7 +374,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 125, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 158, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -427,7 +427,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", task.Priority))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 145, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 178, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -440,7 +440,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 146, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 179, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -453,7 +453,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 161, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 194, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -471,7 +471,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 170, Col: 32}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 203, Col: 32}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -494,7 +494,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 170, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 203, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
@@ -512,7 +512,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(string(task.Source))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 183, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 216, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -525,7 +525,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(task.CreatedAt.Format("2006-01-02 15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 187, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 220, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -538,7 +538,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(task.UpdatedAt.Format("2006-01-02 15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 191, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 224, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -556,7 +556,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(task.CompletedAt.Format("2006-01-02 15:04"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 196, Col: 104}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task.templ`, Line: 229, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {

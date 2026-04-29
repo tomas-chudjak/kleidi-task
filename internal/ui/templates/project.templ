@@ -250,6 +250,9 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 						</details>
 						<button type="submit" class="kvt-add-btn">Add task</button>
 					</form>
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/t/new") } class="kvt-add-btn kvt-add-btn--outline">
+						<i class="icon icon-file-plus"></i> Detailed task
+					</a>
 				</div>
 
 			</aside>
