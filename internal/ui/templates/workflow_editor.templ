@@ -1,0 +1,146 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef) {
+	@Layout("Workflow: "+wf.TaskType+" — "+project.Name, project.Slug) {
+		<div data-slug={ project.Slug }></div>
+		<div class="kvt-toolbar">
+			<div class="kvt-toolbar-left">
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#workflows") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+				<span class={ "kvt-badge kvt-badge-" + wf.TaskType }>{ wf.TaskType }</span>
+				<span class="kvt-toolbar-id">Workflow Editor</span>
+			</div>
+		</div>
+
+		<div id="save-indicator" class="kvt-save-indicator"></div>
+
+		<form
+			id="wf-form"
+			hx-patch={ fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType) }
+			hx-ext="json-enc"
+			hx-swap="none"
+		>
+		<div class="kvt-task-layout">
+			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
+				<div class="kvt-detail-card">
+					<h4 class="kvt-detail-card-title"><i class="icon icon-git-branch"></i> Phases</h4>
+					<p class="kvt-settings-desc">Define the workflow phases and AI prompts for each step.</p>
+
+					<div class="kvt-wf-phases" id="wf-phases">
+						for i, phase := range wf.Phases {
+							<div class="kvt-wf-phase-card">
+								<div class="kvt-wf-phase-header">
+									<span class="kvt-wf-phase-num">{ fmt.Sprintf("%d", i+1) }</span>
+									<input
+										type="text"
+										class="kvt-input kvt-wf-phase-name"
+										name={ fmt.Sprintf("phase_%d_name", i) }
+										value={ phase }
+										placeholder="Phase name"
+										autocomplete="off"
+										data-1p-ignore
+										data-lpignore="true"
+										data-form-type="other"
+									/>
+									if i > 0 && i < len(wf.Phases)-1 {
+										<button type="button" class="kvt-cat-del-btn" onclick="this.closest('.kvt-wf-phase-card').remove();renumberWfPhases()" title="Remove phase">
+											<i class="icon icon-x"></i>
+										</button>
+									}
+								</div>
+								if phase != wf.Phases[0] && phase != wf.Phases[len(wf.Phases)-1] {
+									<textarea
+										class="kvt-textarea"
+										name={ fmt.Sprintf("phase_%d_prompt", i) }
+										rows="3"
+										placeholder="AI prompt for this phase..."
+										style="margin-top:8px;min-height:60px;"
+									>{ wf.PhasePrompts[phase] }</textarea>
+								}
+							</div>
+						}
+					</div>
+					<button type="button" class="kvt-add-btn kvt-add-btn--outline" style="margin-top:12px;max-width:200px;" onclick="addWfPhase()">
+						<i class="icon icon-plus"></i> Add phase
+					</button>
+					<script>
+						function addWfPhase() {
+							var container = document.getElementById('wf-phases');
+							var cards = container.querySelectorAll('.kvt-wf-phase-card');
+							var lastCard = cards[cards.length - 1];
+							var idx = cards.length;
+							// Build DOM elements safely without innerHTML
+							var div = document.createElement('div');
+							div.className = 'kvt-wf-phase-card';
+							var header = document.createElement('div');
+							header.className = 'kvt-wf-phase-header';
+							var num = document.createElement('span');
+							num.className = 'kvt-wf-phase-num';
+							num.textContent = String(idx);
+							var input = document.createElement('input');
+							input.type = 'text';
+							input.className = 'kvt-input kvt-wf-phase-name';
+							input.name = 'phase_' + (idx - 1) + '_name';
+							input.placeholder = 'New phase name';
+							input.autocomplete = 'off';
+							var delBtn = document.createElement('button');
+							delBtn.type = 'button';
+							delBtn.className = 'kvt-cat-del-btn';
+							delBtn.title = 'Remove phase';
+							delBtn.onclick = function() { div.remove(); renumberWfPhases(); };
+							var delIcon = document.createElement('i');
+							delIcon.className = 'icon icon-x';
+							delBtn.appendChild(delIcon);
+							header.appendChild(num);
+							header.appendChild(input);
+							header.appendChild(delBtn);
+							var ta = document.createElement('textarea');
+							ta.className = 'kvt-textarea';
+							ta.name = 'phase_' + (idx - 1) + '_prompt';
+							ta.rows = 3;
+							ta.placeholder = 'AI prompt for this phase...';
+							ta.style.marginTop = '8px';
+							ta.style.minHeight = '60px';
+							div.appendChild(header);
+							div.appendChild(ta);
+							container.insertBefore(div, lastCard);
+							renumberWfPhases();
+						}
+						function renumberWfPhases() {
+							var cards = document.querySelectorAll('#wf-phases .kvt-wf-phase-card');
+							cards.forEach(function(card, i) {
+								var num = card.querySelector('.kvt-wf-phase-num');
+								if (num) num.textContent = String(i + 1);
+								var nameInput = card.querySelector('.kvt-wf-phase-name');
+								if (nameInput) nameInput.name = 'phase_' + i + '_name';
+								var promptInput = card.querySelector('textarea');
+								if (promptInput) promptInput.name = 'phase_' + i + '_prompt';
+							});
+						}
+					</script>
+				</div>
+			</div>
+
+			<div class="kvt-task-sidebar">
+				<button type="submit" class="kvt-add-btn" style="width:100%;">
+					<i class="icon icon-check"></i> Save workflow
+				</button>
+				<div class="kvt-detail-card">
+					<div class="kvt-detail-fields">
+						<div class="kvt-field">
+							<label class="kvt-field-label">Task type</label>
+							<div class="kvt-field-value">{ wf.TaskType }</div>
+						</div>
+						<div class="kvt-field">
+							<label class="kvt-field-label">Phases</label>
+							<div class="kvt-field-value kvt-field-value--mono">{ fmt.Sprintf("%d", len(wf.Phases)) }</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	}
+}

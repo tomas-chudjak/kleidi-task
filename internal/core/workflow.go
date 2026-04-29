@@ -34,9 +34,10 @@ type HistoryEntry struct {
 
 // WorkflowDef defines the phases and triggers for a task type.
 type WorkflowDef struct {
-	TaskType string              `json:"task_type"`
-	Phases   []string            `json:"phases"`
-	Triggers map[string]Triggers `json:"triggers"`
+	TaskType     string              `json:"task_type"`
+	Phases       []string            `json:"phases"`
+	Triggers     map[string]Triggers `json:"triggers"`
+	PhasePrompts map[string]string   `json:"phase_prompts"`
 }
 
 // Triggers defines before/after skill triggers for a workflow phase.
@@ -59,6 +60,7 @@ type AdvanceResult struct {
 // WorkflowContext provides workflow info for a task.
 type WorkflowContext struct {
 	CurrentPhase    string   `json:"current_phase"`
+	CurrentPrompt   string   `json:"current_prompt,omitempty"`
 	NextPhase       string   `json:"next_phase,omitempty"`
 	Phases          []string `json:"phases"`
 	PhaseIndex      int      `json:"phase_index"`
@@ -104,9 +106,10 @@ func (s *WorkflowService) GetContext(ctx context.Context, task Task) (WorkflowCo
 	idx := phaseIndex(wf.Phases, phase)
 
 	wc := WorkflowContext{
-		CurrentPhase: phase,
-		Phases:       wf.Phases,
-		PhaseIndex:   idx,
+		CurrentPhase:  phase,
+		CurrentPrompt: wf.PhasePrompts[phase],
+		Phases:        wf.Phases,
+		PhaseIndex:    idx,
 	}
 
 	if idx < len(wf.Phases)-1 {
@@ -338,12 +341,27 @@ func statusFromPhase(phases []string, phase string) TaskStatus {
 	return StatusDoing
 }
 
+// UpdateWorkflow updates a workflow definition.
+func (s *WorkflowService) UpdateWorkflow(ctx context.Context, wf WorkflowDef) error {
+	phasesJSON, _ := json.Marshal(wf.Phases)
+	triggersJSON, _ := json.Marshal(wf.Triggers)
+	promptsJSON, _ := json.Marshal(wf.PhasePrompts)
+	return s.queries.UpdateWorkflow(ctx, generated.UpdateWorkflowParams{
+		Phases:       string(phasesJSON),
+		Triggers:     string(triggersJSON),
+		PhasePrompts: string(promptsJSON),
+		TaskType:     wf.TaskType,
+	})
+}
+
 func workflowFromRow(row generated.Workflow) WorkflowDef {
 	wf := WorkflowDef{
-		TaskType: row.TaskType,
-		Triggers: map[string]Triggers{},
+		TaskType:     row.TaskType,
+		Triggers:     map[string]Triggers{},
+		PhasePrompts: map[string]string{},
 	}
 	json.Unmarshal([]byte(row.Phases), &wf.Phases)
 	json.Unmarshal([]byte(row.Triggers), &wf.Triggers)
+	json.Unmarshal([]byte(row.PhasePrompts), &wf.PhasePrompts)
 	return wf
 }

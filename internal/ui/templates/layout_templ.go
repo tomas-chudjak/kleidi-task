@@ -209,28 +209,41 @@ func Layout(title string, slug string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 templ.SafeURL
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/settings"))
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/settings#workflows"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 335, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 335, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"kvt-sidebar-link\" title=\"Settings\"><i class=\"icon icon-settings\"></i></a></nav><div class=\"kvt-sidebar-bottom\"><button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"var o=document.getElementById('kbd-help');if(o)o.classList.toggle('kvt-kbd-help--visible')\" title=\"Keyboard shortcuts (?)\"><i class=\"icon icon-help-circle\"></i></button> <button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"toggleTheme()\" title=\"Toggle theme\"><i class=\"icon icon-sun\" id=\"theme-icon-light\" style=\"display:none;\"></i> <i class=\"icon icon-moon\" id=\"theme-icon-dark\" style=\"display:none;\"></i></button></div></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"kvt-sidebar-link\" title=\"Workflows\"><i class=\"icon icon-git-branch\"></i></a> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 templ.SafeURL
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug + "/settings"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 350, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 336, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">Dashboard</a> <span class=\"kvt-topbar-sep\">·</span> <a href=\"/\" class=\"kvt-topbar-link--secondary\">All projects</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"kvt-sidebar-link\" title=\"Settings\"><i class=\"icon icon-settings\"></i></a></nav><div class=\"kvt-sidebar-bottom\"><button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"var o=document.getElementById('kbd-help');if(o)o.classList.toggle('kvt-kbd-help--visible')\" title=\"Keyboard shortcuts (?)\"><i class=\"icon icon-help-circle\"></i></button> <button class=\"kvt-sidebar-link kvt-theme-toggle\" onclick=\"toggleTheme()\" title=\"Toggle theme\"><i class=\"icon icon-sun\" id=\"theme-icon-light\" style=\"display:none;\"></i> <i class=\"icon icon-moon\" id=\"theme-icon-dark\" style=\"display:none;\"></i></button></div></aside><div class=\"kvt-main\"><header class=\"kvt-topbar\"><div class=\"kvt-topbar-actions\"><a href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var11 templ.SafeURL
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/p/" + slug))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/layout.templ`, Line: 351, Col: 43}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">Dashboard</a> <span class=\"kvt-topbar-sep\">·</span> <a href=\"/\" class=\"kvt-topbar-link--secondary\">All projects</a></div><div class=\"kvt-topbar-title\">kvik-tasks</div></header><main class=\"kvt-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -238,7 +251,7 @@ func Layout(title string, slug string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</main></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</main></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -250,7 +263,7 @@ func Layout(title string, slug string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

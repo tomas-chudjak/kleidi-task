@@ -11,7 +11,7 @@ import (
 )
 
 const getWorkflow = `-- name: GetWorkflow :one
-SELECT id, task_type, phases, triggers FROM workflows WHERE task_type = ?
+SELECT id, task_type, phases, triggers, phase_prompts FROM workflows WHERE task_type = ?
 `
 
 func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, error) {
@@ -22,6 +22,7 @@ func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, e
 		&i.TaskType,
 		&i.Phases,
 		&i.Triggers,
+		&i.PhasePrompts,
 	)
 	return i, err
 }
@@ -105,7 +106,7 @@ func (q *Queries) ListWorkflowHistory(ctx context.Context, taskID int64) ([]Work
 }
 
 const listWorkflows = `-- name: ListWorkflows :many
-SELECT id, task_type, phases, triggers FROM workflows ORDER BY task_type
+SELECT id, task_type, phases, triggers, phase_prompts FROM workflows ORDER BY task_type
 `
 
 func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
@@ -122,6 +123,7 @@ func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 			&i.TaskType,
 			&i.Phases,
 			&i.Triggers,
+			&i.PhasePrompts,
 		); err != nil {
 			return nil, err
 		}
@@ -148,5 +150,26 @@ type SetTaskPhaseParams struct {
 
 func (q *Queries) SetTaskPhase(ctx context.Context, arg SetTaskPhaseParams) error {
 	_, err := q.db.ExecContext(ctx, setTaskPhase, arg.Phase, arg.Status, arg.ID)
+	return err
+}
+
+const updateWorkflow = `-- name: UpdateWorkflow :exec
+UPDATE workflows SET phases = ?, triggers = ?, phase_prompts = ? WHERE task_type = ?
+`
+
+type UpdateWorkflowParams struct {
+	Phases       string `json:"phases"`
+	Triggers     string `json:"triggers"`
+	PhasePrompts string `json:"phase_prompts"`
+	TaskType     string `json:"task_type"`
+}
+
+func (q *Queries) UpdateWorkflow(ctx context.Context, arg UpdateWorkflowParams) error {
+	_, err := q.db.ExecContext(ctx, updateWorkflow,
+		arg.Phases,
+		arg.Triggers,
+		arg.PhasePrompts,
+		arg.TaskType,
+	)
 	return err
 }

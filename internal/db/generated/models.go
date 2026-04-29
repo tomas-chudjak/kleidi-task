@@ -59,10 +59,11 @@ type TasksFt struct {
 }
 
 type Workflow struct {
-	ID       int64  `json:"id"`
-	TaskType string `json:"task_type"`
-	Phases   string `json:"phases"`
-	Triggers string `json:"triggers"`
+	ID           int64  `json:"id"`
+	TaskType     string `json:"task_type"`
+	Phases       string `json:"phases"`
+	Triggers     string `json:"triggers"`
+	PhasePrompts string `json:"phase_prompts"`
 }
 
 type WorkflowHistory struct {

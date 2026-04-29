@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate) {
+templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate, workflows []core.WorkflowDef) {
 	@Layout(project.Name+" — Settings", project.Slug) {
 		<div class="kvt-board-header">
 			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
@@ -16,6 +16,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 				<a href="#project-info" class="kvt-settings-nav-link"><i class="icon icon-folder"></i> Project</a>
 				<a href="#categories" class="kvt-settings-nav-link"><i class="icon icon-tag"></i> Categories</a>
 				<a href="#configuration" class="kvt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
+					<a href="#workflows" class="kvt-settings-nav-link"><i class="icon icon-git-branch"></i> Workflows</a>
 					<a href="#templates" class="kvt-settings-nav-link"><i class="icon icon-file-text"></i> Templates</a>
 					<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
 			</nav>
@@ -122,6 +123,24 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 							<button type="submit" class="kvt-add-btn" style="max-width:200px;">Save configuration</button>
 							<span id="config-saved"></span>
 						</form>
+					</section>
+
+					<!-- Workflows -->
+					<section class="kvt-settings-section" id="workflows">
+						<h3 class="kvt-settings-heading"><i class="icon icon-git-branch"></i> Workflows</h3>
+						<p class="kvt-settings-desc">Phase-based workflows for each task type. Click to edit phases and AI prompts.</p>
+						<div class="kvt-cat-list">
+							for _, wf := range workflows {
+								<div class="kvt-cat-row">
+									<div class="kvt-cat-display">
+										<span class={ "kvt-badge kvt-badge-" + wf.TaskType } style="font-size:0.6rem;">{ wf.TaskType }</span>
+										<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">
+											{ fmt.Sprintf("%d phases", len(wf.Phases)) }
+										</a>
+									</div>
+								</div>
+							}
+						</div>
 					</section>
 
 					<!-- Templates -->

@@ -764,7 +764,13 @@ func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
 		taskTemplates, _ = tplService.List(r.Context())
 	}
 
-	templates.SettingsPage(project, categories, stats, config, taskTemplates).Render(r.Context(), w)
+	wfService, _ := h.projectService.WorkflowServiceFor(project.Path)
+	var workflows []core.WorkflowDef
+	if wfService != nil {
+		workflows, _ = wfService.ListWorkflows(r.Context())
+	}
+
+	templates.SettingsPage(project, categories, stats, config, taskTemplates, workflows).Render(r.Context(), w)
 }
 
 // SaveConfig handles HTMX config save from settings page.
@@ -1245,6 +1251,96 @@ func (h *UIHandler) DeleteTemplateRedirect(w http.ResponseWriter, r *http.Reques
 
 	tplService.Delete(r.Context(), id)
 	http.Redirect(w, r, "/p/"+slug+"/settings#templates", http.StatusSeeOther)
+}
+
+// WorkflowEditor renders the workflow editor page for a task type.
+func (h *UIHandler) WorkflowEditor(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	taskType := chi.URLParam(r, "taskType")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	wf, err := wfService.GetWorkflow(r.Context(), taskType)
+	if err != nil {
+		http.Error(w, "Workflow not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.WorkflowEditorPage(project, wf).Render(r.Context(), w)
+}
+
+// UpdateWorkflow handles saving workflow changes.
+func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	taskType := chi.URLParam(r, "taskType")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input map[string]any
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Parse phases and prompts from numbered fields
+	var phases []string
+	prompts := map[string]string{}
+	for i := 0; ; i++ {
+		nameKey := fmt.Sprintf("phase_%d_name", i)
+		name, ok := input[nameKey].(string)
+		if !ok || name == "" {
+			break
+		}
+		phases = append(phases, name)
+		promptKey := fmt.Sprintf("phase_%d_prompt", i)
+		if prompt, ok := input[promptKey].(string); ok && prompt != "" {
+			prompts[name] = prompt
+		}
+	}
+
+	if len(phases) < 2 {
+		http.Error(w, "Workflow must have at least 2 phases", http.StatusBadRequest)
+		return
+	}
+
+	// Get existing workflow to preserve triggers
+	existing, _ := wfService.GetWorkflow(r.Context(), taskType)
+
+	wf := core.WorkflowDef{
+		TaskType:     taskType,
+		Phases:       phases,
+		Triggers:     existing.Triggers,
+		PhasePrompts: prompts,
+	}
+
+	if err := wfService.UpdateWorkflow(r.Context(), wf); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Trigger", "showSaved")
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *UIHandler) renderTemplateList(w http.ResponseWriter, r *http.Request, tplService *core.TemplateService, slug string) {
