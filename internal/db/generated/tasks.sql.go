@@ -21,7 +21,7 @@ func (q *Queries) ArchiveCompletedBefore(ctx context.Context, completedAt sql.Nu
 }
 
 const archiveTask = `-- name: ArchiveTask :one
-UPDATE tasks SET is_archived = 1 WHERE id = ? AND status = 'done' RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
+UPDATE tasks SET is_archived = 1 WHERE id = ? AND status = 'done' RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase
 `
 
 func (q *Queries) ArchiveTask(ctx context.Context, id int64) (Task, error) {
@@ -43,6 +43,7 @@ func (q *Queries) ArchiveTask(ctx context.Context, id int64) (Task, error) {
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }
@@ -51,7 +52,7 @@ const completeTask = `-- name: CompleteTask :one
 UPDATE tasks
 SET status = 'done'
 WHERE id = ?
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase
 `
 
 func (q *Queries) CompleteTask(ctx context.Context, id int64) (Task, error) {
@@ -73,6 +74,7 @@ func (q *Queries) CompleteTask(ctx context.Context, id int64) (Task, error) {
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }
@@ -239,7 +241,7 @@ func (q *Queries) CountTasksFiltered(ctx context.Context, arg CountTasksFiltered
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (type, title, description, status, priority, source, created_by, category, metadata)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase
 `
 
 type CreateTaskParams struct {
@@ -283,6 +285,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }
@@ -297,7 +300,7 @@ func (q *Queries) DeleteTask(ctx context.Context, id int64) error {
 }
 
 const getTask = `-- name: GetTask :one
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived FROM tasks WHERE id = ?
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase FROM tasks WHERE id = ?
 `
 
 func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
@@ -319,12 +322,13 @@ func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }
 
 const listArchivedFiltered = `-- name: ListArchivedFiltered :many
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived FROM tasks
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase FROM tasks
 WHERE is_archived = 1
   AND (?1 IS NULL OR instr(',' || ?1 || ',', ',' || type || ',') > 0)
   AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || category || ',') > 0)
@@ -375,6 +379,7 @@ func (q *Queries) ListArchivedFiltered(ctx context.Context, arg ListArchivedFilt
 			&i.Metadata,
 			&i.Category,
 			&i.IsArchived,
+			&i.Phase,
 		); err != nil {
 			return nil, err
 		}
@@ -390,7 +395,7 @@ func (q *Queries) ListArchivedFiltered(ctx context.Context, arg ListArchivedFilt
 }
 
 const listTasksFiltered = `-- name: ListTasksFiltered :many
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived FROM tasks
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase FROM tasks
 WHERE is_archived = 0
   AND (?1 IS NULL OR instr(',' || ?1 || ',', ',' || status || ',') > 0)
   AND (?2 IS NULL OR instr(',' || ?2 || ',', ',' || type || ',') > 0)
@@ -447,6 +452,7 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 			&i.Metadata,
 			&i.Category,
 			&i.IsArchived,
+			&i.Phase,
 		); err != nil {
 			return nil, err
 		}
@@ -462,7 +468,7 @@ func (q *Queries) ListTasksFiltered(ctx context.Context, arg ListTasksFilteredPa
 }
 
 const recentCompleted = `-- name: RecentCompleted :many
-SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived FROM tasks WHERE is_archived = 0 AND status = 'done' ORDER BY completed_at DESC LIMIT ?
+SELECT id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase FROM tasks WHERE is_archived = 0 AND status = 'done' ORDER BY completed_at DESC LIMIT ?
 `
 
 func (q *Queries) RecentCompleted(ctx context.Context, limit int64) ([]Task, error) {
@@ -490,6 +496,7 @@ func (q *Queries) RecentCompleted(ctx context.Context, limit int64) ([]Task, err
 			&i.Metadata,
 			&i.Category,
 			&i.IsArchived,
+			&i.Phase,
 		); err != nil {
 			return nil, err
 		}
@@ -505,7 +512,7 @@ func (q *Queries) RecentCompleted(ctx context.Context, limit int64) ([]Task, err
 }
 
 const unarchiveTask = `-- name: UnarchiveTask :one
-UPDATE tasks SET is_archived = 0 WHERE id = ? AND is_archived = 1 RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
+UPDATE tasks SET is_archived = 0 WHERE id = ? AND is_archived = 1 RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase
 `
 
 func (q *Queries) UnarchiveTask(ctx context.Context, id int64) (Task, error) {
@@ -527,6 +534,7 @@ func (q *Queries) UnarchiveTask(ctx context.Context, id int64) (Task, error) {
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }
@@ -535,7 +543,7 @@ const updateTask = `-- name: UpdateTask :one
 UPDATE tasks
 SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?, metadata = ?
 WHERE id = ?
-RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
+RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived, phase
 `
 
 type UpdateTaskParams struct {
@@ -577,6 +585,7 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 		&i.Metadata,
 		&i.Category,
 		&i.IsArchived,
+		&i.Phase,
 	)
 	return i, err
 }

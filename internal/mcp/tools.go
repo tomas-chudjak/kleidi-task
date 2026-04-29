@@ -155,6 +155,15 @@ type ProjectCurrentOutput struct {
 	Path    string        `json:"path,omitempty"`
 }
 
+type TaskAdvanceInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID to advance to next phase"`
+}
+
+type TaskAdvanceOutput struct {
+	Result core.AdvanceResult `json:"result"`
+}
+
 type TaskSuggestInput struct {
 	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 }
@@ -256,6 +265,11 @@ func (s *Server) registerTools() {
 		Name:        "project_stats",
 		Description: "Get task statistics for a project (todo/doing/done counts, open bugs)",
 	}, s.projectStats)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_advance",
+		Description: "Advance a task to the next workflow phase. Returns suggested skills to execute for the new phase.",
+	}, s.taskAdvance)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_suggest",
@@ -858,4 +872,34 @@ func (s *Server) taskSuggest(ctx context.Context, req *mcp.CallToolRequest, inpu
 		New:         newCount,
 		Duplicates:  dupCount,
 	}, nil
+}
+
+func (s *Server) taskAdvance(ctx context.Context, req *mcp.CallToolRequest, input TaskAdvanceInput) (*mcp.CallToolResult, TaskAdvanceOutput, error) {
+	projectPath, err := s.resolveProjectPath(input.Project)
+	if err != nil {
+		return nil, TaskAdvanceOutput{}, err
+	}
+
+	wfService, err := s.projectService.WorkflowServiceFor(projectPath)
+	if err != nil {
+		return nil, TaskAdvanceOutput{}, err
+	}
+
+	result, err := wfService.Advance(ctx, input.ID)
+	if err != nil {
+		return nil, TaskAdvanceOutput{}, err
+	}
+
+	text := fmt.Sprintf("Task #%d advanced: %s → %s", input.ID, result.PreviousPhase, result.CurrentPhase)
+	if result.IsComplete {
+		text += " (completed)"
+	}
+	if len(result.SuggestedSkills) > 0 {
+		text += fmt.Sprintf("\n\nSuggested skills for phase %q:\n", result.CurrentPhase)
+		for _, sk := range result.SuggestedSkills {
+			text += fmt.Sprintf("  - %s\n", sk)
+		}
+	}
+
+	return textResult(text), TaskAdvanceOutput{Result: result}, nil
 }

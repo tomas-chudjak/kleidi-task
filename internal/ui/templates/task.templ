@@ -3,7 +3,24 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit) {
+func workflowPhaseClass(phase, current string, idx, currentIdx int) string {
+	if phase == current {
+		return " kvt-workflow-phase--active"
+	}
+	if idx < currentIdx {
+		return " kvt-workflow-phase--done"
+	}
+	return ""
+}
+
+func workflowConnectorClass(idx, currentIdx int) string {
+	if idx <= currentIdx {
+		return " kvt-workflow-connector--done"
+	}
+	return ""
+}
+
+templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit, workflow core.WorkflowContext) {
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title), project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Task toolbar -->
@@ -44,6 +61,30 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 				</a>
 			</div>
 		</div>
+
+		<!-- Workflow progress bar -->
+		if len(workflow.Phases) > 1 {
+			<div class="kvt-workflow-bar">
+				for i, phase := range workflow.Phases {
+					if i > 0 {
+						<span class={ "kvt-workflow-connector" + workflowConnectorClass(i, workflow.PhaseIndex) }></span>
+					}
+					<span class={ "kvt-workflow-phase" + workflowPhaseClass(phase, workflow.CurrentPhase, i, workflow.PhaseIndex) }>
+						{ phase }
+					</span>
+				}
+				if workflow.NextPhase != "" {
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/advance", project.Slug, task.ID)) }
+						class="kvt-workflow-advance"
+						onclick="return confirm('Advance to next phase?')"
+						title={ "Advance to: " + workflow.NextPhase }
+					>
+						<i class="icon icon-chevron-right"></i> Advance
+					</a>
+				}
+			</div>
+		}
 
 		<!-- Save indicator -->
 		<div id="save-indicator" class="kvt-save-indicator"></div>

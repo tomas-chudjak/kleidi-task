@@ -452,6 +452,9 @@ func taskFromRow(row generated.Task) Task {
 	if row.AssignedTo.Valid {
 		t.AssignedTo = &row.AssignedTo.Int64
 	}
+	if row.Phase.Valid {
+		t.Phase = row.Phase.String
+	}
 	if row.Metadata.Valid {
 		var meta TaskMetadata
 		if json.Unmarshal([]byte(row.Metadata.String), &meta) == nil {

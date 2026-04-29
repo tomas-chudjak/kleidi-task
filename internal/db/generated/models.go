@@ -41,6 +41,7 @@ type Task struct {
 	Metadata    sql.NullString `json:"metadata"`
 	Category    sql.NullString `json:"category"`
 	IsArchived  int64          `json:"is_archived"`
+	Phase       sql.NullString `json:"phase"`
 }
 
 type TaskTemplate struct {
@@ -55,4 +56,11 @@ type TaskTemplate struct {
 type TasksFt struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+}
+
+type Workflow struct {
+	ID       int64  `json:"id"`
+	TaskType string `json:"task_type"`
+	Phases   string `json:"phases"`
+	Triggers string `json:"triggers"`
 }

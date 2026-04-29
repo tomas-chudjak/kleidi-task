@@ -1511,6 +1511,66 @@ input, select, textarea {
   .kvt-pagination { flex-wrap: wrap; }
 }
 
+/* ── Workflow progress bar ── */
+.kvt-workflow-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 20px;
+  background: var(--kvt-card-bg);
+  border-radius: var(--kvt-card-radius);
+  box-shadow: var(--kvt-card-shadow);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.kvt-workflow-phase {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: var(--kvt-fg-muted);
+  background: var(--kvt-bg);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.kvt-workflow-phase--active {
+  background: var(--kvt-accent);
+  color: var(--kvt-accent-fg);
+  font-weight: 600;
+}
+.kvt-workflow-phase--done {
+  background: var(--kvt-success);
+  color: #fff;
+}
+.kvt-workflow-connector {
+  width: 20px;
+  height: 2px;
+  background: var(--kvt-border);
+  flex-shrink: 0;
+}
+.kvt-workflow-connector--done {
+  background: var(--kvt-success);
+}
+.kvt-workflow-advance {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border: 1px solid var(--kvt-accent);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--kvt-accent);
+  background: var(--kvt-card-bg);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.kvt-workflow-advance:hover {
+  background: var(--kvt-accent-light);
+}
+
 /* ── EasyMDE overrides ── */
 .editor-toolbar button i,
 .editor-toolbar button {

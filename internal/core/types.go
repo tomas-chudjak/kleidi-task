@@ -49,6 +49,7 @@ type Task struct {
 	Status      TaskStatus `json:"status"`
 	Priority    int64      `json:"priority"`
 	Category    string     `json:"category,omitempty"`
+	Phase       string        `json:"phase,omitempty"`
 	IsArchived  bool          `json:"is_archived"`
 	Metadata    *TaskMetadata `json:"metadata,omitempty"`
 	Source      Source        `json:"source"`

@@ -168,8 +168,14 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 	gitService := &core.GitService{}
 	commits, _ := gitService.CommitsForTask(r.Context(), project.Path, id)
 
+	wfService, _ := h.projectService.WorkflowServiceFor(project.Path)
+	var workflow core.WorkflowContext
+	if wfService != nil {
+		workflow, _ = wfService.GetContext(r.Context(), task)
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits, workflow).Render(r.Context(), w)
 }
 
 // TaskNewPage renders the detailed task creation page.
@@ -439,8 +445,40 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	gitService := &core.GitService{}
 	commits, _ := gitService.CommitsForTask(r.Context(), project.Path, id)
 
+	wfService, _ := h.projectService.WorkflowServiceFor(project.Path)
+	var workflow core.WorkflowContext
+	if wfService != nil {
+		workflow, _ = wfService.GetContext(r.Context(), task)
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits, workflow).Render(r.Context(), w)
+}
+
+// AdvanceTask advances a task to the next workflow phase and redirects back to detail.
+func (h *UIHandler) AdvanceTask(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	wfService.Advance(r.Context(), id)
+	http.Redirect(w, r, fmt.Sprintf("/p/%s/t/%d", slug, id), http.StatusSeeOther)
 }
 
 // BulkAction handles bulk operations on multiple tasks.

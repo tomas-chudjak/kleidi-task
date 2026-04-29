@@ -40,6 +40,7 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Delete("/p/{slug}/tasks/{id}", h.DeleteTask)
 	r.Patch("/p/{slug}/tasks/{id}/field", h.UpdateTaskField)
 	r.Get("/p/{slug}/tasks/{id}/delete", h.DeleteTaskRedirect)
+	r.Get("/p/{slug}/tasks/{id}/advance", h.AdvanceTask)
 	r.Get("/p/{slug}/tasks/{id}/archive", h.ArchiveTaskRedirect)
 	r.Get("/p/{slug}/tasks/{id}/unarchive", h.UnarchiveTaskRedirect)
 
