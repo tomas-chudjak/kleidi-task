@@ -1,0 +1,32 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+import "strings"
+
+templ WorkflowsPage(project core.Project, workflows []core.WorkflowDef) {
+	@Layout("Workflows — "+project.Name, project.Slug) {
+		<div class="kvt-board-header">
+			<h2 class="kvt-title"><i class="icon icon-git-branch"></i> Workflows</h2>
+		</div>
+
+		<div class="k-grid k-grid--12 kvt-project-grid">
+			<div class="k-col-span-9 kvt-project-main">
+				<div class="kvt-task-list">
+					for _, wf := range workflows {
+						<div class="kvt-task-row" style="grid-template-columns: 5.5rem 1fr 8rem 4.5rem;">
+							<span class={ "kvt-badge kvt-badge-" + wf.TaskType }>{ wf.TaskType }</span>
+							<span class="kvt-task-title" style="cursor:default;">{ strings.Join(wf.Phases, " → ") }</span>
+							<span class="kvt-task-status">{ fmt.Sprintf("%d phases", len(wf.Phases)) }</span>
+							<div class="kvt-task-actions" style="opacity:1;">
+								<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="kvt-btn-done" style="opacity:1;" title="Edit workflow">
+									<i class="icon icon-pencil"></i>
+								</a>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+}

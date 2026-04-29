@@ -1253,6 +1253,32 @@ func (h *UIHandler) DeleteTemplateRedirect(w http.ResponseWriter, r *http.Reques
 	http.Redirect(w, r, "/p/"+slug+"/settings#templates", http.StatusSeeOther)
 }
 
+// WorkflowsPage renders the standalone workflows listing page.
+func (h *UIHandler) WorkflowsPage(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	workflows, err := wfService.ListWorkflows(r.Context())
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.WorkflowsPage(project, workflows).Render(r.Context(), w)
+}
+
 // WorkflowEditor renders the workflow editor page for a task type.
 func (h *UIHandler) WorkflowEditor(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

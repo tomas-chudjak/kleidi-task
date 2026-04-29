@@ -8,7 +8,7 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef) {
 		<div data-slug={ project.Slug }></div>
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
-				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#workflows") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/workflows") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
 				<span class={ "kvt-badge kvt-badge-" + wf.TaskType }>{ wf.TaskType }</span>
 				<span class="kvt-toolbar-id">Workflow Editor</span>
 			</div>

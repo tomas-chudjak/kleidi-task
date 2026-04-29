@@ -102,6 +102,29 @@ When you create a task via `task_create` without a description, the response may
 5. You call `task_update(id=X, description="## Objective\nPrepracovať layout login stránky...")
 6. Confirm: "Created task #X: Aktualizujme layout pre login page (description generated from template)"
 
+## Workflow-driven task execution
+
+When you start working on a task, always call `task_get` first. The response includes **workflow context**:
+- Current phase and phase instruction (AI prompt)
+- Next phase
+- Phase count
+
+**When working on a task, you MUST:**
+1. Read the phase instruction and follow it
+2. When the phase work is complete, call `task_advance` to move to the next phase
+3. Read the new phase instruction and continue
+4. Repeat until the task reaches the final phase (done)
+
+**Example flow:**
+1. User: "work on task #42"
+2. You call `task_get(id=42)` → response shows phase "research" with instruction "Analyze requirements and propose approach"
+3. You do the research, propose an approach
+4. You call `task_advance(id=42)` → moves to "implementation" with new instruction
+5. You implement, then advance again to "review"
+6. Continue until done
+
+**Do NOT skip phases.** Each phase exists for a reason. If a phase seems unnecessary for a specific task, still advance through it with a brief note.
+
 ## Available tools
 
 | Tool | Description |
@@ -119,6 +142,7 @@ When you create a task via `task_create` without a description, the response may
 | `task_archive` | Archive a completed task |
 | `task_bulk_update` | Update multiple tasks at once |
 | `task_bulk_complete` | Complete multiple tasks at once |
+| `task_advance` | Advance task to next workflow phase |
 
 ## Example workflows
 

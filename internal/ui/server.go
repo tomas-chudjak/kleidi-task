@@ -50,7 +50,8 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	// Project configuration
 	r.Post("/p/{slug}/settings/config", h.SaveConfig)
 
-	// Workflow editor
+	// Workflows
+	r.Get("/p/{slug}/workflows", h.WorkflowsPage)
 	r.Get("/p/{slug}/workflows/{taskType}", h.WorkflowEditor)
 	r.Patch("/p/{slug}/workflows/{taskType}", h.UpdateWorkflow)
 

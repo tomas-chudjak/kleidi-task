@@ -391,7 +391,26 @@ func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input Ta
 		return nil, TaskOutput{}, err
 	}
 
-	return textResult(formatTask(task)), TaskOutput{Task: task}, nil
+	// Include workflow context
+	text := formatTask(task)
+	projectPath, _ := s.resolveProjectPath(input.Project)
+	if projectPath != "" {
+		wfService, err := s.projectService.WorkflowServiceFor(projectPath)
+		if err == nil {
+			wc, err := wfService.GetContext(ctx, task)
+			if err == nil && len(wc.Phases) > 1 {
+				text += fmt.Sprintf("\n\nWorkflow: %s (phase %d/%d)", wc.CurrentPhase, wc.PhaseIndex+1, len(wc.Phases))
+				if wc.CurrentPrompt != "" {
+					text += fmt.Sprintf("\nPhase instruction: %s", wc.CurrentPrompt)
+				}
+				if wc.NextPhase != "" {
+					text += fmt.Sprintf("\nNext phase: %s", wc.NextPhase)
+				}
+			}
+		}
+	}
+
+	return textResult(text), TaskOutput{Task: task}, nil
 }
 
 func (s *Server) taskUpdate(ctx context.Context, req *mcp.CallToolRequest, input TaskUpdateInput) (*mcp.CallToolResult, TaskOutput, error) {
