@@ -410,6 +410,16 @@ func (s *TaskService) ListArchived(ctx context.Context, filter ListTasksFilter) 
 	}, nil
 }
 
+// ArchiveCompletedBefore archives all done tasks completed before the given time.
+func (s *TaskService) ArchiveCompletedBefore(ctx context.Context, before time.Time) (int64, error) {
+	result, err := s.queries.ArchiveCompletedBefore(ctx, sql.NullTime{Time: before, Valid: true})
+	if err != nil {
+		return 0, fmt.Errorf("auto-archiving tasks: %w", err)
+	}
+	count, _ := result.RowsAffected()
+	return count, nil
+}
+
 // CountArchived returns the total number of archived tasks.
 func (s *TaskService) CountArchived(ctx context.Context) (int64, error) {
 	return s.queries.CountArchived(ctx)

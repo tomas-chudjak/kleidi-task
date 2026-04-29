@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats) {
+templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig) {
 	@Layout(project.Name+" — Settings", project.Slug) {
 		<div class="kvt-board-header">
 			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
@@ -15,7 +15,8 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 			<nav class="kvt-settings-nav">
 				<a href="#project-info" class="kvt-settings-nav-link"><i class="icon icon-folder"></i> Project</a>
 				<a href="#categories" class="kvt-settings-nav-link"><i class="icon icon-tag"></i> Categories</a>
-				<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
+				<a href="#configuration" class="kvt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
+					<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
 			</nav>
 
 			<!-- Sections -->
@@ -86,7 +87,43 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 					</form>
 				</section>
 
-				<!-- Danger zone -->
+				<!-- Configuration -->
+					<section class="kvt-settings-section" id="configuration">
+						<h3 class="kvt-settings-heading"><i class="icon icon-sliders-horizontal"></i> Configuration</h3>
+						<p class="kvt-settings-desc">Project defaults and automation settings.</p>
+						<form
+							hx-post={ "/p/" + project.Slug + "/settings/config" }
+							hx-target="#config-saved"
+							hx-swap="innerHTML"
+							hx-ext="json-enc"
+							class="kvt-detail-fields"
+						>
+							<div class="kvt-field">
+								<label class="kvt-field-label" for="cfg-priority">Default priority</label>
+								<input type="number" class="kvt-input" id="cfg-priority" name="default_priority" value={ fmt.Sprintf("%d", config.DefaultPriority) } min="0" max="10"/>
+							</div>
+							<div class="kvt-field">
+								<label class="kvt-field-label" for="cfg-type">Default task type</label>
+								<div class="kvt-select-wrap">
+									<select class="kvt-select" id="cfg-type" name="default_type">
+										<option value="task" selected?={ config.DefaultType == "task" }>Task</option>
+										<option value="bug" selected?={ config.DefaultType == "bug" }>Bug</option>
+										<option value="feature" selected?={ config.DefaultType == "feature" }>Feature</option>
+										<option value="hotfix" selected?={ config.DefaultType == "hotfix" }>Hotfix</option>
+									</select>
+									<i class="icon icon-chevron-down kvt-select-icon"></i>
+								</div>
+							</div>
+							<div class="kvt-field">
+								<label class="kvt-field-label" for="cfg-archive">Auto-archive after (days)</label>
+								<input type="number" class="kvt-input" id="cfg-archive" name="auto_archive_days" value={ fmt.Sprintf("%d", config.AutoArchiveDays) } min="0" placeholder="0 = disabled"/>
+							</div>
+							<button type="submit" class="kvt-add-btn" style="max-width:200px;">Save configuration</button>
+							<span id="config-saved"></span>
+						</form>
+					</section>
+
+					<!-- Danger zone -->
 				<section class="kvt-settings-section kvt-settings-section--danger" id="danger">
 					<h3 class="kvt-settings-heading kvt-settings-heading--danger"><i class="icon icon-alert-triangle"></i> Danger zone</h3>
 					<div class="kvt-danger-item">

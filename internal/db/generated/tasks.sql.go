@@ -10,6 +10,16 @@ import (
 	"database/sql"
 )
 
+const archiveCompletedBefore = `-- name: ArchiveCompletedBefore :execresult
+UPDATE tasks SET is_archived = 1
+WHERE status = 'done' AND is_archived = 0
+AND completed_at IS NOT NULL AND completed_at < ?
+`
+
+func (q *Queries) ArchiveCompletedBefore(ctx context.Context, completedAt sql.NullTime) (sql.Result, error) {
+	return q.db.ExecContext(ctx, archiveCompletedBefore, completedAt)
+}
+
 const archiveTask = `-- name: ArchiveTask :one
 UPDATE tasks SET is_archived = 1 WHERE id = ? AND status = 'done' RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
 `

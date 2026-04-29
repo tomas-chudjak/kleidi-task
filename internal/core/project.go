@@ -145,6 +145,15 @@ func (s *ProjectService) CategoryServiceFor(projectPath string) (*CategoryServic
 	return NewCategoryService(db), nil
 }
 
+// ConfigServiceFor returns a ConfigService for the given project path.
+func (s *ProjectService) ConfigServiceFor(projectPath string) (*ConfigService, error) {
+	db, err := s.manager.ProjectDB(projectPath)
+	if err != nil {
+		return nil, fmt.Errorf("getting project database: %w", err)
+	}
+	return NewConfigService(db), nil
+}
+
 // Backup creates a consistent backup of the project's database.
 // If destPath is empty, it defaults to .tasks/backups/tasks_<timestamp>.db
 // Returns the path where the backup was written.

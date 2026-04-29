@@ -20,6 +20,11 @@ type Meta struct {
 	Value string `json:"value"`
 }
 
+type ProjectConfig struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type Task struct {
 	ID          int64          `json:"id"`
 	Type        string         `json:"type"`

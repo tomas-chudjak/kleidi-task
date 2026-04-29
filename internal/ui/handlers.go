@@ -552,8 +552,54 @@ func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, _ := taskService.Stats(r.Context())
 
+	configService, _ := h.projectService.ConfigServiceFor(project.Path)
+	var config core.ProjectConfig
+	if configService != nil {
+		config, _ = configService.Get(r.Context())
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.SettingsPage(project, categories, stats).Render(r.Context(), w)
+	templates.SettingsPage(project, categories, stats, config).Render(r.Context(), w)
+}
+
+// SaveConfig handles HTMX config save from settings page.
+func (h *UIHandler) SaveConfig(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	configService, err := h.projectService.ConfigServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		DefaultPriority int64  `json:"default_priority"`
+		DefaultType     string `json:"default_type"`
+		AutoArchiveDays int64  `json:"auto_archive_days"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	cfg := core.ProjectConfig{
+		DefaultPriority: input.DefaultPriority,
+		DefaultType:     input.DefaultType,
+		AutoArchiveDays: input.AutoArchiveDays,
+	}
+	if err := configService.SetAll(r.Context(), cfg); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprint(w, `<span style="color:var(--kvt-success);font-size:0.8rem;">Saved</span>`)
 }
 
 // ListCategories returns the category management HTML fragment.

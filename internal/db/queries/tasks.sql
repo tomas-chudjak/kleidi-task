@@ -84,3 +84,8 @@ WHERE is_archived = 1
 
 -- name: CountArchived :one
 SELECT COUNT(*) as count FROM tasks WHERE is_archived = 1;
+
+-- name: ArchiveCompletedBefore :execresult
+UPDATE tasks SET is_archived = 1
+WHERE status = 'done' AND is_archived = 0
+AND completed_at IS NOT NULL AND completed_at < ?;

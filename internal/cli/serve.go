@@ -1,11 +1,13 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/ahoylog/kvik-tasks/internal/api"
 	"github.com/ahoylog/kvik-tasks/internal/config"
@@ -35,6 +37,11 @@ var serveCmd = &cobra.Command{
 		router := api.NewRouter(projectService)
 		server := api.NewServer(addr, router)
 
+		// Start auto-archive background routine
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		go runAutoArchive(ctx, projectService)
+
 		// Graceful shutdown on SIGINT/SIGTERM
 		stop := make(chan os.Signal, 1)
 		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
@@ -48,8 +55,52 @@ var serveCmd = &cobra.Command{
 
 		<-stop
 		slog.Info("shutting down")
+		cancel()
 		return server.Close()
 	},
+}
+
+// runAutoArchive periodically archives completed tasks older than N days per project config.
+func runAutoArchive(ctx context.Context, projectService *core.ProjectService) {
+	// Run once at startup, then every 24h
+	ticker := time.NewTicker(24 * time.Hour)
+	defer ticker.Stop()
+
+	autoArchiveAll(ctx, projectService)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			autoArchiveAll(ctx, projectService)
+		}
+	}
+}
+
+func autoArchiveAll(ctx context.Context, projectService *core.ProjectService) {
+	projects, err := projectService.List()
+	if err != nil {
+		return
+	}
+	for _, p := range projects {
+		configService, err := projectService.ConfigServiceFor(p.Path)
+		if err != nil {
+			continue
+		}
+		cfg, err := configService.Get(ctx)
+		if err != nil || cfg.AutoArchiveDays <= 0 {
+			continue
+		}
+		taskService, err := projectService.TaskServiceFor(p.Path)
+		if err != nil {
+			continue
+		}
+		cutoff := time.Now().AddDate(0, 0, -int(cfg.AutoArchiveDays))
+		count, err := taskService.ArchiveCompletedBefore(ctx, cutoff)
+		if err == nil && count > 0 {
+			slog.Info("auto-archived tasks", "project", p.Slug, "count", count, "older_than_days", cfg.AutoArchiveDays)
+		}
+	}
 }
 
 func init() {

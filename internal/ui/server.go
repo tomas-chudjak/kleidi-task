@@ -41,6 +41,9 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Get("/p/{slug}/tasks/{id}/archive", h.ArchiveTaskRedirect)
 	r.Get("/p/{slug}/tasks/{id}/unarchive", h.UnarchiveTaskRedirect)
 
+	// Project configuration
+	r.Post("/p/{slug}/settings/config", h.SaveConfig)
+
 	// Category management
 	r.Get("/p/{slug}/categories", h.ListCategories)
 	r.Post("/p/{slug}/categories", h.CreateCategory)
