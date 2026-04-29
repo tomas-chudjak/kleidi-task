@@ -536,6 +536,74 @@ func (h *UIHandler) SearchTasks(w http.ResponseWriter, r *http.Request) {
 	templates.TaskList(tasks, slug).Render(r.Context(), w)
 }
 
+// ExportTasks handles task export as JSON or Markdown file download.
+func (h *UIHandler) ExportTasks(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	format := r.URL.Query().Get("format")
+	if format == "" {
+		format = "json"
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	filter := core.ListTasksFilter{Limit: 10000}
+	if s := r.URL.Query().Get("status"); s != "" {
+		filter.Status = s
+	}
+	if t := r.URL.Query().Get("type"); t != "" {
+		filter.Type = t
+	}
+	archived := r.URL.Query().Get("archived") == "1"
+
+	var tasks []core.Task
+	if archived {
+		result, err := taskService.ListArchived(r.Context(), filter)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		tasks = result.Tasks
+	} else {
+		tasks, err = taskService.List(r.Context(), filter)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var data []byte
+	var contentType, ext string
+	switch format {
+	case "md", "markdown":
+		data = core.ExportMarkdown(project.Name, tasks)
+		contentType = "text/markdown"
+		ext = "md"
+	default:
+		data, err = core.ExportJSON(project.Name, tasks)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		contentType = "application/json"
+		ext = "json"
+	}
+
+	filename := fmt.Sprintf("%s-tasks.%s", project.Slug, ext)
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+	w.Write(data)
+}
+
 // Board renders the kanban board view.
 func (h *UIHandler) Board(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

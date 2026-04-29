@@ -61,10 +61,20 @@ templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter)
 	@Layout(project.Name+" — Archive", project.Slug) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title"><i class="icon icon-archive"></i> Archive</h2>
-			<div class="kvt-view-toggle">
-				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn">
-					<i class="icon icon-arrow-left"></i> Back to project
-				</a>
+			<div style="display:flex;gap:8px;align-items:center;">
+				<div class="kvt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn">
+						<i class="icon icon-arrow-left"></i> Back to project
+					</a>
+				</div>
+				<div class="kvt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&archived=1") } class="kvt-view-btn" title="Export JSON" onclick="return confirm('Export archived tasks as JSON?')">
+						<i class="icon icon-download"></i> JSON
+					</a>
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&archived=1") } class="kvt-view-btn" title="Export Markdown" onclick="return confirm('Export archived tasks as Markdown?')">
+						<i class="icon icon-download"></i> MD
+					</a>
+				</div>
 			</div>
 		</div>
 

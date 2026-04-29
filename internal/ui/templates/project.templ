@@ -120,13 +120,23 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 		<div data-slug={ project.Slug }></div>
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
-			<div class="kvt-view-toggle">
-				<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn kvt-view-btn--active">
-					<i class="icon icon-list"></i> List
-				</a>
-				<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
-					<i class="icon icon-columns-3"></i> Board
-				</a>
+			<div style="display:flex;gap:8px;align-items:center;">
+				<div class="kvt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn kvt-view-btn--active">
+						<i class="icon icon-list"></i> List
+					</a>
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
+						<i class="icon icon-columns-3"></i> Board
+					</a>
+				</div>
+				<div class="kvt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&status=" + filter.Status + "&type=" + filter.Type) } class="kvt-view-btn" title="Export JSON" onclick="return confirm('Export filtered tasks as JSON?')">
+						<i class="icon icon-download"></i> JSON
+					</a>
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&status=" + filter.Status + "&type=" + filter.Type) } class="kvt-view-btn" title="Export Markdown" onclick="return confirm('Export filtered tasks as Markdown?')">
+						<i class="icon icon-download"></i> MD
+					</a>
+				</div>
 			</div>
 		</div>
 
@@ -334,6 +344,7 @@ templ TaskList(tasks []core.Task, slug string) {
 			<label class="kvt-bulk-checkbox">
 				<input type="checkbox" id="bulk-select-all" onchange="kvtBulk.toggleAll(this)"/>
 			</label>
+			<span class="kvt-task-header-label">ID</span>
 			<span class="kvt-task-header-label">Type</span>
 			<span class="kvt-task-header-label">Title</span>
 			<span class="kvt-task-header-label">Category</span>

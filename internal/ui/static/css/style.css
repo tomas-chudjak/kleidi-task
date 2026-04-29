@@ -406,13 +406,12 @@ input, select, textarea {
 /* ── Task header row ── */
 .kvt-task-header {
   display: grid;
-  grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4rem;
+  grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
   background: var(--kvt-card-bg);
   align-items: center;
   gap: 12px;
   padding: 8px 20px;
   border-bottom: 1px solid var(--kvt-border);
-  background: var(--kvt-bg);
 }
 .kvt-task-header-label {
   font-size: 0.65rem;
