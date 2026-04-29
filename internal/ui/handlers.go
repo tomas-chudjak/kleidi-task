@@ -358,6 +358,62 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	templates.TaskPage(project, task, categories, commits).Render(r.Context(), w)
 }
 
+// BulkAction handles bulk operations on multiple tasks.
+func (h *UIHandler) BulkAction(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		Action string  `json:"action"` // complete, delete, archive, status, type
+		IDs    []int64 `json:"ids"`
+		Value  string  `json:"value"` // for status/type actions
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if len(input.IDs) == 0 {
+		http.Error(w, "No tasks selected", http.StatusBadRequest)
+		return
+	}
+
+	for _, id := range input.IDs {
+		switch input.Action {
+		case "complete":
+			taskService.Complete(r.Context(), id)
+		case "delete":
+			taskService.Delete(r.Context(), id)
+		case "archive":
+			taskService.Archive(r.Context(), id)
+		case "status":
+			s := core.TaskStatus(input.Value)
+			taskService.Update(r.Context(), id, core.UpdateTaskInput{Status: &s})
+		case "type":
+			t := core.TaskType(input.Value)
+			taskService.Update(r.Context(), id, core.UpdateTaskInput{Type: &t})
+		}
+	}
+
+	// Return updated task list + OOB stats
+	tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
+	stats, _ := taskService.Stats(r.Context())
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.TaskList(tasks, slug).Render(r.Context(), w)
+	templates.StatsBarOOB(stats).Render(r.Context(), w)
+}
+
 // SearchTasks handles search via HTMX — returns task list HTML fragment.
 func (h *UIHandler) SearchTasks(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")

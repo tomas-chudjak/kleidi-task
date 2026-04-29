@@ -182,7 +182,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"kvt-task-layout\"><!-- Main content (left) --><div class=\"kvt-task-main\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\">Title</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"kvt-task-layout\"><!-- Main content (left) --><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\">Title</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

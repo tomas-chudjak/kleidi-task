@@ -69,6 +69,81 @@ templ layoutScripts() {
 		url.searchParams.delete('page');
 		window.location.href = url.toString();
 	}
+	// Bulk selection manager
+	var kvtBulk = (function() {
+		var selected = new Set();
+
+		function update() {
+			var bar = document.getElementById('bulk-bar');
+			var count = document.getElementById('bulk-count');
+			if (!bar) return;
+			if (selected.size > 0) {
+				bar.style.display = 'flex';
+				count.textContent = selected.size;
+			} else {
+				bar.style.display = 'none';
+			}
+			var sa = document.getElementById('bulk-select-all');
+			if (sa) {
+				var cbs = document.querySelectorAll('.kvt-bulk-cb');
+				sa.checked = cbs.length > 0 && selected.size === cbs.length;
+				sa.indeterminate = selected.size > 0 && selected.size < cbs.length;
+			}
+		}
+
+		return {
+			toggle: function(cb) {
+				var id = parseInt(cb.value);
+				if (cb.checked) { selected.add(id); } else { selected.delete(id); }
+				cb.closest('.kvt-task-row').classList.toggle('kvt-task-row--selected', cb.checked);
+				update();
+			},
+			toggleAll: function(cb) {
+				document.querySelectorAll('.kvt-bulk-cb').forEach(function(c) {
+					var id = parseInt(c.value);
+					c.checked = cb.checked;
+					if (cb.checked) { selected.add(id); } else { selected.delete(id); }
+					c.closest('.kvt-task-row').classList.toggle('kvt-task-row--selected', cb.checked);
+				});
+				update();
+			},
+			clear: function() {
+				selected.clear();
+				document.querySelectorAll('.kvt-bulk-cb').forEach(function(cb) {
+					cb.checked = false;
+					cb.closest('.kvt-task-row').classList.remove('kvt-task-row--selected');
+				});
+				var sa = document.getElementById('bulk-select-all');
+				if (sa) { sa.checked = false; sa.indeterminate = false; }
+				update();
+			},
+			exec: function(slug, action, value) {
+				if (selected.size === 0) return;
+				if (action === 'delete' && !confirm('Delete ' + selected.size + ' task(s)? This cannot be undone.')) return;
+				var ids = Array.from(selected);
+				var body = { action: action, ids: ids };
+				if (value) body.value = value;
+				fetch('/p/' + slug + '/tasks/bulk', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				}).then(function(resp) {
+					if (resp.ok) {
+						selected.clear();
+						// Reload the page to get fresh state
+						window.location.reload();
+					}
+				});
+			}
+		};
+	})();
+	// Reset checkboxes after HTMX swaps on #task-list
+	document.body.addEventListener('htmx:afterSwap', function(e) {
+		if (e.detail.target && e.detail.target.id === 'task-list') {
+			var sa = document.getElementById('bulk-select-all');
+			if (sa) { sa.checked = false; sa.indeterminate = false; }
+		}
+	});
 	</script>
 }
 

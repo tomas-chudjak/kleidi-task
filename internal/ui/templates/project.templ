@@ -208,6 +208,8 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 					@TaskList(tasks, project.Slug)
 				</div>
 
+				@BulkBar(project.Slug)
+
 				if filter.TotalPages > 1 {
 					@Pagination(project.Slug, filter)
 				}
@@ -324,6 +326,17 @@ templ TaskList(tasks []core.Task, slug string) {
 	if len(tasks) == 0 {
 		<div class="kvt-empty">No tasks yet.</div>
 	} else {
+		<div class="kvt-task-header">
+			<label class="kvt-bulk-checkbox">
+				<input type="checkbox" id="bulk-select-all" onchange="kvtBulk.toggleAll(this)"/>
+			</label>
+			<span class="kvt-task-header-label">Type</span>
+			<span class="kvt-task-header-label">Title</span>
+			<span class="kvt-task-header-label">Category</span>
+			<span class="kvt-task-header-label">Status</span>
+			<span class="kvt-task-header-label">Priority</span>
+			<span></span>
+		</div>
 		for _, t := range tasks {
 			@TaskRow(t, slug)
 		}
@@ -355,7 +368,10 @@ templ Pagination(slug string, filter ProjectFilter) {
 }
 
 templ TaskRow(task core.Task, slug string) {
-	<div class="kvt-task-row" id={ fmt.Sprintf("task-%d", task.ID) }>
+	<div class="kvt-task-row kvt-task-row--bulk" id={ fmt.Sprintf("task-%d", task.ID) }>
+		<label class="kvt-bulk-checkbox">
+			<input type="checkbox" class="kvt-bulk-cb" value={ fmt.Sprintf("%d", task.ID) } onchange="kvtBulk.toggle(this)"/>
+		</label>
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
@@ -393,6 +409,57 @@ templ TaskRow(task core.Task, slug string) {
 					<i class="icon icon-archive"></i>
 				</a>
 			}
+		</div>
+	</div>
+}
+
+// bulkAction generates JS for simple bulk actions (complete, archive, delete).
+script bulkAction(slug string, action string) {
+	kvtBulk.exec(slug, action);
+}
+
+// bulkDropdown generates JS for dropdown-based bulk actions (status, type).
+script bulkDropdown(slug string, action string) {
+	var val = event.target.value;
+	if (val) {
+		kvtBulk.exec(slug, action, val);
+		event.target.selectedIndex = 0;
+	}
+}
+
+templ BulkBar(slug string) {
+	<div id="bulk-bar" class="kvt-bulk-bar" style="display:none;">
+		<div class="kvt-bulk-bar-left">
+			<span id="bulk-count">0</span> selected
+			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--clear" onclick="kvtBulk.clear()">Clear</button>
+		</div>
+		<div class="kvt-bulk-bar-right">
+			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--success" onclick={ bulkAction(slug, "complete") }>
+				<i class="icon icon-check"></i> Complete
+			</button>
+			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--archive" onclick={ bulkAction(slug, "archive") }>
+				<i class="icon icon-archive"></i> Archive
+			</button>
+			<div class="kvt-bulk-dropdown">
+				<select onchange={ bulkDropdown(slug, "status") }>
+					<option value="">Status...</option>
+					<option value="todo">Todo</option>
+					<option value="doing">Doing</option>
+					<option value="done">Done</option>
+				</select>
+			</div>
+			<div class="kvt-bulk-dropdown">
+				<select onchange={ bulkDropdown(slug, "type") }>
+					<option value="">Type...</option>
+					<option value="task">Task</option>
+					<option value="bug">Bug</option>
+					<option value="feature">Feature</option>
+					<option value="hotfix">Hotfix</option>
+				</select>
+			</div>
+			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--danger" onclick={ bulkAction(slug, "delete") }>
+				<i class="icon icon-trash-2"></i> Delete
+			</button>
 		</div>
 	</div>
 }

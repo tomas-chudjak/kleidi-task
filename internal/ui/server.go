@@ -34,6 +34,7 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	r.Post("/p/{slug}/tasks", h.CreateTask)
 	r.Post("/p/{slug}/tasks/{id}/complete", h.CompleteTask)
 	r.Post("/p/{slug}/tasks/{id}/move", h.MoveTask)
+	r.Post("/p/{slug}/tasks/bulk", h.BulkAction)
 	r.Delete("/p/{slug}/tasks/{id}", h.DeleteTask)
 	r.Patch("/p/{slug}/tasks/{id}/field", h.UpdateTaskField)
 	r.Get("/p/{slug}/tasks/{id}/delete", h.DeleteTaskRedirect)
