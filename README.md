@@ -55,7 +55,13 @@ kvt project list                         # all projects
 kvt project stats                        # todo/doing/done counts
 ```
 
-### Connect to Claude Desktop
+### MCP Server Setup
+
+kvt includes a built-in MCP server (stdio transport). This lets AI assistants create, list, and manage your tasks natively.
+
+**Prerequisites:** Build or install the `kvt` binary first (see [Install](#install) above), and make sure it's on your `PATH`. Initialize at least one project with `kvt init`.
+
+#### Claude Desktop
 
 Add to `~/.claude/claude_desktop_config.json`:
 
@@ -70,7 +76,59 @@ Add to `~/.claude/claude_desktop_config.json`:
 }
 ```
 
-Now Claude can create tasks, list bugs, and track your work across sessions.
+Restart Claude Desktop to pick up the change.
+
+#### Claude Code (CLI)
+
+Use the built-in `claude mcp add` command:
+
+```bash
+# Add to current project
+claude mcp add --scope project --transport stdio kvik-tasks -- kvt mcp
+
+# Or add globally (available in all projects)
+claude mcp add --scope user --transport stdio kvik-tasks -- kvt mcp
+```
+
+Alternatively, add manually to `.mcp.json` (project) or `~/.claude/mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "kvik-tasks": {
+      "command": "kvt",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Then run `/mcp` in Claude Code to reconnect.
+
+#### Cursor
+
+Open **Settings → MCP Servers → Add Server** and configure:
+
+- **Name:** `kvik-tasks`
+- **Type:** `stdio`
+- **Command:** `kvt mcp`
+
+Or add manually to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "kvik-tasks": {
+      "command": "kvt",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### Verify
+
+Once connected, your AI assistant should see the kvt tools (e.g. `task_create`, `task_list`, `project_stats`). Try asking it to list your tasks — if it works, you're set.
 
 ## How it works
 

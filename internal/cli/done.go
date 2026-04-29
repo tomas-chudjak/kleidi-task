@@ -48,7 +48,7 @@ var doneCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Task #%d marked as done: %s\n", task.ID, task.Title)
+		printTaskRow("Completed", task)
 		return nil
 	},
 }

@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -45,6 +46,7 @@ func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, 
 		Source:      string(input.Source),
 		CreatedBy:   1, // default local user
 		Category:    toNullString(input.Category),
+		Metadata:    serializeMetadata(input.ConversationID, input.SessionID),
 	})
 	if err != nil {
 		return Task{}, fmt.Errorf("creating task: %w", err)
@@ -165,6 +167,7 @@ func (s *TaskService) Update(ctx context.Context, id int64, input UpdateTaskInpu
 		Type:        existing.Type,
 		Priority:    existing.Priority,
 		Category:    existing.Category,
+		Metadata:    existing.Metadata,
 	}
 
 	if input.Title != nil {
@@ -439,8 +442,31 @@ func taskFromRow(row generated.Task) Task {
 	if row.AssignedTo.Valid {
 		t.AssignedTo = &row.AssignedTo.Int64
 	}
+	if row.Metadata.Valid {
+		var meta TaskMetadata
+		if json.Unmarshal([]byte(row.Metadata.String), &meta) == nil {
+			if meta.ConversationID != "" || meta.SessionID != "" {
+				t.Metadata = &meta
+			}
+		}
+	}
 
 	return t
+}
+
+func serializeMetadata(conversationID, sessionID string) sql.NullString {
+	if conversationID == "" && sessionID == "" {
+		return sql.NullString{}
+	}
+	meta := TaskMetadata{
+		ConversationID: conversationID,
+		SessionID:      sessionID,
+	}
+	b, err := json.Marshal(meta)
+	if err != nil {
+		return sql.NullString{}
+	}
+	return sql.NullString{String: string(b), Valid: true}
 }
 
 func toNullString(s string) sql.NullString {

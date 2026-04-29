@@ -3,7 +3,6 @@ package cli
 import (
 	"fmt"
 	"os"
-	"text/tabwriter"
 
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/ahoylog/kvik-tasks/internal/db"
@@ -60,17 +59,7 @@ var listCmd = &cobra.Command{
 			return nil
 		}
 
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "ID\tTYPE\tSTATUS\tPRI\tTITLE")
-		for _, t := range tasks {
-			pri := ""
-			if t.Priority > 0 {
-				pri = fmt.Sprintf("%d", t.Priority)
-			}
-			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", t.ID, t.Type, t.Status, pri, t.Title)
-		}
-		w.Flush()
-
+		printTaskTable(tasks)
 		return nil
 	},
 }

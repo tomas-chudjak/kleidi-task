@@ -1,6 +1,6 @@
 -- name: CreateTask :one
-INSERT INTO tasks (type, title, description, status, priority, source, created_by, category)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO tasks (type, title, description, status, priority, source, created_by, category, metadata)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetTask :one
@@ -30,7 +30,7 @@ WHERE is_archived = 0
 
 -- name: UpdateTask :one
 UPDATE tasks
-SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?
+SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?, metadata = ?
 WHERE id = ?
 RETURNING *;
 

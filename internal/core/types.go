@@ -34,6 +34,12 @@ const (
 	StatusDone  TaskStatus = "done"
 )
 
+// TaskMetadata holds optional structured data stored in the metadata JSON column.
+type TaskMetadata struct {
+	ConversationID string `json:"conversation_id,omitempty"`
+	SessionID      string `json:"session_id,omitempty"`
+}
+
 // Task is the domain representation of a task or bug.
 type Task struct {
 	ID          int64      `json:"id"`
@@ -43,8 +49,9 @@ type Task struct {
 	Status      TaskStatus `json:"status"`
 	Priority    int64      `json:"priority"`
 	Category    string     `json:"category,omitempty"`
-	IsArchived  bool       `json:"is_archived"`
-	Source      Source     `json:"source"`
+	IsArchived  bool          `json:"is_archived"`
+	Metadata    *TaskMetadata `json:"metadata,omitempty"`
+	Source      Source        `json:"source"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
@@ -54,12 +61,14 @@ type Task struct {
 
 // CreateTaskInput holds the parameters for creating a new task.
 type CreateTaskInput struct {
-	Title       string     `json:"title"`
-	Description string     `json:"description,omitempty"`
-	Type        TaskType   `json:"type"`
-	Priority    int64      `json:"priority"`
-	Category    string     `json:"category,omitempty"`
-	Source      Source     `json:"source"` // required, set by entry point
+	Title          string   `json:"title"`
+	Description    string   `json:"description,omitempty"`
+	Type           TaskType `json:"type"`
+	Priority       int64    `json:"priority"`
+	Category       string   `json:"category,omitempty"`
+	ConversationID string   `json:"conversation_id,omitempty"`
+	SessionID      string   `json:"session_id,omitempty"`
+	Source         Source   `json:"source"` // required, set by entry point
 }
 
 // UpdateTaskInput holds the parameters for updating a task.

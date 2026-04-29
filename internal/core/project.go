@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/ahoylog/kvik-tasks/internal/db"
 )
@@ -142,6 +143,31 @@ func (s *ProjectService) CategoryServiceFor(projectPath string) (*CategoryServic
 		return nil, fmt.Errorf("getting project database: %w", err)
 	}
 	return NewCategoryService(db), nil
+}
+
+// Backup creates a consistent backup of the project's database.
+// If destPath is empty, it defaults to .tasks/backups/tasks_<timestamp>.db
+// Returns the path where the backup was written.
+func (s *ProjectService) Backup(projectPath, destPath string) (string, error) {
+	absPath, err := filepath.Abs(projectPath)
+	if err != nil {
+		return "", fmt.Errorf("resolving path: %w", err)
+	}
+
+	if destPath == "" {
+		backupDir := filepath.Join(absPath, ".tasks", "backups")
+		if err := os.MkdirAll(backupDir, 0755); err != nil {
+			return "", fmt.Errorf("creating backup directory: %w", err)
+		}
+		now := time.Now()
+		destPath = filepath.Join(backupDir, fmt.Sprintf("tasks_%s.db", now.Format("20060102_150405")))
+	}
+
+	if err := s.manager.BackupProject(absPath, destPath); err != nil {
+		return "", err
+	}
+
+	return destPath, nil
 }
 
 // slugFromPath generates a slug from a directory path.

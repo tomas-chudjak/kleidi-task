@@ -83,7 +83,7 @@ var updateCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Task #%d updated: %s [%s]\n", task.ID, task.Title, task.Status)
+		printTaskRow("Updated", task)
 		return nil
 	},
 }

@@ -48,7 +48,7 @@ var archiveCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Archived task #%d: %s\n", task.ID, task.Title)
+		printTaskRow("Archived", task)
 		return nil
 	},
 }
@@ -91,7 +91,7 @@ var unarchiveCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Unarchived task #%d: %s\n", task.ID, task.Title)
+		printTaskRow("Unarchived", task)
 		return nil
 	},
 }

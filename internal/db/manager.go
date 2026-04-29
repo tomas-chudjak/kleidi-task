@@ -127,6 +127,22 @@ func (m *Manager) InitProject(projectPath, slug, name string) error {
 	return nil
 }
 
+// BackupProject creates a consistent backup of a project's database using VACUUM INTO.
+// The dest path must not already exist.
+func (m *Manager) BackupProject(projectPath, destPath string) error {
+	db, err := m.ProjectDB(projectPath)
+	if err != nil {
+		return fmt.Errorf("opening project database: %w", err)
+	}
+
+	_, err = db.Exec("VACUUM INTO ?", destPath)
+	if err != nil {
+		return fmt.Errorf("backup failed: %w", err)
+	}
+
+	return nil
+}
+
 // Close closes all database connections.
 func (m *Manager) Close() error {
 	m.mu.Lock()

@@ -227,8 +227,8 @@ func (q *Queries) CountTasksFiltered(ctx context.Context, arg CountTasksFiltered
 }
 
 const createTask = `-- name: CreateTask :one
-INSERT INTO tasks (type, title, description, status, priority, source, created_by, category)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO tasks (type, title, description, status, priority, source, created_by, category, metadata)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
 `
 
@@ -241,6 +241,7 @@ type CreateTaskParams struct {
 	Source      string         `json:"source"`
 	CreatedBy   int64          `json:"created_by"`
 	Category    sql.NullString `json:"category"`
+	Metadata    sql.NullString `json:"metadata"`
 }
 
 func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
@@ -253,6 +254,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		arg.Source,
 		arg.CreatedBy,
 		arg.Category,
+		arg.Metadata,
 	)
 	var i Task
 	err := row.Scan(
@@ -521,7 +523,7 @@ func (q *Queries) UnarchiveTask(ctx context.Context, id int64) (Task, error) {
 
 const updateTask = `-- name: UpdateTask :one
 UPDATE tasks
-SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?
+SET title = ?, description = ?, status = ?, type = ?, priority = ?, category = ?, metadata = ?
 WHERE id = ?
 RETURNING id, type, title, description, status, created_at, updated_at, completed_at, created_by, assigned_to, priority, source, metadata, category, is_archived
 `
@@ -533,6 +535,7 @@ type UpdateTaskParams struct {
 	Type        string         `json:"type"`
 	Priority    int64          `json:"priority"`
 	Category    sql.NullString `json:"category"`
+	Metadata    sql.NullString `json:"metadata"`
 	ID          int64          `json:"id"`
 }
 
@@ -544,6 +547,7 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 		arg.Type,
 		arg.Priority,
 		arg.Category,
+		arg.Metadata,
 		arg.ID,
 	)
 	var i Task

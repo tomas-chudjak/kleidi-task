@@ -14,12 +14,14 @@ import (
 // Tool input types
 
 type TaskCreateInput struct {
-	Project     string `json:"project" jsonschema:"project slug or 'current'"`
-	Title       string `json:"title" jsonschema:"task title"`
-	Type        string `json:"type,omitempty" jsonschema:"work item type,enum=task,enum=bug,enum=feature,enum=hotfix"`
-	Description string `json:"description,omitempty" jsonschema:"task description"`
-	Priority    int64  `json:"priority,omitempty" jsonschema:"higher number means higher priority"`
-	Category    string `json:"category,omitempty" jsonschema:"category/area of work (e.g. backend, frontend, design)"`
+	Project        string `json:"project" jsonschema:"project slug or 'current'"`
+	Title          string `json:"title" jsonschema:"task title"`
+	Type           string `json:"type,omitempty" jsonschema:"work item type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Description    string `json:"description,omitempty" jsonschema:"task description"`
+	Priority       int64  `json:"priority,omitempty" jsonschema:"higher number means higher priority"`
+	Category       string `json:"category,omitempty" jsonschema:"category/area of work (e.g. backend, frontend, design)"`
+	ConversationID string `json:"conversation_id,omitempty" jsonschema:"ID of the AI conversation that created this task"`
+	SessionID      string `json:"session_id,omitempty" jsonschema:"ID of the MCP session"`
 }
 
 type TaskListInput struct {
@@ -47,6 +49,7 @@ type TaskUpdateInput struct {
 	Status      string `json:"status,omitempty" jsonschema:"new status,enum=todo,enum=doing,enum=done"`
 	Type        string `json:"type,omitempty" jsonschema:"new type,enum=task,enum=bug,enum=feature,enum=hotfix"`
 	Priority    *int64 `json:"priority,omitempty" jsonschema:"new priority"`
+	Category    string `json:"category,omitempty" jsonschema:"new category"`
 }
 
 type TaskCompleteInput struct {
@@ -109,6 +112,15 @@ type BulkOutput struct {
 
 type ExtendedStatsOutput struct {
 	Stats core.ExtendedStats `json:"stats"`
+}
+
+type ProjectBackupInput struct {
+	Slug   string `json:"slug,omitempty" jsonschema:"project slug (default: current)"`
+	Output string `json:"output,omitempty" jsonschema:"output path (default: .tasks/backups/tasks_<timestamp>.db)"`
+}
+
+type ProjectBackupOutput struct {
+	Path string `json:"path"`
 }
 
 type ProjectStatsInput struct {
@@ -215,6 +227,11 @@ func (s *Server) registerTools() {
 	}, s.projectStatsExtended)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "project_backup",
+		Description: "Create a consistent backup of the project's task database",
+	}, s.projectBackup)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "project_list",
 		Description: "List all registered projects",
 	}, s.projectList)
@@ -246,12 +263,14 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 	}
 
 	task, err := taskService.Create(ctx, core.CreateTaskInput{
-		Title:       title,
-		Description: input.Description,
-		Type:        taskType,
-		Priority:    input.Priority,
-		Category:    input.Category,
-		Source:      core.SourceMCP,
+		Title:          title,
+		Description:    input.Description,
+		Type:           taskType,
+		Priority:       input.Priority,
+		Category:       input.Category,
+		ConversationID: input.ConversationID,
+		SessionID:      input.SessionID,
+		Source:         core.SourceMCP,
 	})
 	if err != nil {
 		return nil, TaskOutput{}, err
@@ -351,6 +370,9 @@ func (s *Server) taskUpdate(ctx context.Context, req *mcp.CallToolRequest, input
 	if input.Priority != nil {
 		updateInput.Priority = input.Priority
 	}
+	if input.Category != "" {
+		updateInput.Category = &input.Category
+	}
 
 	task, err := taskService.Update(ctx, input.ID, updateInput)
 	if err != nil {
@@ -413,6 +435,33 @@ func (s *Server) taskUnarchive(ctx context.Context, req *mcp.CallToolRequest, in
 	}
 
 	return textResult(fmt.Sprintf("Unarchived task #%d: %s (back to done)", task.ID, task.Title)), TaskOutput{Task: task}, nil
+}
+
+func (s *Server) projectBackup(ctx context.Context, req *mcp.CallToolRequest, input ProjectBackupInput) (*mcp.CallToolResult, ProjectBackupOutput, error) {
+	var projectPath string
+	if input.Slug != "" && input.Slug != "current" {
+		project, err := s.projectService.GetBySlug(input.Slug)
+		if err != nil {
+			return nil, ProjectBackupOutput{}, err
+		}
+		projectPath = project.Path
+	} else {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return nil, ProjectBackupOutput{}, fmt.Errorf("getting working directory: %w", err)
+		}
+		projectPath, err = s.projectService.DetectProject(cwd)
+		if err != nil {
+			return nil, ProjectBackupOutput{}, err
+		}
+	}
+
+	backupPath, err := s.projectService.Backup(projectPath, input.Output)
+	if err != nil {
+		return nil, ProjectBackupOutput{}, err
+	}
+
+	return textResult(fmt.Sprintf("Backup created: %s", backupPath)), ProjectBackupOutput{Path: backupPath}, nil
 }
 
 func (s *Server) projectList(ctx context.Context, req *mcp.CallToolRequest, input struct{}) (*mcp.CallToolResult, ProjectListOutput, error) {

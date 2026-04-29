@@ -2,6 +2,8 @@ package mcp
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/ahoylog/kvik-tasks/internal/core"
@@ -310,6 +312,224 @@ func TestMCPFullLifecycle(t *testing.T) {
 	if listText != "No tasks found." {
 		t.Errorf("expected empty list after delete, got: %s", listText)
 	}
+}
+
+func TestMCPTaskUpdateCategory(t *testing.T) {
+	session, slug, cleanup := setupTestServer(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// Create a task with category "shopify"
+	_, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_create",
+		Arguments: map[string]any{
+			"project":  slug,
+			"title":    "Update category test",
+			"category": "shopify",
+		},
+	})
+	if err != nil {
+		t.Fatalf("creating task: %v", err)
+	}
+
+	// Verify initial category
+	getRes, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_get",
+		Arguments: map[string]any{
+			"project": slug,
+			"id":      float64(1),
+		},
+	})
+	if err != nil {
+		t.Fatalf("getting task: %v", err)
+	}
+	getText := getRes.Content[0].(*mcp.TextContent).Text
+	if !strings.Contains(getText, "shopify") {
+		t.Fatalf("expected category 'shopify' in response, got: %s", getText)
+	}
+
+	// Update category from "shopify" to "b2b"
+	updateRes, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_update",
+		Arguments: map[string]any{
+			"project":  slug,
+			"id":       float64(1),
+			"category": "b2b",
+		},
+	})
+	if err != nil {
+		t.Fatalf("updating task: %v", err)
+	}
+	if updateRes.IsError {
+		t.Fatalf("update error: %s", updateRes.Content[0].(*mcp.TextContent).Text)
+	}
+
+	// Verify category changed
+	getRes2, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_get",
+		Arguments: map[string]any{
+			"project": slug,
+			"id":      float64(1),
+		},
+	})
+	if err != nil {
+		t.Fatalf("getting task after update: %v", err)
+	}
+	getText2 := getRes2.Content[0].(*mcp.TextContent).Text
+	if !strings.Contains(getText2, "b2b") {
+		t.Errorf("expected category 'b2b' after update, got: %s", getText2)
+	}
+	if strings.Contains(getText2, "shopify") {
+		t.Errorf("category should no longer be 'shopify', got: %s", getText2)
+	}
+}
+
+func TestMCPTaskUpdateCategorySchema(t *testing.T) {
+	session, _, cleanup := setupTestServer(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// List tools and verify task_update has category in its schema
+	res, err := session.ListTools(ctx, nil)
+	if err != nil {
+		t.Fatalf("listing tools: %v", err)
+	}
+
+	var found bool
+	for _, tool := range res.Tools {
+		if tool.Name == "task_update" {
+			found = true
+			// InputSchema is any — marshal to JSON and check for "category"
+			schemaJSON, err := json.Marshal(tool.InputSchema)
+			if err != nil {
+				t.Fatalf("marshaling schema: %v", err)
+			}
+			schemaStr := string(schemaJSON)
+			t.Logf("task_update schema: %s", schemaStr)
+
+			if !strings.Contains(schemaStr, `"category"`) {
+				t.Error("task_update schema is missing 'category' property")
+			}
+			break
+		}
+	}
+	if !found {
+		t.Fatal("task_update tool not found")
+	}
+}
+
+func TestMCPTaskCreateWithConversation(t *testing.T) {
+	session, slug, cleanup := setupTestServer(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// Create a task with conversation_id and session_id
+	createRes, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_create",
+		Arguments: map[string]any{
+			"project":         slug,
+			"title":           "Task with conversation",
+			"conversation_id": "conv-abc-123",
+			"session_id":      "sess-xyz-789",
+		},
+	})
+	if err != nil {
+		t.Fatalf("creating task: %v", err)
+	}
+	if createRes.IsError {
+		t.Fatalf("create error: %s", createRes.Content[0].(*mcp.TextContent).Text)
+	}
+
+	// Get the task and verify metadata is stored
+	getRes, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_get",
+		Arguments: map[string]any{
+			"project": slug,
+			"id":      float64(1),
+		},
+	})
+	if err != nil {
+		t.Fatalf("getting task: %v", err)
+	}
+	getText := getRes.Content[0].(*mcp.TextContent).Text
+	if !strings.Contains(getText, "conv-abc-123") {
+		t.Errorf("expected conversation_id in response, got: %s", getText)
+	}
+	if !strings.Contains(getText, "sess-xyz-789") {
+		t.Errorf("expected session_id in response, got: %s", getText)
+	}
+}
+
+func TestMCPTaskCreateWithoutConversation(t *testing.T) {
+	session, slug, cleanup := setupTestServer(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// Create a task without conversation info
+	_, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_create",
+		Arguments: map[string]any{
+			"project": slug,
+			"title":   "Task without conversation",
+		},
+	})
+	if err != nil {
+		t.Fatalf("creating task: %v", err)
+	}
+
+	// Get task — should not contain metadata fields
+	getRes, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_get",
+		Arguments: map[string]any{
+			"project": slug,
+			"id":      float64(1),
+		},
+	})
+	if err != nil {
+		t.Fatalf("getting task: %v", err)
+	}
+	getText := getRes.Content[0].(*mcp.TextContent).Text
+	if strings.Contains(getText, "conversation_id") {
+		t.Errorf("expected no conversation_id in response, got: %s", getText)
+	}
+}
+
+func TestMCPProjectBackup(t *testing.T) {
+	session, slug, cleanup := setupTestServer(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// Create a task so the backup has data
+	_, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "task_create",
+		Arguments: map[string]any{
+			"project": slug,
+			"title":   "Backup test task",
+		},
+	})
+	if err != nil {
+		t.Fatalf("creating task: %v", err)
+	}
+
+	// Run backup
+	res, err := session.CallTool(ctx, &mcp.CallToolParams{
+		Name: "project_backup",
+		Arguments: map[string]any{
+			"slug": slug,
+		},
+	})
+	if err != nil {
+		t.Fatalf("calling project_backup: %v", err)
+	}
+	if res.IsError {
+		t.Fatalf("backup error: %s", res.Content[0].(*mcp.TextContent).Text)
+	}
+
+	text := res.Content[0].(*mcp.TextContent).Text
+	if !strings.Contains(text, "Backup created:") {
+		t.Errorf("expected 'Backup created:' in response, got: %s", text)
+	}
+	t.Logf("backup response: %s", text)
 }
 
 func TestMCPPrefixDetection(t *testing.T) {

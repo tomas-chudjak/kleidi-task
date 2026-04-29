@@ -92,8 +92,7 @@ var addCmd = &cobra.Command{
 			return err
 		}
 
-		label := strings.ToUpper(string(task.Type[:1])) + string(task.Type[1:])
-		fmt.Printf("%s #%d created: %s\n", label, task.ID, task.Title)
+		printTaskRow("Created", task)
 		return nil
 	},
 }
