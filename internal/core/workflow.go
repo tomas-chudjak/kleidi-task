@@ -1,13 +1,36 @@
 package core
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os/exec"
+	"time"
 
 	"github.com/ahoylog/kvik-tasks/internal/db/generated"
 )
+
+// PhaseAction defines an action to execute when entering a phase.
+type PhaseAction struct {
+	Type        string `json:"type"`        // "shell" or "prompt"
+	Command     string `json:"command"`     // shell command or prompt text
+	Description string `json:"description"` // human-readable description
+}
+
+// HistoryEntry represents a recorded workflow phase transition.
+type HistoryEntry struct {
+	ID         int64     `json:"id"`
+	TaskID     int64     `json:"task_id"`
+	Phase      string    `json:"phase"`
+	Action     string    `json:"action"`
+	ActionType string    `json:"action_type"`
+	Output     string    `json:"output"`
+	Success    bool      `json:"success"`
+	DurationMs int64     `json:"duration_ms"`
+	CreatedAt  time.Time `json:"created_at"`
+}
 
 // WorkflowDef defines the phases and triggers for a task type.
 type WorkflowDef struct {
@@ -24,11 +47,13 @@ type Triggers struct {
 
 // AdvanceResult holds the result of advancing a task to the next phase.
 type AdvanceResult struct {
-	Task            Task     `json:"task"`
-	PreviousPhase   string   `json:"previous_phase"`
-	CurrentPhase    string   `json:"current_phase"`
-	SuggestedSkills []string `json:"suggested_skills,omitempty"`
-	IsComplete      bool     `json:"is_complete"`
+	Task            Task           `json:"task"`
+	PreviousPhase   string         `json:"previous_phase"`
+	CurrentPhase    string         `json:"current_phase"`
+	SuggestedSkills []string       `json:"suggested_skills,omitempty"`
+	Actions         []PhaseAction  `json:"actions,omitempty"`
+	ActionResults   []HistoryEntry `json:"action_results,omitempty"`
+	IsComplete      bool           `json:"is_complete"`
 }
 
 // WorkflowContext provides workflow info for a task.
@@ -137,11 +162,27 @@ func (s *WorkflowService) Advance(ctx context.Context, taskID int64) (AdvanceRes
 	// Re-fetch updated task
 	task, _ = taskService.Get(ctx, taskID)
 
-	// Collect suggested skills for the new phase
+	// Record phase transition in history
+	s.recordHistory(ctx, taskID, nextPhase, "phase-advance", "none", fmt.Sprintf("%s → %s", prevPhase, nextPhase), true, 0)
+
+	// Execute actions for the new phase
+	var actions []PhaseAction
+	var actionResults []HistoryEntry
 	var skills []string
+
 	if triggers, ok := wf.Triggers[nextPhase]; ok {
 		skills = append(skills, triggers.Before...)
 		skills = append(skills, triggers.After...)
+
+		// Execute shell actions from before triggers
+		for _, skillName := range triggers.Before {
+			action := s.resolveAction(skillName)
+			actions = append(actions, action)
+			if action.Type == "shell" {
+				result := s.executeShell(ctx, taskID, nextPhase, action)
+				actionResults = append(actionResults, result)
+			}
+		}
 	}
 
 	return AdvanceResult{
@@ -149,8 +190,61 @@ func (s *WorkflowService) Advance(ctx context.Context, taskID int64) (AdvanceRes
 		PreviousPhase:   prevPhase,
 		CurrentPhase:    nextPhase,
 		SuggestedSkills: skills,
+		Actions:         actions,
+		ActionResults:   actionResults,
 		IsComplete:      newStatus == StatusDone,
 	}, nil
+}
+
+// executeShell runs a shell command and records the result.
+func (s *WorkflowService) executeShell(ctx context.Context, taskID int64, phase string, action PhaseAction) HistoryEntry {
+	start := time.Now()
+	cmd := exec.CommandContext(ctx, "sh", "-c", action.Command)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
+	duration := time.Since(start).Milliseconds()
+	success := err == nil
+
+	output := stdout.String()
+	if stderr.Len() > 0 {
+		if output != "" {
+			output += "\n"
+		}
+		output += stderr.String()
+	}
+	// Truncate output if too long
+	if len(output) > 4000 {
+		output = output[:4000] + "\n... (truncated)"
+	}
+
+	entry := s.recordHistory(ctx, taskID, phase, action.Command, "shell", output, success, duration)
+	return entry
+}
+
+// resolveAction maps a skill name to a PhaseAction.
+func (s *WorkflowService) resolveAction(skillName string) PhaseAction {
+	// Built-in skill mappings
+	builtins := map[string]PhaseAction{
+		"run-tests":          {Type: "shell", Command: "go test ./...", Description: "Run test suite"},
+		"lint":               {Type: "shell", Command: "go vet ./...", Description: "Run linter"},
+		"type-check":         {Type: "shell", Command: "go build ./...", Description: "Type check"},
+		"smoke-test":         {Type: "shell", Command: "go test -short ./...", Description: "Quick smoke test"},
+		"regression-test":    {Type: "shell", Command: "go test -run TestRegression ./...", Description: "Regression tests"},
+	}
+
+	if action, ok := builtins[skillName]; ok {
+		return action
+	}
+
+	// Unknown skill — return as prompt for AI
+	return PhaseAction{
+		Type:        "prompt",
+		Command:     skillName,
+		Description: skillName,
+	}
 }
 
 // ListWorkflows returns all workflow definitions.
@@ -164,6 +258,54 @@ func (s *WorkflowService) ListWorkflows(ctx context.Context) ([]WorkflowDef, err
 		wfs[i] = workflowFromRow(r)
 	}
 	return wfs, nil
+}
+
+// recordHistory writes a history entry to the database.
+func (s *WorkflowService) recordHistory(ctx context.Context, taskID int64, phase, action, actionType, output string, success bool, durationMs int64) HistoryEntry {
+	successInt := int64(0)
+	if success {
+		successInt = 1
+	}
+	row, err := s.queries.InsertWorkflowHistory(ctx, generated.InsertWorkflowHistoryParams{
+		TaskID:     taskID,
+		Phase:      phase,
+		Action:     action,
+		ActionType: actionType,
+		Output:     output,
+		Success:    successInt,
+		DurationMs: durationMs,
+	})
+	if err != nil {
+		return HistoryEntry{Phase: phase, Action: action, ActionType: actionType, Output: output, Success: success}
+	}
+	return historyFromRow(row)
+}
+
+// GetHistory returns the workflow history for a task.
+func (s *WorkflowService) GetHistory(ctx context.Context, taskID int64) ([]HistoryEntry, error) {
+	rows, err := s.queries.ListWorkflowHistory(ctx, taskID)
+	if err != nil {
+		return nil, err
+	}
+	entries := make([]HistoryEntry, len(rows))
+	for i, r := range rows {
+		entries[i] = historyFromRow(r)
+	}
+	return entries, nil
+}
+
+func historyFromRow(row generated.WorkflowHistory) HistoryEntry {
+	return HistoryEntry{
+		ID:         row.ID,
+		TaskID:     row.TaskID,
+		Phase:      row.Phase,
+		Action:     row.Action,
+		ActionType: row.ActionType,
+		Output:     row.Output,
+		Success:    row.Success != 0,
+		DurationMs: row.DurationMs,
+		CreatedAt:  row.CreatedAt,
+	}
 }
 
 func currentPhase(task Task) string {

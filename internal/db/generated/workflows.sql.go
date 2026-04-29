@@ -26,6 +26,84 @@ func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, e
 	return i, err
 }
 
+const insertWorkflowHistory = `-- name: InsertWorkflowHistory :one
+INSERT INTO workflow_history (task_id, phase, action, action_type, output, success, duration_ms)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING id, task_id, phase, "action", action_type, output, success, duration_ms, created_at
+`
+
+type InsertWorkflowHistoryParams struct {
+	TaskID     int64  `json:"task_id"`
+	Phase      string `json:"phase"`
+	Action     string `json:"action"`
+	ActionType string `json:"action_type"`
+	Output     string `json:"output"`
+	Success    int64  `json:"success"`
+	DurationMs int64  `json:"duration_ms"`
+}
+
+func (q *Queries) InsertWorkflowHistory(ctx context.Context, arg InsertWorkflowHistoryParams) (WorkflowHistory, error) {
+	row := q.db.QueryRowContext(ctx, insertWorkflowHistory,
+		arg.TaskID,
+		arg.Phase,
+		arg.Action,
+		arg.ActionType,
+		arg.Output,
+		arg.Success,
+		arg.DurationMs,
+	)
+	var i WorkflowHistory
+	err := row.Scan(
+		&i.ID,
+		&i.TaskID,
+		&i.Phase,
+		&i.Action,
+		&i.ActionType,
+		&i.Output,
+		&i.Success,
+		&i.DurationMs,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const listWorkflowHistory = `-- name: ListWorkflowHistory :many
+SELECT id, task_id, phase, "action", action_type, output, success, duration_ms, created_at FROM workflow_history WHERE task_id = ? ORDER BY created_at ASC
+`
+
+func (q *Queries) ListWorkflowHistory(ctx context.Context, taskID int64) ([]WorkflowHistory, error) {
+	rows, err := q.db.QueryContext(ctx, listWorkflowHistory, taskID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []WorkflowHistory{}
+	for rows.Next() {
+		var i WorkflowHistory
+		if err := rows.Scan(
+			&i.ID,
+			&i.TaskID,
+			&i.Phase,
+			&i.Action,
+			&i.ActionType,
+			&i.Output,
+			&i.Success,
+			&i.DurationMs,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listWorkflows = `-- name: ListWorkflows :many
 SELECT id, task_type, phases, triggers FROM workflows ORDER BY task_type
 `

@@ -1571,6 +1571,73 @@ input, select, textarea {
   background: var(--kvt-accent-light);
 }
 
+/* ── Workflow timeline ── */
+.kvt-timeline { display: flex; flex-direction: column; gap: 0; }
+.kvt-timeline-entry {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-left: 2px solid var(--kvt-border);
+  margin-left: 6px;
+  padding-left: 16px;
+  position: relative;
+}
+.kvt-timeline-dot {
+  position: absolute;
+  left: -6px;
+  top: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--kvt-success);
+  border: 2px solid var(--kvt-card-bg);
+}
+.kvt-timeline-entry--fail .kvt-timeline-dot { background: var(--kvt-danger); }
+.kvt-timeline-content { flex: 1; min-width: 0; }
+.kvt-timeline-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.kvt-timeline-phase {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--kvt-accent);
+  background: var(--kvt-accent-light);
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+.kvt-timeline-action {
+  font-size: 0.75rem;
+  color: var(--kvt-fg);
+  font-family: var(--k-font-mono);
+}
+.kvt-timeline-duration {
+  font-size: 0.65rem;
+  color: var(--kvt-fg-muted);
+  font-family: var(--k-font-mono);
+}
+.kvt-timeline-time {
+  font-size: 0.65rem;
+  color: var(--kvt-fg-subtle);
+  margin-left: auto;
+}
+.kvt-timeline-output {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  background: var(--kvt-bg);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-family: var(--k-font-mono);
+  color: var(--kvt-fg-muted);
+  overflow-x: auto;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 /* ── EasyMDE overrides ── */
 .editor-toolbar button i,
 .editor-toolbar button {

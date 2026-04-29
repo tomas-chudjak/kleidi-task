@@ -13,6 +13,13 @@ func workflowPhaseClass(phase, current string, idx, currentIdx int) string {
 	return ""
 }
 
+func timelineEntryClass(success bool) string {
+	if !success {
+		return " kvt-timeline-entry--fail"
+	}
+	return ""
+}
+
 func workflowConnectorClass(idx, currentIdx int) string {
 	if idx <= currentIdx {
 		return " kvt-workflow-connector--done"
@@ -20,7 +27,7 @@ func workflowConnectorClass(idx, currentIdx int) string {
 	return ""
 }
 
-templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit, workflow core.WorkflowContext) {
+templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit, workflow core.WorkflowContext, history []core.HistoryEntry) {
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title), project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Task toolbar -->
@@ -173,6 +180,32 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 						</div>
 					}
 				</div>
+			<!-- Workflow Timeline -->
+				if len(history) > 0 {
+					<div class="kvt-detail-card">
+						<h4 class="kvt-detail-card-title"><i class="icon icon-clock"></i> Workflow Timeline</h4>
+						<div class="kvt-timeline">
+							for _, h := range history {
+								<div class={ "kvt-timeline-entry" + timelineEntryClass(h.Success) }>
+									<div class="kvt-timeline-dot"></div>
+									<div class="kvt-timeline-content">
+										<div class="kvt-timeline-header">
+											<span class="kvt-timeline-phase">{ h.Phase }</span>
+											<span class="kvt-timeline-action">{ h.Action }</span>
+											if h.DurationMs > 0 {
+												<span class="kvt-timeline-duration">{ fmt.Sprintf("%dms", h.DurationMs) }</span>
+											}
+											<span class="kvt-timeline-time">{ h.CreatedAt.Format("15:04:05") }</span>
+										</div>
+										if h.Output != "" && h.ActionType == "shell" {
+											<pre class="kvt-timeline-output">{ h.Output }</pre>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				}
 			</div>
 
 			<!-- Properties sidebar (right) -->

@@ -64,3 +64,15 @@ type Workflow struct {
 	Phases   string `json:"phases"`
 	Triggers string `json:"triggers"`
 }
+
+type WorkflowHistory struct {
+	ID         int64     `json:"id"`
+	TaskID     int64     `json:"task_id"`
+	Phase      string    `json:"phase"`
+	Action     string    `json:"action"`
+	ActionType string    `json:"action_type"`
+	Output     string    `json:"output"`
+	Success    int64     `json:"success"`
+	DurationMs int64     `json:"duration_ms"`
+	CreatedAt  time.Time `json:"created_at"`
+}

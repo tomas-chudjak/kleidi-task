@@ -175,7 +175,11 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task, categories, commits, workflow).Render(r.Context(), w)
+	var history []core.HistoryEntry
+	if wfService != nil {
+		history, _ = wfService.GetHistory(r.Context(), task.ID)
+	}
+	templates.TaskPage(project, task, categories, commits, workflow, history).Render(r.Context(), w)
 }
 
 // TaskNewPage renders the detailed task creation page.
@@ -452,7 +456,11 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskPage(project, task, categories, commits, workflow).Render(r.Context(), w)
+	var history []core.HistoryEntry
+	if wfService != nil {
+		history, _ = wfService.GetHistory(r.Context(), task.ID)
+	}
+	templates.TaskPage(project, task, categories, commits, workflow, history).Render(r.Context(), w)
 }
 
 // AdvanceTask advances a task to the next workflow phase and redirects back to detail.
