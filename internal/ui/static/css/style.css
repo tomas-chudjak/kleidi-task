@@ -108,11 +108,18 @@ input, select, textarea {
 }
 .kvt-sidebar-link:hover { color: var(--kvt-accent); }
 .kvt-theme-toggle {
-  margin-top: auto;
-  margin-bottom: 16px;
   background: none;
   border: none;
   cursor: pointer;
+  margin-bottom: 0;
+}
+.kvt-sidebar-bottom {
+  margin-top: auto;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 .kvt-sidebar-link--active {
   color: var(--kvt-accent);
@@ -367,6 +374,12 @@ input, select, textarea {
   grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
 }
 .kvt-task-row--selected { background: #f8f9fd; }
+.kvt-task-row--focused {
+  background: var(--kvt-accent-light);
+  box-shadow: inset 3px 0 0 var(--kvt-accent);
+}
+.kvt-task-row--focused .kvt-btn-done,
+.kvt-task-row--focused .kvt-btn-delete { opacity: 1; }
 .kvt-task-row:last-child { border-bottom: none; }
 .kvt-task-row:hover { background: #f8f9fd; }
 @media (prefers-color-scheme: dark) {
@@ -1479,4 +1492,77 @@ input, select, textarea {
   .kvt-add-card { position: static; }
   .kvt-advanced-filters { flex-direction: column; align-items: stretch; }
   .kvt-pagination { flex-wrap: wrap; }
+}
+
+/* ── Keyboard help overlay ── */
+.kvt-kbd-help {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+}
+.kvt-kbd-help--visible { display: flex; }
+.kvt-kbd-help-card {
+  background: var(--kvt-card-bg);
+  border-radius: var(--kvt-card-radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  padding: 24px 32px;
+  max-width: 420px;
+  width: 90%;
+}
+.kvt-kbd-help-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kvt-kbd-help-close {
+  background: none;
+  border: none;
+  color: var(--kvt-fg-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.kvt-kbd-help-close:hover { color: var(--kvt-fg); }
+.kvt-kbd-help-group {
+  margin-bottom: 14px;
+}
+.kvt-kbd-help-group-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kvt-label);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.kvt-kbd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+.kvt-kbd-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--kvt-bg);
+  border: 1px solid var(--kvt-border);
+  border-radius: 5px;
+  font-family: var(--k-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--kvt-fg);
+  box-shadow: 0 1px 0 var(--kvt-border);
+}
+.kvt-kbd-desc {
+  font-size: 0.8rem;
+  color: var(--kvt-fg-muted);
 }

@@ -117,6 +117,7 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 
 templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category) {
 	@Layout(project.Name, project.Slug) {
+		<div data-slug={ project.Slug }></div>
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
 			<div class="kvt-view-toggle">
@@ -460,6 +461,38 @@ templ BulkBar(slug string) {
 			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--danger" onclick={ bulkAction(slug, "delete") }>
 				<i class="icon icon-trash-2"></i> Delete
 			</button>
+		</div>
+	</div>
+}
+
+templ KeyboardHelp() {
+	<div id="kbd-help" class="kvt-kbd-help" onclick="if(event.target===this)this.classList.remove('kvt-kbd-help--visible')">
+		<div class="kvt-kbd-help-card">
+			<h3 class="kvt-kbd-help-title">
+				Keyboard shortcuts
+				<button class="kvt-kbd-help-close" onclick="document.getElementById('kbd-help').classList.remove('kvt-kbd-help--visible')">
+					<i class="icon icon-x"></i>
+				</button>
+			</h3>
+			<div class="kvt-kbd-help-group">
+				<div class="kvt-kbd-help-group-title">Navigation</div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">j</span><span class="kvt-kbd-desc">Move down</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">k</span><span class="kvt-kbd-desc">Move up</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">e</span><span class="kvt-kbd-desc">Open task detail</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">&#9003;</span><span class="kvt-kbd-desc">Go back</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">n</span><span class="kvt-kbd-desc">New task</span></div>
+			</div>
+			<div class="kvt-kbd-help-group">
+				<div class="kvt-kbd-help-group-title">Actions</div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">x</span><span class="kvt-kbd-desc">Mark as done</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">d</span><span class="kvt-kbd-desc">Delete task</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">a</span><span class="kvt-kbd-desc">Archive task</span></div>
+			</div>
+			<div class="kvt-kbd-help-group">
+				<div class="kvt-kbd-help-group-title">Other</div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">?</span><span class="kvt-kbd-desc">Show this help</span></div>
+				<div class="kvt-kbd-row"><span class="kvt-kbd-key">Esc</span><span class="kvt-kbd-desc">Close overlay</span></div>
+			</div>
 		</div>
 	</div>
 }
