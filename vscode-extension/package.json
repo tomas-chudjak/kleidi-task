@@ -1,0 +1,135 @@
+{
+  "name": "kvik-tasks",
+  "displayName": "Kvik Tasks",
+  "description": "Task sidebar for kvik-tasks — view, filter, and insert tasks into your workflow",
+  "version": "0.1.0",
+  "publisher": "ahoylog",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "kvik-tasks",
+          "title": "Kvik Tasks",
+          "icon": "$(checklist)"
+        }
+      ]
+    },
+    "views": {
+      "kvik-tasks": [
+        {
+          "id": "kvikTasks",
+          "name": "Tasks"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "kvikTasks.refresh",
+        "title": "Refresh Tasks",
+        "icon": "$(refresh)",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.insertToTerminal",
+        "title": "Insert to Terminal",
+        "icon": "$(terminal)",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.openInBrowser",
+        "title": "Open in Browser",
+        "icon": "$(link-external)",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.copyReference",
+        "title": "Copy Reference",
+        "icon": "$(copy)",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.filterTodo",
+        "title": "Show Todo",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.filterDoing",
+        "title": "Show Doing",
+        "category": "Kvik Tasks"
+      },
+      {
+        "command": "kvikTasks.filterAll",
+        "title": "Show All",
+        "category": "Kvik Tasks"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "kvikTasks.refresh",
+          "when": "view == kvikTasks",
+          "group": "navigation"
+        },
+        {
+          "command": "kvikTasks.filterTodo",
+          "when": "view == kvikTasks"
+        },
+        {
+          "command": "kvikTasks.filterDoing",
+          "when": "view == kvikTasks"
+        },
+        {
+          "command": "kvikTasks.filterAll",
+          "when": "view == kvikTasks"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "kvikTasks.insertToTerminal",
+          "when": "view == kvikTasks",
+          "group": "inline"
+        },
+        {
+          "command": "kvikTasks.openInBrowser",
+          "when": "view == kvikTasks"
+        },
+        {
+          "command": "kvikTasks.copyReference",
+          "when": "view == kvikTasks"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Kvik Tasks",
+      "properties": {
+        "kvikTasks.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:7842",
+          "description": "URL of the kvt serve instance"
+        },
+        "kvikTasks.refreshInterval": {
+          "type": "number",
+          "default": 10,
+          "description": "Auto-refresh interval in seconds (0 to disable)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}

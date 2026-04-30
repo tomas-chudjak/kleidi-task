@@ -1,67 +1,108 @@
 # kvik-tasks
 
-Local-first, single-binary task tracker for developers who use AI assistants.
+[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
 
-**Binary name:** `kvt`
+Local-first, single-binary task tracker for developers who use AI assistants. Built with MCP-first design — the AI integration is a primary interface, not an afterthought.
 
-## What is this?
+## Why kvik-tasks?
 
-kvik-tasks is a task tracker designed with AI integration as a first-class feature. It runs entirely on your machine — no cloud, no vendor lock-in. The built-in MCP server lets Claude Desktop, Cursor, and other AI assistants create, list, and manage your tasks natively.
+Existing task managers are designed for humans clicking buttons. kvik-tasks is designed for developers who work alongside AI assistants like Claude, Cursor, and Copilot. Tasks live with your project (per-project SQLite), sync across AI sessions via MCP, and everything runs locally — no cloud, no vendor lock-in.
 
 ## Features
 
-- **Single Go binary** — download and run, no dependencies
-- **SQLite per-project** — tasks live with your project, optionally in Git
-- **MCP-first** — native Model Context Protocol server for AI assistants
-- **CLI** — fast terminal interface for daily use
-- **REST API** — for custom integrations (v0.2)
-- **Web UI** — HTMX-based dashboard (v0.2)
+**Core**
+- Single Go binary, no external dependencies
+- Per-project SQLite databases with global registry
+- CLI, REST API, Web UI, and MCP server — all sharing one service layer
+
+**Task Management**
+- Task types: task, bug, feature, hotfix, plus custom types
+- Full-text search (FTS5)
+- Categories, priorities, bulk operations
+- Task templates for quick creation
+- Export/import as JSON or Markdown
+
+**AI Integration**
+- MCP server (stdio) for Claude Desktop, Cursor, VS Code
+- Task workflows with phase-based AI prompts
+- Source code scanning for TODO/FIXME/HACK comments
+- Claude skill with auto-parse title prefixes
+
+**Web UI**
+- Dashboard with project overview and stats
+- Kanban board with drag-and-drop
+- Vim-like keyboard shortcuts
+- Markdown editor for descriptions
+- Workflow editor with trigger configuration
+
+**Infrastructure**
+- Docker deployment with compose
+- HTTP Basic Auth for teams
+- Script hooks on task lifecycle events
+- Git commit to task linking
+- VS Code extension with task sidebar
+
+## Installation
+
+### Go install
+
+```bash
+go install github.com/ahoylog/kvik-tasks/cmd/kvt@latest
+```
+
+### Build from source
+
+```bash
+git clone https://github.com/ahoylog/kvik-tasks.git
+cd kvik-tasks
+task setup    # installs templ, sqlc, goose, air
+task build    # builds the kvt binary
+task install  # symlinks to /usr/local/bin
+```
+
+Requires Go 1.22+.
+
+### Docker
+
+```bash
+git clone https://github.com/ahoylog/kvik-tasks.git
+cd kvik-tasks
+docker compose up -d
+```
+
+Web UI available at http://localhost:7842. See [docs/docker.md](docs/docker.md) for details.
 
 ## Quick start
 
-### Install
-
 ```bash
-# From source
-go install github.com/ahoylog/kvik-tasks/cmd/kvt@latest
+# Initialize a project
+cd my-project
+kvt init
 
-# Or download binary from releases
-# https://github.com/ahoylog/kvik-tasks/releases
+# Add tasks
+kvt add "Implement user authentication"
+kvt add "BUG: Login fails on Firefox"        # auto-detected as bug
+kvt add --feature "Dark mode support"
+
+# View tasks
+kvt list
+kvt list --status todo --type bug
+
+# Work on tasks
+kvt done 1
+
+# Start web UI
+kvt serve
+# Open http://localhost:7842
 ```
 
-### Initialize a project
+## MCP setup
 
-```bash
-cd ~/projects/my-app
-kvt init --name "My App"
-```
+Add kvik-tasks as an MCP server in your AI tool:
 
-### Use the CLI
-
-```bash
-kvt add "Implement user auth"           # add a task
-kvt add "CSS broken on mobile" --bug    # add a bug
-kvt add --feature "Dark mode support"    # add a feature
-kvt add --hotfix "Fix crash on start"    # add a hotfix
-kvt add "BUG: login broken"             # auto-detected from prefix
-kvt add "FEAT: dark mode"               # auto-detected (also: FEATURE:, HOTFIX:, TASK:)
-kvt list                                 # list all tasks
-kvt list --status todo --type bug        # filter
-kvt done 1                               # mark as done
-kvt show 1                               # task details
-kvt update 1 --status doing --priority 5 # update fields
-kvt delete 2                             # delete permanently
-kvt project list                         # all projects
-kvt project stats                        # todo/doing/done counts
-```
-
-### MCP Server Setup
-
-kvt includes a built-in MCP server (stdio transport). This lets AI assistants create, list, and manage your tasks natively.
-
-**Prerequisites:** Build or install the `kvt` binary first (see [Install](#install) above), and make sure it's on your `PATH`. Initialize at least one project with `kvt init`.
-
-#### Claude Desktop
+### Claude Desktop
 
 Add to `~/.claude/claude_desktop_config.json`:
 
@@ -76,21 +117,15 @@ Add to `~/.claude/claude_desktop_config.json`:
 }
 ```
 
-Restart Claude Desktop to pick up the change.
-
-#### Claude Code (CLI)
-
-Use the built-in `claude mcp add` command:
+### Claude Code
 
 ```bash
-# Add to current project
 claude mcp add --scope project --transport stdio kvik-tasks -- kvt mcp
-
-# Or add globally (available in all projects)
-claude mcp add --scope user --transport stdio kvik-tasks -- kvt mcp
 ```
 
-Alternatively, add manually to `.mcp.json` (project) or `~/.claude/mcp.json` (global):
+### Cursor
+
+Add to `.cursor/mcp.json`:
 
 ```json
 {
@@ -103,76 +138,69 @@ Alternatively, add manually to `.mcp.json` (project) or `~/.claude/mcp.json` (gl
 }
 ```
 
-Then run `/mcp` in Claude Code to reconnect.
+Once connected, try: "task: implement search feature" or "show my tasks".
 
-#### Cursor
+See [docs/mcp-usage.md](docs/mcp-usage.md) for the full MCP tool reference.
 
-Open **Settings → MCP Servers → Add Server** and configure:
+## CLI reference
 
-- **Name:** `kvik-tasks`
-- **Type:** `stdio`
-- **Command:** `kvt mcp`
+| Command | Description |
+|---------|-------------|
+| `kvt init` | Initialize `.tasks/` in current directory |
+| `kvt add <title>` | Create a task (`--bug`, `--feature`, `--hotfix`, or prefix detection) |
+| `kvt list` | List tasks (`--status`, `--type` filters) |
+| `kvt show <id>` | Show task detail |
+| `kvt done <id>` | Mark task as complete |
+| `kvt update <id>` | Update task fields |
+| `kvt delete <id>` | Delete a task |
+| `kvt advance <id>` | Advance task to next workflow phase |
+| `kvt archive <id>` | Archive a completed task |
+| `kvt suggest` | Scan source code for TODO/FIXME comments |
+| `kvt export` | Export tasks as JSON or Markdown |
+| `kvt import <file>` | Import tasks from file |
+| `kvt serve` | Start HTTP server (UI + API) |
+| `kvt mcp` | Start MCP stdio server |
+| `kvt user add <name>` | Add a user (enables Basic Auth) |
+| `kvt backup` | Backup project database |
+| `kvt version` | Show version |
 
-Or add manually to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "kvik-tasks": {
-      "command": "kvt",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-#### Verify
-
-Once connected, your AI assistant should see the kvt tools (e.g. `task_create`, `task_list`, `project_stats`). Try asking it to list your tasks — if it works, you're set.
+See [docs/cli.md](docs/cli.md) for all flags and examples.
 
 ## How it works
 
 ```
 You (CLI / Browser / Claude)
-    ↓
+    |
   kvt binary
-    ↓
-  Service Layer
-    ↓
+    |
+  Service Layer (TaskService, ProjectService, WorkflowService)
+    |
   SQLite
-    ├── ~/.tasks/registry.db      (global project registry)
-    └── <project>/.tasks/tasks.db (per-project tasks)
+    |-- ~/.tasks/registry.db      (global project registry + users)
+    '-- <project>/.tasks/tasks.db (per-project tasks)
 ```
 
 Each project gets its own SQLite database in `.tasks/`. A global registry at `~/.tasks/registry.db` maps project slugs to paths.
 
-## MCP Tools
+## Documentation
 
-| Tool | Description |
-|---|---|
-| `task_create` | Create a new task or bug |
-| `task_list` | List tasks with filters (status, type, project) |
-| `task_get` | Get task details |
-| `task_update` | Update task fields |
-| `task_complete` | Mark task as done |
-| `task_delete` | Delete a task |
-| `project_list` | List all projects |
-| `project_current` | Detect current project from cwd |
-| `project_stats` | Get task statistics |
+| Document | Description |
+|----------|-------------|
+| [Installation](docs/installation.md) | Install and build guide |
+| [CLI Reference](docs/cli.md) | All commands, flags, and examples |
+| [REST API](docs/rest-api.md) | API endpoints and curl examples |
+| [MCP Integration](docs/mcp-usage.md) | MCP tools and AI assistant setup |
+| [Configuration](docs/configuration.md) | Global and project config options |
+| [Workflows](docs/workflows.md) | Phase-based task workflows |
+| [Authentication](docs/authentication.md) | HTTP Basic Auth for teams |
+| [Docker](docs/docker.md) | Container deployment |
+| [Script Hooks](docs/hooks.md) | Task lifecycle event hooks |
+| [Git Integration](docs/git-integration.md) | Commit to task linking |
+| [VS Code Extension](docs/vscode-extension.md) | Task sidebar for VS Code/Cursor |
 
-## Development
+## Tech stack
 
-See [DEV.md](DEV.md) for build instructions, database inspection, and testing guide.
-
-```bash
-task build     # build the binary
-task test      # run tests
-task sqlc      # regenerate SQL code
-```
-
-## Architecture
-
-See [PROJECT.md](PROJECT.md) for the full architectural document.
+Go, SQLite (modernc.org/sqlite), sqlc, chi, cobra, HTMX, templ, ahoylog-css, MCP Go SDK, SortableJS.
 
 ## License
 
