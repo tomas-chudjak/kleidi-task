@@ -33,10 +33,22 @@ export class TaskTreeProvider implements vscode.TreeDataProvider<TaskItem> {
       } catch {
         return [
           new TaskItem(
-            "Cannot connect to kvt serve",
+            "Server not running",
             "",
             vscode.TreeItemCollapsibleState.None,
             "error"
+          ),
+          new TaskItem(
+            "Run: kvt serve",
+            "",
+            vscode.TreeItemCollapsibleState.None,
+            "hint"
+          ),
+          new TaskItem(
+            "Default: http://localhost:7842",
+            "",
+            vscode.TreeItemCollapsibleState.None,
+            "hint"
           ),
         ];
       }
@@ -48,6 +60,12 @@ export class TaskTreeProvider implements vscode.TreeDataProvider<TaskItem> {
             "",
             vscode.TreeItemCollapsibleState.None,
             "info"
+          ),
+          new TaskItem(
+            "Run: kvt init",
+            "",
+            vscode.TreeItemCollapsibleState.None,
+            "hint"
           ),
         ];
       }
@@ -62,7 +80,7 @@ export class TaskTreeProvider implements vscode.TreeDataProvider<TaskItem> {
           new TaskItem(
             p.name,
             p.slug,
-            vscode.TreeItemCollapsibleState.Expanded,
+            vscode.TreeItemCollapsibleState.Collapsed,
             "project"
           )
       );
@@ -201,7 +219,7 @@ export class TaskItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly slug: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly itemType: "task" | "project" | "info" | "error" | "detail",
+    public readonly itemType: "task" | "project" | "info" | "error" | "detail" | "hint",
     public readonly task?: Task
   ) {
     super(label, collapsibleState);
@@ -219,7 +237,9 @@ export class TaskItem extends vscode.TreeItem {
     } else if (itemType === "detail") {
       this.iconPath = new vscode.ThemeIcon("dash");
     } else if (itemType === "error") {
-      this.iconPath = new vscode.ThemeIcon("warning");
+      this.iconPath = new vscode.ThemeIcon("error");
+    } else if (itemType === "hint") {
+      this.iconPath = new vscode.ThemeIcon("terminal");
     } else {
       this.iconPath = new vscode.ThemeIcon("info");
     }
