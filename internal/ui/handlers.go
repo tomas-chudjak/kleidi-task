@@ -834,7 +834,66 @@ func (h *UIHandler) Settings(w http.ResponseWriter, r *http.Request) {
 		workflows, _ = wfService.ListWorkflows(r.Context())
 	}
 
-	templates.SettingsPage(project, categories, stats, config, taskTemplates, workflows).Render(r.Context(), w)
+	hookService := h.projectService.HookServiceFor(project.Path)
+	var hooks []core.Hook
+	if hookService != nil {
+		hooks, _ = hookService.List()
+	}
+
+	templates.SettingsPage(project, categories, stats, config, taskTemplates, workflows, hooks).Render(r.Context(), w)
+}
+
+// CreateHook handles POST /p/{slug}/hooks — adds a new hook.
+func (h *UIHandler) CreateHook(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	var input struct {
+		Event   string `json:"event"`
+		Command string `json:"command"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	hookService := h.projectService.HookServiceFor(project.Path)
+	hookService.Add(core.Hook{
+		Event:   core.HookEvent(input.Event),
+		Command: input.Command,
+	})
+
+	hooks, _ := hookService.List()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.HookList(hooks, slug).Render(r.Context(), w)
+}
+
+// DeleteHook handles DELETE /p/{slug}/hooks/{hookID} — removes a hook.
+func (h *UIHandler) DeleteHook(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	hookIDStr := chi.URLParam(r, "hookID")
+	hookID, err := strconv.Atoi(hookIDStr)
+	if err != nil {
+		http.Error(w, "Invalid hook ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	hookService := h.projectService.HookServiceFor(project.Path)
+	hookService.Remove(hookID)
+
+	hooks, _ := hookService.List()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.HookList(hooks, slug).Render(r.Context(), w)
 }
 
 // SaveConfig handles HTMX config save from settings page.

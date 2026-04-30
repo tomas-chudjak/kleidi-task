@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate, workflows []core.WorkflowDef) {
+templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate, workflows []core.WorkflowDef, hooks []core.Hook) {
 	@Layout(project.Name+" — Settings", project.Slug) {
 		<div class="kvt-board-header">
 			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
@@ -18,6 +18,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 				<a href="#configuration" class="kvt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
 					<a href="#workflows" class="kvt-settings-nav-link"><i class="icon icon-git-branch"></i> Workflows</a>
 					<a href="#templates" class="kvt-settings-nav-link"><i class="icon icon-file-text"></i> Templates</a>
+					<a href="#hooks" class="kvt-settings-nav-link"><i class="icon icon-zap"></i> Hooks</a>
 					<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
 			</nav>
 
@@ -167,6 +168,40 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 						</form>
 					</section>
 
+					<!-- Hooks -->
+					<section class="kvt-settings-section" id="hooks">
+						<h3 class="kvt-settings-heading"><i class="icon icon-zap"></i> Hooks</h3>
+						<p class="kvt-settings-desc">Run shell scripts on task lifecycle events. Hooks run asynchronously and don't block operations.</p>
+
+						<div id="hook-list" class="kvt-cat-list">
+							@HookList(hooks, project.Slug)
+						</div>
+
+						<form
+							hx-post={ "/p/" + project.Slug + "/hooks" }
+							hx-target="#hook-list"
+							hx-swap="innerHTML"
+							hx-on::after-request="this.reset();"
+							hx-ext="json-enc"
+							class="kvt-cat-form"
+						>
+							<div class="kvt-cat-form-row">
+								<select name="event" class="kvt-cat-input" style="max-width:130px;" required>
+									<option value="task.create">task.create</option>
+									<option value="task.complete">task.complete</option>
+									<option value="task.update">task.update</option>
+									<option value="task.delete">task.delete</option>
+									<option value="task.archive">task.archive</option>
+								</select>
+								<input type="text" name="command" placeholder="Shell command" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
+								<button type="submit" class="kvt-cat-add-btn" title="Add hook"><i class="icon icon-plus"></i></button>
+							</div>
+						</form>
+						<p class="kvt-settings-desc" style="margin-top:6px;font-size:0.7rem;">
+							Environment: <code>KVT_EVENT</code>, <code>KVT_TASK_ID</code>, <code>KVT_TASK_TITLE</code>, <code>KVT_TASK_TYPE</code>, <code>KVT_TASK_STATUS</code>, <code>KVT_TASK_PRIORITY</code>. Task JSON on stdin.
+						</p>
+					</section>
+
 					<!-- Danger zone -->
 				<section class="kvt-settings-section kvt-settings-section--danger" id="danger">
 					<h3 class="kvt-settings-heading kvt-settings-heading--danger"><i class="icon icon-alert-triangle"></i> Danger zone</h3>
@@ -251,6 +286,34 @@ templ TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.Workf
 						hx-swap="innerHTML"
 						hx-confirm={ fmt.Sprintf("Delete template '%s'?", t.Name) }
 						title="Delete"
+					>
+						<i class="icon icon-trash-2"></i>
+					</button>
+				</div>
+			</div>
+		}
+	}
+}
+
+templ HookList(hooks []core.Hook, slug string) {
+	if len(hooks) == 0 {
+		<div class="kvt-empty" style="font-size:0.85rem;">No hooks configured.</div>
+	} else {
+		for _, h := range hooks {
+			<div class="kvt-cat-row" id={ fmt.Sprintf("hook-%d", h.ID) }>
+				<div class="kvt-cat-display">
+					<span class="kvt-badge kvt-badge-todo" style="font-size:0.6rem;">{ string(h.Event) }</span>
+					<span class="kvt-cat-name" style="font-family:var(--kvt-font-mono);font-size:0.75rem;">{ h.Command }</span>
+					if h.Description != "" {
+						<span style="font-size:0.65rem;color:var(--kvt-fg-muted);">{ h.Description }</span>
+					}
+					<button
+						class="kvt-cat-del-btn"
+						hx-delete={ fmt.Sprintf("/p/%s/hooks/%d", slug, h.ID) }
+						hx-target="#hook-list"
+						hx-swap="innerHTML"
+						hx-confirm={ fmt.Sprintf("Remove hook '%s'?", h.Command) }
+						title="Remove"
 					>
 						<i class="icon icon-trash-2"></i>
 					</button>

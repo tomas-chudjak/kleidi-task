@@ -51,6 +51,10 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 	// Project configuration
 	r.Post("/p/{slug}/settings/config", h.SaveConfig)
 
+	// Hooks
+	r.Post("/p/{slug}/hooks", h.CreateHook)
+	r.Delete("/p/{slug}/hooks/{hookID}", h.DeleteHook)
+
 	// Workflows
 	r.Get("/p/{slug}/workflows", h.WorkflowsPage)
 	r.Post("/p/{slug}/workflows", h.CreateCustomType)

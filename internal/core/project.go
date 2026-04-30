@@ -133,7 +133,14 @@ func (s *ProjectService) TaskServiceFor(projectPath string) (*TaskService, error
 	if err != nil {
 		return nil, fmt.Errorf("getting project database: %w", err)
 	}
-	return NewTaskService(db), nil
+	ts := NewTaskService(db)
+	ts.SetHooks(NewHookService(projectPath))
+	return ts, nil
+}
+
+// HookServiceFor returns a HookService for the given project path.
+func (s *ProjectService) HookServiceFor(projectPath string) *HookService {
+	return NewHookService(projectPath)
 }
 
 // CategoryServiceFor returns a CategoryService for the given project path.

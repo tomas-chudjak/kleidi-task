@@ -14,6 +14,7 @@ import (
 type TaskService struct {
 	db      *sql.DB
 	queries *generated.Queries
+	hooks   *HookService
 }
 
 // NewTaskService creates a new TaskService with the given database connection.
@@ -21,6 +22,18 @@ func NewTaskService(db *sql.DB) *TaskService {
 	return &TaskService{
 		db:      db,
 		queries: generated.New(db),
+	}
+}
+
+// SetHooks sets the hook service for firing lifecycle hooks.
+func (s *TaskService) SetHooks(hooks *HookService) {
+	s.hooks = hooks
+}
+
+// fireHook fires a hook event if a HookService is configured.
+func (s *TaskService) fireHook(event HookEvent, task Task) {
+	if s.hooks != nil {
+		s.hooks.Fire(event, task)
 	}
 }
 
@@ -52,7 +65,9 @@ func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, 
 		return Task{}, fmt.Errorf("creating task: %w", err)
 	}
 
-	return taskFromRow(row), nil
+	task := taskFromRow(row)
+	s.fireHook(EventTaskCreate, task)
+	return task, nil
 }
 
 // Get returns a task by ID.
@@ -194,7 +209,9 @@ func (s *TaskService) Update(ctx context.Context, id int64, input UpdateTaskInpu
 		return Task{}, fmt.Errorf("updating task %d: %w", id, err)
 	}
 
-	return taskFromRow(row), nil
+	task := taskFromRow(row)
+	s.fireHook(EventTaskUpdate, task)
+	return task, nil
 }
 
 // Complete marks a task as done.
@@ -206,13 +223,15 @@ func (s *TaskService) Complete(ctx context.Context, id int64) (Task, error) {
 		}
 		return Task{}, fmt.Errorf("completing task %d: %w", id, err)
 	}
-	return taskFromRow(row), nil
+	task := taskFromRow(row)
+	s.fireHook(EventTaskComplete, task)
+	return task, nil
 }
 
 // Delete permanently removes a task.
 func (s *TaskService) Delete(ctx context.Context, id int64) error {
-	// Verify the task exists first
-	_, err := s.queries.GetTask(ctx, id)
+	// Get the task first for hook data
+	taskRow, err := s.queries.GetTask(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("task %d: %w", id, ErrNotFound)
@@ -223,6 +242,7 @@ func (s *TaskService) Delete(ctx context.Context, id int64) error {
 	if err := s.queries.DeleteTask(ctx, id); err != nil {
 		return fmt.Errorf("deleting task %d: %w", id, err)
 	}
+	s.fireHook(EventTaskDelete, taskFromRow(taskRow))
 	return nil
 }
 
@@ -335,7 +355,9 @@ func (s *TaskService) Archive(ctx context.Context, id int64) (Task, error) {
 		}
 		return Task{}, fmt.Errorf("archiving task %d: %w", id, err)
 	}
-	return taskFromRow(row), nil
+	task := taskFromRow(row)
+	s.fireHook(EventTaskArchive, task)
+	return task, nil
 }
 
 // Unarchive restores an archived task back to done status.
