@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/ahoylog/kvik-tasks/internal/core"
 	"github.com/ahoylog/kvik-tasks/internal/ui/templates"
@@ -495,8 +496,61 @@ func (h *UIHandler) AdvanceTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wfService.Advance(r.Context(), id)
-	http.Redirect(w, r, fmt.Sprintf("/p/%s/t/%d", slug, id), http.StatusSeeOther)
+	result, err := wfService.Advance(r.Context(), id)
+	if err != nil {
+		slog.Error("advancing task", "id", id, "err", err)
+	}
+
+	// Show advance result summary via query param
+	summary := fmt.Sprintf("%s→%s", result.PreviousPhase, result.CurrentPhase)
+	if len(result.ActionResults) > 0 {
+		ok := 0
+		for _, ar := range result.ActionResults {
+			if ar.Success {
+				ok++
+			}
+		}
+		summary += fmt.Sprintf(" (%d/%d triggers OK)", ok, len(result.ActionResults))
+	}
+	http.Redirect(w, r, fmt.Sprintf("/p/%s/t/%d?advanced=%s", slug, id, summary), http.StatusSeeOther)
+}
+
+// TaskHistory renders the full workflow history page for a task.
+func (h *UIHandler) TaskHistory(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		return
+	}
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	taskService, err := h.projectService.TaskServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	task, err := taskService.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, _ := h.projectService.WorkflowServiceFor(project.Path)
+	var history []core.HistoryEntry
+	if wfService != nil {
+		history, _ = wfService.GetHistory(r.Context(), id)
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	templates.HistoryPage(project, task, history, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // BulkAction handles bulk operations on multiple tasks.
@@ -1339,9 +1393,10 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse phases and prompts from numbered fields
+	// Parse phases, prompts, and triggers from numbered fields
 	var phases []string
 	prompts := map[string]string{}
+	triggers := map[string]core.Triggers{}
 	for i := 0; ; i++ {
 		nameKey := fmt.Sprintf("phase_%d_name", i)
 		name, ok := input[nameKey].(string)
@@ -1353,6 +1408,17 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		if prompt, ok := input[promptKey].(string); ok && prompt != "" {
 			prompts[name] = prompt
 		}
+		// Parse triggers
+		var t core.Triggers
+		if before, ok := input[fmt.Sprintf("phase_%d_trigger_before", i)].(string); ok && before != "" {
+			t.Before = splitTriggers(before)
+		}
+		if after, ok := input[fmt.Sprintf("phase_%d_trigger_after", i)].(string); ok && after != "" {
+			t.After = splitTriggers(after)
+		}
+		if len(t.Before) > 0 || len(t.After) > 0 {
+			triggers[name] = t
+		}
 	}
 
 	if len(phases) < 2 {
@@ -1360,13 +1426,10 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get existing workflow to preserve triggers
-	existing, _ := wfService.GetWorkflow(r.Context(), taskType)
-
 	wf := core.WorkflowDef{
 		TaskType:     taskType,
 		Phases:       phases,
-		Triggers:     existing.Triggers,
+		Triggers:     triggers,
 		PhasePrompts: prompts,
 	}
 
@@ -1458,4 +1521,16 @@ func (h *UIHandler) renderTemplateList(w http.ResponseWriter, r *http.Request, t
 	project, _ := h.projectService.GetBySlug(slug)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	templates.TemplateList(tpls, project.Slug, h.workflows(r, project.Path)).Render(r.Context(), w)
+}
+
+// splitTriggers splits a comma-separated trigger string into a cleaned slice.
+func splitTriggers(s string) []string {
+	var result []string
+	for _, part := range strings.Split(s, ",") {
+		t := strings.TrimSpace(part)
+		if t != "" {
+			result = append(result, t)
+		}
+	}
+	return result
 }

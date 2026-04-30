@@ -183,7 +183,10 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 			<!-- Workflow Timeline -->
 				if len(history) > 0 {
 					<div class="kvt-detail-card">
-						<h4 class="kvt-detail-card-title"><i class="icon icon-clock"></i> Workflow Timeline</h4>
+						<h4 class="kvt-detail-card-title">
+						<i class="icon icon-clock"></i> Workflow Timeline
+						<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/history", project.Slug, task.ID)) } style="font-size:0.7rem;margin-left:auto;font-weight:400;">View full history</a>
+					</h4>
 						<div class="kvt-timeline">
 							for _, h := range history {
 								<div class={ "kvt-timeline-entry" + timelineEntryClass(h.Success) }>

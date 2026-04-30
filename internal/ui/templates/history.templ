@@ -1,0 +1,55 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+
+templ HistoryPage(project core.Project, task core.Task, history []core.HistoryEntry, workflows []core.WorkflowDef) {
+	@Layout(fmt.Sprintf("#%d History", task.ID), project.Slug) {
+		<div class="kvt-toolbar">
+			<div class="kvt-toolbar-left">
+				<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", project.Slug, task.ID)) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+				@TypeBadge(string(task.Type), workflows)
+				<span class="kvt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+				<span style="color:var(--kvt-fg-muted);">{ task.Title }</span>
+			</div>
+		</div>
+
+		<div class="kvt-task-layout">
+			<div class="kvt-task-main">
+				<div class="kvt-detail-card">
+					<h4 class="kvt-detail-card-title"><i class="icon icon-clock"></i> Workflow History ({ fmt.Sprintf("%d", len(history)) } entries)</h4>
+					if len(history) == 0 {
+						<div class="kvt-empty">No workflow history for this task.</div>
+					} else {
+						<div class="kvt-timeline">
+							for _, h := range history {
+								<div class={ "kvt-timeline-entry" + timelineEntryClass(h.Success) }>
+									<div class="kvt-timeline-dot"></div>
+									<div class="kvt-timeline-content">
+										<div class="kvt-timeline-header">
+											<span class="kvt-timeline-phase">{ h.Phase }</span>
+											<span class="kvt-timeline-action">{ h.Action }</span>
+											if h.ActionType != "none" && h.ActionType != "" {
+												<span class="kvt-badge kvt-badge-todo" style="font-size:0.55rem;">{ h.ActionType }</span>
+											}
+											if h.DurationMs > 0 {
+												<span class="kvt-timeline-duration">{ fmt.Sprintf("%dms", h.DurationMs) }</span>
+											}
+											if !h.Success {
+												<span class="kvt-badge" style="background:#fde8ee;color:var(--kvt-danger);font-size:0.55rem;">FAILED</span>
+											}
+											<span class="kvt-timeline-time">{ h.CreatedAt.Format("2006-01-02 15:04:05") }</span>
+										</div>
+										if h.Output != "" {
+											<pre class="kvt-timeline-output">{ h.Output }</pre>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+}

@@ -164,6 +164,16 @@ type TaskAdvanceOutput struct {
 	Result core.AdvanceResult `json:"result"`
 }
 
+type TaskHistoryInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID to get workflow history for"`
+}
+
+type TaskHistoryOutput struct {
+	History []core.HistoryEntry `json:"history"`
+	Count   int                 `json:"count"`
+}
+
 type TaskSuggestInput struct {
 	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 }
@@ -270,6 +280,11 @@ func (s *Server) registerTools() {
 		Name:        "task_advance",
 		Description: "Advance a task to the next workflow phase. Returns suggested skills to execute for the new phase.",
 	}, s.taskAdvance)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_history",
+		Description: "Get workflow phase transition history for a task. Shows all phase changes, trigger executions, and their results.",
+	}, s.taskHistory)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_suggest",
@@ -921,4 +936,39 @@ func (s *Server) taskAdvance(ctx context.Context, req *mcp.CallToolRequest, inpu
 	}
 
 	return textResult(text), TaskAdvanceOutput{Result: result}, nil
+}
+
+func (s *Server) taskHistory(ctx context.Context, req *mcp.CallToolRequest, input TaskHistoryInput) (*mcp.CallToolResult, TaskHistoryOutput, error) {
+	projectPath, err := s.resolveProjectPath(input.Project)
+	if err != nil {
+		return nil, TaskHistoryOutput{}, err
+	}
+
+	wfService, err := s.projectService.WorkflowServiceFor(projectPath)
+	if err != nil {
+		return nil, TaskHistoryOutput{}, err
+	}
+
+	history, err := wfService.GetHistory(ctx, input.ID)
+	if err != nil {
+		return nil, TaskHistoryOutput{}, err
+	}
+
+	text := fmt.Sprintf("Workflow history for task #%d (%d entries):\n\n", input.ID, len(history))
+	for _, h := range history {
+		status := "OK"
+		if !h.Success {
+			status = "FAIL"
+		}
+		text += fmt.Sprintf("[%s] %s — %s (%s", h.CreatedAt.Format("2006-01-02 15:04:05"), h.Phase, h.Action, status)
+		if h.DurationMs > 0 {
+			text += fmt.Sprintf(", %dms", h.DurationMs)
+		}
+		text += ")\n"
+		if h.Output != "" {
+			text += fmt.Sprintf("  Output: %s\n", h.Output)
+		}
+	}
+
+	return textResult(text), TaskHistoryOutput{History: history, Count: len(history)}, nil
 }

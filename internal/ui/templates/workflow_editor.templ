@@ -2,6 +2,18 @@ package templates
 
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
+import "strings"
+
+func triggersFor(wf core.WorkflowDef, phase string, when string) string {
+	t, ok := wf.Triggers[phase]
+	if !ok {
+		return ""
+	}
+	if when == "before" {
+		return strings.Join(t.Before, ", ")
+	}
+	return strings.Join(t.After, ", ")
+}
 
 templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []core.WorkflowDef) {
 	@Layout("Workflow: "+wf.TaskType+" — "+project.Name, project.Slug) {
@@ -26,7 +38,7 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
 				<div class="kvt-detail-card">
 					<h4 class="kvt-detail-card-title"><i class="icon icon-git-branch"></i> Phases</h4>
-					<p class="kvt-settings-desc">Define the workflow phases and AI prompts for each step.</p>
+					<p class="kvt-settings-desc">Define the workflow phases, AI prompts, and automation triggers for each step.</p>
 
 					<div class="kvt-wf-phases" id="wf-phases">
 						for i, phase := range wf.Phases {
@@ -58,6 +70,38 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 										placeholder="AI prompt for this phase..."
 										style="margin-top:8px;min-height:60px;"
 									>{ wf.PhasePrompts[phase] }</textarea>
+									<div class="kvt-wf-triggers" style="margin-top:8px;display:flex;gap:8px;">
+										<div style="flex:1;">
+											<label class="kvt-field-label" style="font-size:0.65rem;margin-bottom:2px;">Before triggers</label>
+											<input
+												type="text"
+												class="kvt-input kvt-wf-trigger-before"
+												name={ fmt.Sprintf("phase_%d_trigger_before", i) }
+												value={ triggersFor(wf, phase, "before") }
+												placeholder="e.g. run-tests, lint"
+												autocomplete="off"
+												data-1p-ignore
+												data-lpignore="true"
+												data-form-type="other"
+												style="font-size:0.75rem;"
+											/>
+										</div>
+										<div style="flex:1;">
+											<label class="kvt-field-label" style="font-size:0.65rem;margin-bottom:2px;">After triggers</label>
+											<input
+												type="text"
+												class="kvt-input kvt-wf-trigger-after"
+												name={ fmt.Sprintf("phase_%d_trigger_after", i) }
+												value={ triggersFor(wf, phase, "after") }
+												placeholder="e.g. type-check"
+												autocomplete="off"
+												data-1p-ignore
+												data-lpignore="true"
+												data-form-type="other"
+												style="font-size:0.75rem;"
+											/>
+										</div>
+									</div>
 								}
 							</div>
 						}
@@ -65,13 +109,15 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 					<button type="button" class="kvt-add-btn kvt-add-btn--outline" style="margin-top:12px;max-width:200px;" onclick="addWfPhase()">
 						<i class="icon icon-plus"></i> Add phase
 					</button>
+					<p class="kvt-settings-desc" style="margin-top:8px;font-size:0.7rem;color:var(--kvt-fg-muted);">
+						Triggers: comma-separated skill names or shell commands. Built-in: <code>run-tests</code>, <code>lint</code>, <code>type-check</code>, <code>smoke-test</code>, <code>regression-test</code>. Any other value is treated as an AI prompt.
+					</p>
 					<script>
 						function addWfPhase() {
 							var container = document.getElementById('wf-phases');
 							var cards = container.querySelectorAll('.kvt-wf-phase-card');
 							var lastCard = cards[cards.length - 1];
 							var idx = cards.length;
-							// Build DOM elements safely without innerHTML
 							var div = document.createElement('div');
 							div.className = 'kvt-wf-phase-card';
 							var header = document.createElement('div');
@@ -103,8 +149,31 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 							ta.placeholder = 'AI prompt for this phase...';
 							ta.style.marginTop = '8px';
 							ta.style.minHeight = '60px';
+							// Trigger inputs
+							var trigDiv = document.createElement('div');
+							trigDiv.className = 'kvt-wf-triggers';
+							trigDiv.style.cssText = 'margin-top:8px;display:flex;gap:8px;';
+							['before', 'after'].forEach(function(when) {
+								var wrap = document.createElement('div');
+								wrap.style.flex = '1';
+								var lbl = document.createElement('label');
+								lbl.className = 'kvt-field-label';
+								lbl.style.cssText = 'font-size:0.65rem;margin-bottom:2px;';
+								lbl.textContent = when.charAt(0).toUpperCase() + when.slice(1) + ' triggers';
+								var inp = document.createElement('input');
+								inp.type = 'text';
+								inp.className = 'kvt-input kvt-wf-trigger-' + when;
+								inp.name = 'phase_' + (idx - 1) + '_trigger_' + when;
+								inp.placeholder = 'e.g. run-tests, lint';
+								inp.autocomplete = 'off';
+								inp.style.fontSize = '0.75rem';
+								wrap.appendChild(lbl);
+								wrap.appendChild(inp);
+								trigDiv.appendChild(wrap);
+							});
 							div.appendChild(header);
 							div.appendChild(ta);
+							div.appendChild(trigDiv);
 							container.insertBefore(div, lastCard);
 							renumberWfPhases();
 						}
@@ -117,6 +186,10 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 								if (nameInput) nameInput.name = 'phase_' + i + '_name';
 								var promptInput = card.querySelector('textarea');
 								if (promptInput) promptInput.name = 'phase_' + i + '_prompt';
+								var beforeInput = card.querySelector('.kvt-wf-trigger-before');
+								if (beforeInput) beforeInput.name = 'phase_' + i + '_trigger_before';
+								var afterInput = card.querySelector('.kvt-wf-trigger-after');
+								if (afterInput) afterInput.name = 'phase_' + i + '_trigger_after';
 							});
 						}
 					</script>
