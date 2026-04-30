@@ -1,0 +1,8 @@
+.git
+.tasks
+.task
+kvt
+*.out
+*.html
+coverage.*
+docs/

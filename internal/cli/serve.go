@@ -25,7 +25,11 @@ var serveCmd = &cobra.Command{
 		if cmd.Flags().Changed("port") {
 			port, _ = cmd.Flags().GetInt("port")
 		}
-		addr := fmt.Sprintf("127.0.0.1:%d", port)
+		host := "127.0.0.1"
+		if cmd.Flags().Changed("host") {
+			host, _ = cmd.Flags().GetString("host")
+		}
+		addr := fmt.Sprintf("%s:%d", host, port)
 
 		manager, err := db.NewManager()
 		if err != nil {
@@ -104,6 +108,7 @@ func autoArchiveAll(ctx context.Context, projectService *core.ProjectService) {
 }
 
 func init() {
+	serveCmd.Flags().String("host", "127.0.0.1", "Host to bind to (use 0.0.0.0 for Docker)")
 	serveCmd.Flags().Int("port", 7842, "Port to listen on")
 	rootCmd.AddCommand(serveCmd)
 }
