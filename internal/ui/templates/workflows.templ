@@ -15,16 +15,47 @@ templ WorkflowsPage(project core.Project, workflows []core.WorkflowDef) {
 				<div class="kvt-task-list">
 					for _, wf := range workflows {
 						<div class="kvt-task-row" style="grid-template-columns: 5.5rem 1fr 8rem 4.5rem;">
-							<span class={ "kvt-badge kvt-badge-" + wf.TaskType }>{ wf.TaskType }</span>
+							@TypeBadge(wf.TaskType, workflows)
 							<span class="kvt-task-title" style="cursor:default;">{ strings.Join(wf.Phases, " → ") }</span>
 							<span class="kvt-task-status">{ fmt.Sprintf("%d phases", len(wf.Phases)) }</span>
 							<div class="kvt-task-actions" style="opacity:1;">
 								<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="kvt-btn-done" style="opacity:1;" title="Edit workflow">
 									<i class="icon icon-pencil"></i>
 								</a>
+								if !wf.IsBuiltin {
+									<button
+										class="kvt-cat-del-btn"
+										hx-delete={ fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType) }
+										hx-target="body"
+										hx-swap="outerHTML"
+										hx-confirm={ fmt.Sprintf("Delete task type '%s' and its workflow?", wf.TaskType) }
+										title="Delete type"
+									>
+										<i class="icon icon-trash-2"></i>
+									</button>
+								}
 							</div>
 						</div>
 					}
+				</div>
+
+				<!-- Create new task type -->
+				<div class="kvt-detail-card" style="margin-top:1rem;">
+					<h3 class="kvt-settings-heading" style="margin-bottom:0.75rem;">Create custom task type</h3>
+					<form
+						hx-post={ "/p/" + project.Slug + "/workflows" }
+						hx-target="body"
+						hx-swap="outerHTML"
+						hx-ext="json-enc"
+						class="kvt-cat-form"
+					>
+						<div class="kvt-cat-form-row">
+							<input type="text" name="task_type" placeholder="Type name (e.g. spike)" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input" pattern="[a-z][a-z0-9-]*" title="Lowercase letters, numbers, and hyphens"/>
+							<input type="text" name="prefix" placeholder="PREFIX (optional)" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input" style="max-width:120px;" title="Title prefix for auto-detection (e.g. SPIKE)"/>
+							<input type="color" name="color" value="#e0e7ef" class="kvt-cat-color"/>
+							<button type="submit" class="kvt-cat-add-btn" title="Create type"><i class="icon icon-plus"></i></button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

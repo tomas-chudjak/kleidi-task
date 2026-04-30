@@ -64,6 +64,9 @@ type Workflow struct {
 	Phases       string `json:"phases"`
 	Triggers     string `json:"triggers"`
 	PhasePrompts string `json:"phase_prompts"`
+	Color        string `json:"color"`
+	Prefix       string `json:"prefix"`
+	IsBuiltin    int64  `json:"is_builtin"`
 }
 
 type WorkflowHistory struct {

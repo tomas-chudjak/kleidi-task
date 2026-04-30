@@ -3,7 +3,7 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ TaskNewPage(project core.Project, categories []core.Category, config core.ProjectConfig, taskTemplates []core.TaskTemplate) {
+templ TaskNewPage(project core.Project, categories []core.Category, config core.ProjectConfig, taskTemplates []core.TaskTemplate, workflows []core.WorkflowDef) {
 	@Layout("New task — "+project.Name, project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Toolbar -->
@@ -118,10 +118,7 @@ templ TaskNewPage(project core.Project, categories []core.Category, config core.
 							<label class="kvt-field-label">Type</label>
 							<div class="kvt-select-wrap">
 								<select class="kvt-select" onchange="document.getElementById('new-type-hidden').value=this.value">
-									<option value="task" selected?={ config.DefaultType == "task" }>Task</option>
-									<option value="bug" selected?={ config.DefaultType == "bug" }>Bug</option>
-									<option value="feature" selected?={ config.DefaultType == "feature" }>Feature</option>
-									<option value="hotfix" selected?={ config.DefaultType == "hotfix" }>Hotfix</option>
+									@TypeOptions(config.DefaultType, workflows)
 								</select>
 								<i class="icon icon-chevron-down kvt-select-icon"></i>
 							</div>

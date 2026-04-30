@@ -52,8 +52,10 @@ func MountRoutes(r chi.Router, projectService *core.ProjectService) {
 
 	// Workflows
 	r.Get("/p/{slug}/workflows", h.WorkflowsPage)
+	r.Post("/p/{slug}/workflows", h.CreateCustomType)
 	r.Get("/p/{slug}/workflows/{taskType}", h.WorkflowEditor)
 	r.Patch("/p/{slug}/workflows/{taskType}", h.UpdateWorkflow)
+	r.Delete("/p/{slug}/workflows/{taskType}", h.DeleteCustomType)
 
 	// Template management
 	r.Get("/p/{slug}/templates/{tplID}", h.TemplateDetail)

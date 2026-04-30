@@ -57,7 +57,7 @@ func archivePageURL(slug string, page int64, f ArchiveFilter) string {
 	return archiveFilterURL(slug, f, map[string]string{"page": p})
 }
 
-templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter) {
+templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, workflows []core.WorkflowDef) {
 	@Layout(project.Name+" — Archive", project.Slug) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title"><i class="icon icon-archive"></i> Archive</h2>
@@ -124,7 +124,7 @@ templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter)
 				<div class="kvt-empty">No archived tasks.</div>
 			} else {
 				for _, t := range tasks {
-					@ArchiveRow(t, project.Slug)
+					@ArchiveRow(t, project.Slug, workflows)
 				}
 			}
 		</div>
@@ -135,10 +135,10 @@ templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter)
 	}
 }
 
-templ ArchiveRow(task core.Task, slug string) {
+templ ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 	<div class="kvt-task-row" id={ fmt.Sprintf("archive-%d", task.ID) }>
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
-		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+		@TypeBadge(string(task.Type), workflows)
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
 		if task.Category != "" {
 			<span class="kvt-category-tag">{ task.Category }</span>

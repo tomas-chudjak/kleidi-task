@@ -108,10 +108,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 								<label class="kvt-field-label" for="cfg-type">Default task type</label>
 								<div class="kvt-select-wrap">
 									<select class="kvt-select" id="cfg-type" name="default_type">
-										<option value="task" selected?={ config.DefaultType == "task" }>Task</option>
-										<option value="bug" selected?={ config.DefaultType == "bug" }>Bug</option>
-										<option value="feature" selected?={ config.DefaultType == "feature" }>Feature</option>
-										<option value="hotfix" selected?={ config.DefaultType == "hotfix" }>Hotfix</option>
+										@TypeOptions(config.DefaultType, workflows)
 									</select>
 									<i class="icon icon-chevron-down kvt-select-icon"></i>
 								</div>
@@ -133,7 +130,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 							for _, wf := range workflows {
 								<div class="kvt-cat-row">
 									<div class="kvt-cat-display">
-										<span class={ "kvt-badge kvt-badge-" + wf.TaskType } style="font-size:0.6rem;">{ wf.TaskType }</span>
+										@TypeBadgeSmall(wf.TaskType, workflows)
 										<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">
 											{ fmt.Sprintf("%d phases", len(wf.Phases)) }
 										</a>
@@ -149,7 +146,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 						<p class="kvt-settings-desc">Predefined templates for quick task creation.</p>
 
 						<div id="template-list" class="kvt-cat-list">
-							@TemplateList(taskTemplates, project.Slug)
+							@TemplateList(taskTemplates, project.Slug, workflows)
 						</div>
 
 						<form
@@ -163,10 +160,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 							<div class="kvt-cat-form-row">
 								<input type="text" name="name" placeholder="Template name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
 								<select name="type" class="kvt-cat-input" style="max-width:100px;">
-									<option value="task">Task</option>
-									<option value="bug">Bug</option>
-									<option value="feature">Feature</option>
-									<option value="hotfix">Hotfix</option>
+									@TypeOptions("task", workflows)
 								</select>
 								<button type="submit" class="kvt-cat-add-btn" title="Add template"><i class="icon icon-plus"></i></button>
 							</div>
@@ -240,14 +234,14 @@ templ CategoryRow(cat core.Category, slug string) {
 	</div>
 }
 
-templ TemplateList(tpls []core.TaskTemplate, slug string) {
+templ TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.WorkflowDef) {
 	if len(tpls) == 0 {
 		<div class="kvt-empty" style="font-size:0.85rem;">No templates yet.</div>
 	} else {
 		for _, t := range tpls {
 			<div class="kvt-cat-row" id={ fmt.Sprintf("tpl-%d", t.ID) }>
 				<div class="kvt-cat-display">
-					<span class={ "kvt-badge kvt-badge-" + t.Type } style="font-size:0.6rem;">{ t.Type }</span>
+					@TypeBadgeSmall(t.Type, workflows)
 					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">{ t.Name }</a>
 					<span style="font-size:0.65rem;color:var(--kvt-fg-muted);">P{ fmt.Sprintf("%d", t.Priority) }</span>
 					<button

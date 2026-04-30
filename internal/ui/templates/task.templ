@@ -27,14 +27,14 @@ func workflowConnectorClass(idx, currentIdx int) string {
 	return ""
 }
 
-templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit, workflow core.WorkflowContext, history []core.HistoryEntry) {
+templ TaskPage(project core.Project, task core.Task, categories []core.Category, commits []core.Commit, workflow core.WorkflowContext, history []core.HistoryEntry, workflows []core.WorkflowDef) {
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title), project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Task toolbar -->
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
 				<a href={ templ.SafeURL("/p/" + project.Slug) } onclick="if(document.referrer){event.preventDefault();history.back()}" class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
-				<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+				@TypeBadge(string(task.Type), workflows)
 				<span class="kvt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 				<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
 			</div>
@@ -243,10 +243,7 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 									name="type"
 									hx-trigger="change"
 								>
-									<option value="task" selected?={ task.Type == core.TypeTask }>Task</option>
-									<option value="bug" selected?={ task.Type == core.TypeBug }>Bug</option>
-									<option value="feature" selected?={ task.Type == core.TypeFeature }>Feature</option>
-									<option value="hotfix" selected?={ task.Type == core.TypeHotfix }>Hotfix</option>
+									@TypeOptions(string(task.Type), workflows)
 								</select>
 								<i class="icon icon-chevron-down kvt-select-icon"></i>
 							</div>

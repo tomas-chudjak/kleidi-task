@@ -38,6 +38,9 @@ type WorkflowDef struct {
 	Phases       []string            `json:"phases"`
 	Triggers     map[string]Triggers `json:"triggers"`
 	PhasePrompts map[string]string   `json:"phase_prompts"`
+	Color        string              `json:"color"`
+	Prefix       string              `json:"prefix"`
+	IsBuiltin    bool                `json:"is_builtin"`
 }
 
 // Triggers defines before/after skill triggers for a workflow phase.
@@ -354,11 +357,62 @@ func (s *WorkflowService) UpdateWorkflow(ctx context.Context, wf WorkflowDef) er
 	})
 }
 
+// CreateWorkflow creates a new custom task type with its workflow.
+func (s *WorkflowService) CreateWorkflow(ctx context.Context, wf WorkflowDef) (WorkflowDef, error) {
+	if wf.TaskType == "" {
+		return WorkflowDef{}, fmt.Errorf("%w: task type name is required", ErrInvalidInput)
+	}
+	if len(wf.Phases) == 0 {
+		wf.Phases = []string{"todo", "doing", "done"}
+	}
+	if wf.Triggers == nil {
+		wf.Triggers = map[string]Triggers{}
+	}
+	if wf.PhasePrompts == nil {
+		wf.PhasePrompts = map[string]string{}
+	}
+	if wf.Color == "" {
+		wf.Color = "#e0e7ef"
+	}
+
+	phasesJSON, _ := json.Marshal(wf.Phases)
+	triggersJSON, _ := json.Marshal(wf.Triggers)
+	promptsJSON, _ := json.Marshal(wf.PhasePrompts)
+
+	row, err := s.queries.CreateWorkflow(ctx, generated.CreateWorkflowParams{
+		TaskType:     wf.TaskType,
+		Phases:       string(phasesJSON),
+		Triggers:     string(triggersJSON),
+		PhasePrompts: string(promptsJSON),
+		Color:        wf.Color,
+		Prefix:       wf.Prefix,
+		IsBuiltin:    0,
+	})
+	if err != nil {
+		return WorkflowDef{}, fmt.Errorf("creating workflow: %w", err)
+	}
+	return workflowFromRow(row), nil
+}
+
+// DeleteWorkflow removes a custom (non-builtin) task type and its workflow.
+func (s *WorkflowService) DeleteWorkflow(ctx context.Context, taskType string) error {
+	return s.queries.DeleteWorkflow(ctx, taskType)
+}
+
+// ValidTypeExists checks if a task type exists in the workflows table.
+func (s *WorkflowService) ValidTypeExists(ctx context.Context, taskType string) bool {
+	_, err := s.queries.GetWorkflow(ctx, taskType)
+	return err == nil
+}
+
 func workflowFromRow(row generated.Workflow) WorkflowDef {
 	wf := WorkflowDef{
 		TaskType:     row.TaskType,
 		Triggers:     map[string]Triggers{},
 		PhasePrompts: map[string]string{},
+		Color:        row.Color,
+		Prefix:       row.Prefix,
+		IsBuiltin:    row.IsBuiltin != 0,
 	}
 	json.Unmarshal([]byte(row.Phases), &wf.Phases)
 	json.Unmarshal([]byte(row.Triggers), &wf.Triggers)

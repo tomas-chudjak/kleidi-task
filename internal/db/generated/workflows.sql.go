@@ -10,8 +10,57 @@ import (
 	"database/sql"
 )
 
+const createWorkflow = `-- name: CreateWorkflow :one
+INSERT INTO workflows (task_type, phases, triggers, phase_prompts, color, prefix, is_builtin)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin
+`
+
+type CreateWorkflowParams struct {
+	TaskType     string `json:"task_type"`
+	Phases       string `json:"phases"`
+	Triggers     string `json:"triggers"`
+	PhasePrompts string `json:"phase_prompts"`
+	Color        string `json:"color"`
+	Prefix       string `json:"prefix"`
+	IsBuiltin    int64  `json:"is_builtin"`
+}
+
+func (q *Queries) CreateWorkflow(ctx context.Context, arg CreateWorkflowParams) (Workflow, error) {
+	row := q.db.QueryRowContext(ctx, createWorkflow,
+		arg.TaskType,
+		arg.Phases,
+		arg.Triggers,
+		arg.PhasePrompts,
+		arg.Color,
+		arg.Prefix,
+		arg.IsBuiltin,
+	)
+	var i Workflow
+	err := row.Scan(
+		&i.ID,
+		&i.TaskType,
+		&i.Phases,
+		&i.Triggers,
+		&i.PhasePrompts,
+		&i.Color,
+		&i.Prefix,
+		&i.IsBuiltin,
+	)
+	return i, err
+}
+
+const deleteWorkflow = `-- name: DeleteWorkflow :exec
+DELETE FROM workflows WHERE task_type = ? AND is_builtin = 0
+`
+
+func (q *Queries) DeleteWorkflow(ctx context.Context, taskType string) error {
+	_, err := q.db.ExecContext(ctx, deleteWorkflow, taskType)
+	return err
+}
+
 const getWorkflow = `-- name: GetWorkflow :one
-SELECT id, task_type, phases, triggers, phase_prompts FROM workflows WHERE task_type = ?
+SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin FROM workflows WHERE task_type = ?
 `
 
 func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, error) {
@@ -23,6 +72,9 @@ func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, e
 		&i.Phases,
 		&i.Triggers,
 		&i.PhasePrompts,
+		&i.Color,
+		&i.Prefix,
+		&i.IsBuiltin,
 	)
 	return i, err
 }
@@ -106,7 +158,7 @@ func (q *Queries) ListWorkflowHistory(ctx context.Context, taskID int64) ([]Work
 }
 
 const listWorkflows = `-- name: ListWorkflows :many
-SELECT id, task_type, phases, triggers, phase_prompts FROM workflows ORDER BY task_type
+SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin FROM workflows ORDER BY task_type
 `
 
 func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
@@ -124,6 +176,9 @@ func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 			&i.Phases,
 			&i.Triggers,
 			&i.PhasePrompts,
+			&i.Color,
+			&i.Prefix,
+			&i.IsBuiltin,
 		); err != nil {
 			return nil, err
 		}
@@ -171,5 +226,20 @@ func (q *Queries) UpdateWorkflow(ctx context.Context, arg UpdateWorkflowParams) 
 		arg.PhasePrompts,
 		arg.TaskType,
 	)
+	return err
+}
+
+const updateWorkflowMeta = `-- name: UpdateWorkflowMeta :exec
+UPDATE workflows SET color = ?, prefix = ? WHERE task_type = ?
+`
+
+type UpdateWorkflowMetaParams struct {
+	Color    string `json:"color"`
+	Prefix   string `json:"prefix"`
+	TaskType string `json:"task_type"`
+}
+
+func (q *Queries) UpdateWorkflowMeta(ctx context.Context, arg UpdateWorkflowMetaParams) error {
+	_, err := q.db.ExecContext(ctx, updateWorkflowMeta, arg.Color, arg.Prefix, arg.TaskType)
 	return err
 }

@@ -3,13 +3,13 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef) {
+templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []core.WorkflowDef) {
 	@Layout("Workflow: "+wf.TaskType+" — "+project.Name, project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
 				<a href={ templ.SafeURL("/p/" + project.Slug + "/workflows") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
-				<span class={ "kvt-badge kvt-badge-" + wf.TaskType }>{ wf.TaskType }</span>
+				@TypeBadge(wf.TaskType, workflows)
 				<span class="kvt-toolbar-id">Workflow Editor</span>
 			</div>
 		</div>

@@ -115,7 +115,7 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 	return buildFilterURL(slug, f, map[string]string{"page": p})
 }
 
-templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category) {
+templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category, workflows []core.WorkflowDef) {
 	@Layout(project.Name, project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<div class="kvt-board-header">
@@ -216,10 +216,10 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 		<div class="k-grid k-grid--12 kvt-project-grid">
 			<div class="k-col-span-9 kvt-project-main">
 				<div id="task-list" class="kvt-task-list">
-					@TaskList(tasks, project.Slug)
+					@TaskList(tasks, project.Slug, workflows)
 				</div>
 
-				@BulkBar(project.Slug)
+				@BulkBar(project.Slug, workflows)
 
 				if filter.TotalPages > 1 {
 					@Pagination(project.Slug, filter)
@@ -336,7 +336,7 @@ templ StatsBarOOB(stats core.ProjectStats) {
 	</div>
 }
 
-templ TaskList(tasks []core.Task, slug string) {
+templ TaskList(tasks []core.Task, slug string, workflows []core.WorkflowDef) {
 	if len(tasks) == 0 {
 		<div class="kvt-empty">No tasks yet.</div>
 	} else {
@@ -353,7 +353,7 @@ templ TaskList(tasks []core.Task, slug string) {
 			<span></span>
 		</div>
 		for _, t := range tasks {
-			@TaskRow(t, slug)
+			@TaskRow(t, slug, workflows)
 		}
 	}
 }
@@ -382,13 +382,13 @@ templ Pagination(slug string, filter ProjectFilter) {
 	</nav>
 }
 
-templ TaskRow(task core.Task, slug string) {
+templ TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 	<div class="kvt-task-row kvt-task-row--bulk" id={ fmt.Sprintf("task-%d", task.ID) }>
 		<label class="kvt-bulk-checkbox">
 			<input type="checkbox" class="kvt-bulk-cb" value={ fmt.Sprintf("%d", task.ID) } onchange="kvtBulk.toggle(this)"/>
 		</label>
 		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
-		<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+		@TypeBadge(string(task.Type), workflows)
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
 		if task.Category != "" {
 			<span class="kvt-category-tag">{ task.Category }</span>
@@ -442,7 +442,7 @@ script bulkDropdown(slug string, action string) {
 	}
 }
 
-templ BulkBar(slug string) {
+templ BulkBar(slug string, workflows []core.WorkflowDef) {
 	<div id="bulk-bar" class="kvt-bulk-bar" style="display:none;">
 		<div class="kvt-bulk-bar-left">
 			<span id="bulk-count">0</span> selected
@@ -466,10 +466,7 @@ templ BulkBar(slug string) {
 			<div class="kvt-bulk-dropdown">
 				<select onchange={ bulkDropdown(slug, "type") }>
 					<option value="">Type...</option>
-					<option value="task">Task</option>
-					<option value="bug">Bug</option>
-					<option value="feature">Feature</option>
-					<option value="hotfix">Hotfix</option>
+					@TypeOptions("", workflows)
 				</select>
 			</div>
 			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--danger" onclick={ bulkAction(slug, "delete") }>

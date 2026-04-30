@@ -16,6 +16,16 @@ type UIHandler struct {
 	projectService *core.ProjectService
 }
 
+// workflows returns the workflow definitions for a project path.
+func (h *UIHandler) workflows(r *http.Request, projectPath string) []core.WorkflowDef {
+	wfService, _ := h.projectService.WorkflowServiceFor(projectPath)
+	if wfService == nil {
+		return nil
+	}
+	wfs, _ := wfService.ListWorkflows(r.Context())
+	return wfs
+}
+
 // Dashboard renders the main page with all projects and live stats.
 func (h *UIHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	projects, err := h.projectService.List()
@@ -128,7 +138,7 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ProjectPage(project, result.Tasks, stats, pf, categories).Render(r.Context(), w)
+	templates.ProjectPage(project, result.Tasks, stats, pf, categories, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // TaskDetail renders a single task page.
@@ -179,7 +189,7 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 	if wfService != nil {
 		history, _ = wfService.GetHistory(r.Context(), task.ID)
 	}
-	templates.TaskPage(project, task, categories, commits, workflow, history).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // TaskNewPage renders the detailed task creation page.
@@ -211,7 +221,7 @@ func (h *UIHandler) TaskNewPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskNewPage(project, categories, config, taskTemplates).Render(r.Context(), w)
+	templates.TaskNewPage(project, categories, config, taskTemplates, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // CreateDetailedTask handles the detailed task creation form — creates task and redirects to detail.
@@ -311,7 +321,7 @@ func (h *UIHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskList(tasks, slug).Render(r.Context(), w)
+	templates.TaskList(tasks, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }
 
@@ -346,7 +356,7 @@ func (h *UIHandler) CompleteTask(w http.ResponseWriter, r *http.Request) {
 	// Return updated task row + OOB stats
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskRow(task, slug).Render(r.Context(), w)
+	templates.TaskRow(task, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }
 
@@ -460,7 +470,7 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	if wfService != nil {
 		history, _ = wfService.GetHistory(r.Context(), task.ID)
 	}
-	templates.TaskPage(project, task, categories, commits, workflow, history).Render(r.Context(), w)
+	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // AdvanceTask advances a task to the next workflow phase and redirects back to detail.
@@ -541,7 +551,7 @@ func (h *UIHandler) BulkAction(w http.ResponseWriter, r *http.Request) {
 	tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 100})
 	stats, _ := taskService.Stats(r.Context())
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskList(tasks, slug).Render(r.Context(), w)
+	templates.TaskList(tasks, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 	templates.StatsBarOOB(stats).Render(r.Context(), w)
 }
 
@@ -566,7 +576,7 @@ func (h *UIHandler) SearchTasks(w http.ResponseWriter, r *http.Request) {
 		// Empty query — return full list
 		tasks, _ := taskService.List(r.Context(), core.ListTasksFilter{Limit: 20})
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		templates.TaskList(tasks, slug).Render(r.Context(), w)
+		templates.TaskList(tasks, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 		return
 	}
 
@@ -574,12 +584,12 @@ func (h *UIHandler) SearchTasks(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// FTS syntax error — fall back to empty
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		templates.TaskList(nil, slug).Render(r.Context(), w)
+		templates.TaskList(nil, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TaskList(tasks, slug).Render(r.Context(), w)
+	templates.TaskList(tasks, slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // ExportTasks handles task export as JSON or Markdown file download.
@@ -676,7 +686,7 @@ func (h *UIHandler) Board(w http.ResponseWriter, r *http.Request) {
 	stats, _ := taskService.Stats(r.Context())
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.BoardPage(project, todoTasks, doingTasks, doneTasks, stats, typeFilter).Render(r.Context(), w)
+	templates.BoardPage(project, todoTasks, doingTasks, doneTasks, stats, typeFilter, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // MoveTask handles drag & drop status change from kanban board.
@@ -1002,7 +1012,7 @@ func (h *UIHandler) ArchivePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ArchivePage(project, result.Tasks, af).Render(r.Context(), w)
+	templates.ArchivePage(project, result.Tasks, af, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // ArchiveTaskRedirect archives a task and redirects back.
@@ -1175,7 +1185,7 @@ func (h *UIHandler) TemplateDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TemplateDetailPage(project, tpl).Render(r.Context(), w)
+	templates.TemplateDetailPage(project, tpl, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // UpdateTemplate handles template update from detail page.
@@ -1303,7 +1313,7 @@ func (h *UIHandler) WorkflowEditor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.WorkflowEditorPage(project, wf).Render(r.Context(), w)
+	templates.WorkflowEditorPage(project, wf, h.workflows(r, project.Path)).Render(r.Context(), w)
 }
 
 // UpdateWorkflow handles saving workflow changes.
@@ -1369,10 +1379,83 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// CreateCustomType handles POST /p/{slug}/workflows — creates a new custom task type with workflow.
+func (h *UIHandler) CreateCustomType(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var input struct {
+		TaskType string `json:"task_type"`
+		Prefix   string `json:"prefix"`
+		Color    string `json:"color"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	if input.TaskType == "" {
+		http.Error(w, "Type name is required", http.StatusBadRequest)
+		return
+	}
+
+	wf := core.WorkflowDef{
+		TaskType: input.TaskType,
+		Prefix:   input.Prefix,
+		Color:    input.Color,
+	}
+
+	if _, err := wfService.CreateWorkflow(r.Context(), wf); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Redirect back to workflows page
+	w.Header().Set("HX-Redirect", fmt.Sprintf("/p/%s/workflows", slug))
+	w.WriteHeader(http.StatusCreated)
+}
+
+// DeleteCustomType handles DELETE /p/{slug}/workflows/{taskType} — deletes a custom task type.
+func (h *UIHandler) DeleteCustomType(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	taskType := chi.URLParam(r, "taskType")
+
+	project, err := h.projectService.GetBySlug(slug)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	wfService, err := h.projectService.WorkflowServiceFor(project.Path)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if err := wfService.DeleteWorkflow(r.Context(), taskType); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Redirect back to workflows page
+	w.Header().Set("HX-Redirect", fmt.Sprintf("/p/%s/workflows", slug))
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *UIHandler) renderTemplateList(w http.ResponseWriter, r *http.Request, tplService *core.TemplateService, slug string) {
 	tpls, _ := tplService.List(r.Context())
 
 	project, _ := h.projectService.GetBySlug(slug)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.TemplateList(tpls, project.Slug).Render(r.Context(), w)
+	templates.TemplateList(tpls, project.Slug, h.workflows(r, project.Path)).Render(r.Context(), w)
 }

@@ -3,14 +3,14 @@ package templates
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate) {
+templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows []core.WorkflowDef) {
 	@Layout(tpl.Name+" — Template", project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Toolbar -->
 		<div class="kvt-toolbar">
 			<div class="kvt-toolbar-left">
 				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#templates") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
-				<span class={ "kvt-badge kvt-badge-" + tpl.Type }>{ tpl.Type }</span>
+				@TypeBadge(tpl.Type, workflows)
 				<span class="kvt-toolbar-id">Template: { tpl.Name }</span>
 			</div>
 			<div class="kvt-toolbar-right">
@@ -85,10 +85,7 @@ templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate) {
 							<label class="kvt-field-label">Type</label>
 							<div class="kvt-select-wrap">
 								<select class="kvt-select" id="tpl-type" name="type">
-									<option value="task" selected?={ tpl.Type == "task" }>Task</option>
-									<option value="bug" selected?={ tpl.Type == "bug" }>Bug</option>
-									<option value="feature" selected?={ tpl.Type == "feature" }>Feature</option>
-									<option value="hotfix" selected?={ tpl.Type == "hotfix" }>Hotfix</option>
+									@TypeOptions(tpl.Type, workflows)
 								</select>
 								<i class="icon icon-chevron-down kvt-select-icon"></i>
 							</div>

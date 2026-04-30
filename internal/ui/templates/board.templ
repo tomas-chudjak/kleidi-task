@@ -14,7 +14,7 @@ func boardTypeURL(slug, typ, current string) string {
 	return "/p/" + slug + "/board?type=" + toggled
 }
 
-templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats, typeFilter string) {
+templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done []core.Task, stats core.ProjectStats, typeFilter string, workflows []core.WorkflowDef) {
 	@Layout(project.Name+" — Board", project.Slug) {
 		<div class="kvt-board-header">
 			<h2 class="kvt-title">{ project.Name }</h2>
@@ -40,9 +40,9 @@ templ BoardPage(project core.Project, todo []core.Task, doing []core.Task, done 
 		</div>
 
 		<div class="k-grid k-grid--3 kvt-board">
-			@BoardColumn("Todo", "todo", todo, project.Slug)
-			@BoardColumn("In Progress", "doing", doing, project.Slug)
-			@BoardColumn("Done", "done", done, project.Slug)
+			@BoardColumn("Todo", "todo", todo, project.Slug, workflows)
+			@BoardColumn("In Progress", "doing", doing, project.Slug, workflows)
+			@BoardColumn("Done", "done", done, project.Slug, workflows)
 		</div>
 
 		<script src="/static/js/sortable.min.js"></script>
@@ -91,7 +91,7 @@ script boardScript() {
 	});
 }
 
-templ BoardColumn(title string, status string, tasks []core.Task, slug string) {
+templ BoardColumn(title string, status string, tasks []core.Task, slug string, workflows []core.WorkflowDef) {
 	<div class={ "kvt-board-column kvt-board-column--" + status }>
 		<div class="kvt-board-column-header">
 			<span class={ "kvt-board-dot kvt-board-dot--" + status }></span>
@@ -100,16 +100,16 @@ templ BoardColumn(title string, status string, tasks []core.Task, slug string) {
 		</div>
 		<div class="kvt-board-cards" data-status={ status } data-slug={ slug }>
 			for _, t := range tasks {
-				@BoardCard(t, slug)
+				@BoardCard(t, slug, workflows)
 			}
 		</div>
 	</div>
 }
 
-templ BoardCard(task core.Task, slug string) {
+templ BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) {
 	<div class={ "kvt-board-card kvt-board-card--" + string(task.Type) } data-task-id={ fmt.Sprintf("%d", task.ID) }>
 		<div class="kvt-board-card-top">
-			<span class={ "kvt-badge kvt-badge-" + string(task.Type) }>{ string(task.Type) }</span>
+			@TypeBadge(string(task.Type), workflows)
 			<span class="kvt-board-card-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		</div>
 		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-board-card-title">{ task.Title }</a>

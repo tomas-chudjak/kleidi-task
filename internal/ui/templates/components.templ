@@ -1,0 +1,76 @@
+package templates
+
+import "github.com/ahoylog/kvik-tasks/internal/core"
+import "fmt"
+import "strings"
+
+// TypeBadge renders a badge for a task type using inline colors from the workflow definition.
+// Falls back to neutral styling if no workflows are provided.
+templ TypeBadge(typeName string, workflows []core.WorkflowDef) {
+	<span class="kvt-badge" style={ typeBadgeStyle(typeName, workflows) }>{ typeName }</span>
+}
+
+// TypeBadgeSmall renders a smaller badge variant.
+templ TypeBadgeSmall(typeName string, workflows []core.WorkflowDef) {
+	<span class="kvt-badge" style={ typeBadgeStyle(typeName, workflows) + "font-size:0.6rem;" }>{ typeName }</span>
+}
+
+// TypeSelect renders a <select> with all available task types from workflows.
+templ TypeSelect(selectedType string, workflows []core.WorkflowDef, attrs templ.Attributes) {
+	<select { attrs... }>
+		for _, wf := range workflows {
+			<option value={ wf.TaskType } selected?={ wf.TaskType == selectedType }>{ capitalize(wf.TaskType) }</option>
+		}
+	</select>
+}
+
+// TypeOptions renders just the <option> elements for a type select.
+templ TypeOptions(selectedType string, workflows []core.WorkflowDef) {
+	for _, wf := range workflows {
+		<option value={ wf.TaskType } selected?={ wf.TaskType == selectedType }>{ capitalize(wf.TaskType) }</option>
+	}
+}
+
+// typeBadgeStyle returns inline CSS for a type badge based on workflow color.
+func typeBadgeStyle(typeName string, workflows []core.WorkflowDef) string {
+	for _, wf := range workflows {
+		if wf.TaskType == typeName && wf.Color != "" {
+			return fmt.Sprintf("background:%s;color:%s;", wf.Color, typeBadgeFg(wf.TaskType))
+		}
+	}
+	// Fallback for built-in types (when workflows not loaded yet)
+	switch typeName {
+	case "bug":
+		return "background:#fde8ee;color:var(--kvt-danger);"
+	case "feature":
+		return "background:#f0e8ff;color:var(--kvt-purple);"
+	case "hotfix":
+		return "background:#fff1e6;color:var(--kvt-orange);"
+	default:
+		return "background:var(--kvt-accent-light);color:var(--kvt-accent);"
+	}
+}
+
+// typeBadgeFg returns the foreground color for a type badge.
+func typeBadgeFg(typeName string) string {
+	switch typeName {
+	case "task":
+		return "var(--kvt-accent)"
+	case "bug":
+		return "var(--kvt-danger)"
+	case "feature":
+		return "var(--kvt-purple)"
+	case "hotfix":
+		return "var(--kvt-orange)"
+	default:
+		return "var(--kvt-fg)"
+	}
+}
+
+// capitalize returns the string with the first letter uppercased.
+func capitalize(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}

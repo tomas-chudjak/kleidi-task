@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/ahoylog/kvik-tasks/internal/core"
 import "fmt"
 
-func WorkflowEditorPage(project core.Project, wf core.WorkflowDef) templ.Component {
+func WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []core.WorkflowDef) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -70,176 +70,149 @@ func WorkflowEditorPage(project core.Project, wf core.WorkflowDef) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 = []any{"kvt-badge kvt-badge-" + wf.TaskType}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+			templ_7745c5c3_Err = TypeBadge(wf.TaskType, workflows).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"kvt-toolbar-id\">Workflow Editor</span></div></div><div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><form id=\"wf-form\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var5).String())
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 1, Col: 0}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(wf.TaskType)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 12, Col: 70}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span class=\"kvt-toolbar-id\">Workflow Editor</span></div></div><div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><form id=\"wf-form\" hx-patch=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType))
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 21, Col: 74}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-ext=\"json-enc\" hx-swap=\"none\"><div class=\"kvt-task-layout\"><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-git-branch\"></i> Phases</h4><p class=\"kvt-settings-desc\">Define the workflow phases and AI prompts for each step.</p><div class=\"kvt-wf-phases\" id=\"wf-phases\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-ext=\"json-enc\" hx-swap=\"none\"><div class=\"kvt-task-layout\"><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-git-branch\"></i> Phases</h4><p class=\"kvt-settings-desc\">Define the workflow phases and AI prompts for each step.</p><div class=\"kvt-wf-phases\" id=\"wf-phases\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for i, phase := range wf.Phases {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"kvt-wf-phase-card\"><div class=\"kvt-wf-phase-header\"><span class=\"kvt-wf-phase-num\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"kvt-wf-phase-card\"><div class=\"kvt-wf-phase-header\"><span class=\"kvt-wf-phase-num\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
+				var templ_7745c5c3_Var6 string
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", i+1))
 				if templ_7745c5c3_Err != nil {
 					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 35, Col: 64}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <input type=\"text\" class=\"kvt-input kvt-wf-phase-name\" name=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <input type=\"text\" class=\"kvt-input kvt-wf-phase-name\" name=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var10 string
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_name", i))
+				var templ_7745c5c3_Var7 string
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_name", i))
 				if templ_7745c5c3_Err != nil {
 					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 39, Col: 48}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(phase)
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(phase)
 				if templ_7745c5c3_Err != nil {
 					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 40, Col: 23}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" placeholder=\"Phase name\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" placeholder=\"Phase name\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if i > 0 && i < len(wf.Phases)-1 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<button type=\"button\" class=\"kvt-cat-del-btn\" onclick=\"this.closest('.kvt-wf-phase-card').remove();renumberWfPhases()\" title=\"Remove phase\"><i class=\"icon icon-x\"></i></button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button type=\"button\" class=\"kvt-cat-del-btn\" onclick=\"this.closest('.kvt-wf-phase-card').remove();renumberWfPhases()\" title=\"Remove phase\"><i class=\"icon icon-x\"></i></button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if phase != wf.Phases[0] && phase != wf.Phases[len(wf.Phases)-1] {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<textarea class=\"kvt-textarea\" name=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<textarea class=\"kvt-textarea\" name=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var12 string
-					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_prompt", i))
+					var templ_7745c5c3_Var9 string
+					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_prompt", i))
 					if templ_7745c5c3_Err != nil {
 						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 56, Col: 50}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" rows=\"3\" placeholder=\"AI prompt for this phase...\" style=\"margin-top:8px;min-height:60px;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" rows=\"3\" placeholder=\"AI prompt for this phase...\" style=\"margin-top:8px;min-height:60px;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var13 string
-					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(wf.PhasePrompts[phase])
+					var templ_7745c5c3_Var10 string
+					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(wf.PhasePrompts[phase])
 					if templ_7745c5c3_Err != nil {
 						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 60, Col: 34}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</textarea>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><button type=\"button\" class=\"kvt-add-btn kvt-add-btn--outline\" style=\"margin-top:12px;max-width:200px;\" onclick=\"addWfPhase()\"><i class=\"icon icon-plus\"></i> Add phase</button><script>\n\t\t\t\t\t\tfunction addWfPhase() {\n\t\t\t\t\t\t\tvar container = document.getElementById('wf-phases');\n\t\t\t\t\t\t\tvar cards = container.querySelectorAll('.kvt-wf-phase-card');\n\t\t\t\t\t\t\tvar lastCard = cards[cards.length - 1];\n\t\t\t\t\t\t\tvar idx = cards.length;\n\t\t\t\t\t\t\t// Build DOM elements safely without innerHTML\n\t\t\t\t\t\t\tvar div = document.createElement('div');\n\t\t\t\t\t\t\tdiv.className = 'kvt-wf-phase-card';\n\t\t\t\t\t\t\tvar header = document.createElement('div');\n\t\t\t\t\t\t\theader.className = 'kvt-wf-phase-header';\n\t\t\t\t\t\t\tvar num = document.createElement('span');\n\t\t\t\t\t\t\tnum.className = 'kvt-wf-phase-num';\n\t\t\t\t\t\t\tnum.textContent = String(idx);\n\t\t\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\t\t\tinput.type = 'text';\n\t\t\t\t\t\t\tinput.className = 'kvt-input kvt-wf-phase-name';\n\t\t\t\t\t\t\tinput.name = 'phase_' + (idx - 1) + '_name';\n\t\t\t\t\t\t\tinput.placeholder = 'New phase name';\n\t\t\t\t\t\t\tinput.autocomplete = 'off';\n\t\t\t\t\t\t\tvar delBtn = document.createElement('button');\n\t\t\t\t\t\t\tdelBtn.type = 'button';\n\t\t\t\t\t\t\tdelBtn.className = 'kvt-cat-del-btn';\n\t\t\t\t\t\t\tdelBtn.title = 'Remove phase';\n\t\t\t\t\t\t\tdelBtn.onclick = function() { div.remove(); renumberWfPhases(); };\n\t\t\t\t\t\t\tvar delIcon = document.createElement('i');\n\t\t\t\t\t\t\tdelIcon.className = 'icon icon-x';\n\t\t\t\t\t\t\tdelBtn.appendChild(delIcon);\n\t\t\t\t\t\t\theader.appendChild(num);\n\t\t\t\t\t\t\theader.appendChild(input);\n\t\t\t\t\t\t\theader.appendChild(delBtn);\n\t\t\t\t\t\t\tvar ta = document.createElement('textarea');\n\t\t\t\t\t\t\tta.className = 'kvt-textarea';\n\t\t\t\t\t\t\tta.name = 'phase_' + (idx - 1) + '_prompt';\n\t\t\t\t\t\t\tta.rows = 3;\n\t\t\t\t\t\t\tta.placeholder = 'AI prompt for this phase...';\n\t\t\t\t\t\t\tta.style.marginTop = '8px';\n\t\t\t\t\t\t\tta.style.minHeight = '60px';\n\t\t\t\t\t\t\tdiv.appendChild(header);\n\t\t\t\t\t\t\tdiv.appendChild(ta);\n\t\t\t\t\t\t\tcontainer.insertBefore(div, lastCard);\n\t\t\t\t\t\t\trenumberWfPhases();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tfunction renumberWfPhases() {\n\t\t\t\t\t\t\tvar cards = document.querySelectorAll('#wf-phases .kvt-wf-phase-card');\n\t\t\t\t\t\t\tcards.forEach(function(card, i) {\n\t\t\t\t\t\t\t\tvar num = card.querySelector('.kvt-wf-phase-num');\n\t\t\t\t\t\t\t\tif (num) num.textContent = String(i + 1);\n\t\t\t\t\t\t\t\tvar nameInput = card.querySelector('.kvt-wf-phase-name');\n\t\t\t\t\t\t\t\tif (nameInput) nameInput.name = 'phase_' + i + '_name';\n\t\t\t\t\t\t\t\tvar promptInput = card.querySelector('textarea');\n\t\t\t\t\t\t\t\tif (promptInput) promptInput.name = 'phase_' + i + '_prompt';\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t</script></div></div><div class=\"kvt-task-sidebar\"><button type=\"submit\" class=\"kvt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save workflow</button><div class=\"kvt-detail-card\"><div class=\"kvt-detail-fields\"><div class=\"kvt-field\"><label class=\"kvt-field-label\">Task type</label><div class=\"kvt-field-value\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><button type=\"button\" class=\"kvt-add-btn kvt-add-btn--outline\" style=\"margin-top:12px;max-width:200px;\" onclick=\"addWfPhase()\"><i class=\"icon icon-plus\"></i> Add phase</button><script>\n\t\t\t\t\t\tfunction addWfPhase() {\n\t\t\t\t\t\t\tvar container = document.getElementById('wf-phases');\n\t\t\t\t\t\t\tvar cards = container.querySelectorAll('.kvt-wf-phase-card');\n\t\t\t\t\t\t\tvar lastCard = cards[cards.length - 1];\n\t\t\t\t\t\t\tvar idx = cards.length;\n\t\t\t\t\t\t\t// Build DOM elements safely without innerHTML\n\t\t\t\t\t\t\tvar div = document.createElement('div');\n\t\t\t\t\t\t\tdiv.className = 'kvt-wf-phase-card';\n\t\t\t\t\t\t\tvar header = document.createElement('div');\n\t\t\t\t\t\t\theader.className = 'kvt-wf-phase-header';\n\t\t\t\t\t\t\tvar num = document.createElement('span');\n\t\t\t\t\t\t\tnum.className = 'kvt-wf-phase-num';\n\t\t\t\t\t\t\tnum.textContent = String(idx);\n\t\t\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\t\t\tinput.type = 'text';\n\t\t\t\t\t\t\tinput.className = 'kvt-input kvt-wf-phase-name';\n\t\t\t\t\t\t\tinput.name = 'phase_' + (idx - 1) + '_name';\n\t\t\t\t\t\t\tinput.placeholder = 'New phase name';\n\t\t\t\t\t\t\tinput.autocomplete = 'off';\n\t\t\t\t\t\t\tvar delBtn = document.createElement('button');\n\t\t\t\t\t\t\tdelBtn.type = 'button';\n\t\t\t\t\t\t\tdelBtn.className = 'kvt-cat-del-btn';\n\t\t\t\t\t\t\tdelBtn.title = 'Remove phase';\n\t\t\t\t\t\t\tdelBtn.onclick = function() { div.remove(); renumberWfPhases(); };\n\t\t\t\t\t\t\tvar delIcon = document.createElement('i');\n\t\t\t\t\t\t\tdelIcon.className = 'icon icon-x';\n\t\t\t\t\t\t\tdelBtn.appendChild(delIcon);\n\t\t\t\t\t\t\theader.appendChild(num);\n\t\t\t\t\t\t\theader.appendChild(input);\n\t\t\t\t\t\t\theader.appendChild(delBtn);\n\t\t\t\t\t\t\tvar ta = document.createElement('textarea');\n\t\t\t\t\t\t\tta.className = 'kvt-textarea';\n\t\t\t\t\t\t\tta.name = 'phase_' + (idx - 1) + '_prompt';\n\t\t\t\t\t\t\tta.rows = 3;\n\t\t\t\t\t\t\tta.placeholder = 'AI prompt for this phase...';\n\t\t\t\t\t\t\tta.style.marginTop = '8px';\n\t\t\t\t\t\t\tta.style.minHeight = '60px';\n\t\t\t\t\t\t\tdiv.appendChild(header);\n\t\t\t\t\t\t\tdiv.appendChild(ta);\n\t\t\t\t\t\t\tcontainer.insertBefore(div, lastCard);\n\t\t\t\t\t\t\trenumberWfPhases();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tfunction renumberWfPhases() {\n\t\t\t\t\t\t\tvar cards = document.querySelectorAll('#wf-phases .kvt-wf-phase-card');\n\t\t\t\t\t\t\tcards.forEach(function(card, i) {\n\t\t\t\t\t\t\t\tvar num = card.querySelector('.kvt-wf-phase-num');\n\t\t\t\t\t\t\t\tif (num) num.textContent = String(i + 1);\n\t\t\t\t\t\t\t\tvar nameInput = card.querySelector('.kvt-wf-phase-name');\n\t\t\t\t\t\t\t\tif (nameInput) nameInput.name = 'phase_' + i + '_name';\n\t\t\t\t\t\t\t\tvar promptInput = card.querySelector('textarea');\n\t\t\t\t\t\t\t\tif (promptInput) promptInput.name = 'phase_' + i + '_prompt';\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t</script></div></div><div class=\"kvt-task-sidebar\"><button type=\"submit\" class=\"kvt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save workflow</button><div class=\"kvt-detail-card\"><div class=\"kvt-detail-fields\"><div class=\"kvt-field\"><label class=\"kvt-field-label\">Task type</label><div class=\"kvt-field-value\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var14 string
-			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(wf.TaskType)
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(wf.TaskType)
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 134, Col: 49}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Phases</label><div class=\"kvt-field-value kvt-field-value--mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Phases</label><div class=\"kvt-field-value kvt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var15 string
-			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(wf.Phases)))
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(wf.Phases)))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 138, Col: 93}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div></div></div></div></div></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div></div></div></div></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

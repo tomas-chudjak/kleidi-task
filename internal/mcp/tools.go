@@ -16,7 +16,7 @@ import (
 type TaskCreateInput struct {
 	Project        string `json:"project" jsonschema:"project slug or 'current'"`
 	Title          string `json:"title" jsonschema:"task title"`
-	Type           string `json:"type,omitempty" jsonschema:"work item type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Type           string `json:"type,omitempty" jsonschema:"work item type (built-in: task, bug, feature, hotfix; or any custom type)"`
 	Description    string `json:"description,omitempty" jsonschema:"task description"`
 	Priority       int64  `json:"priority,omitempty" jsonschema:"higher number means higher priority"`
 	Category       string `json:"category,omitempty" jsonschema:"category/area of work (e.g. backend, frontend, design)"`
@@ -27,7 +27,7 @@ type TaskCreateInput struct {
 type TaskListInput struct {
 	Project       string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	Status        string `json:"status,omitempty" jsonschema:"filter by status,enum=todo,enum=doing,enum=done"`
-	Type          string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Type          string `json:"type,omitempty" jsonschema:"filter by type,enum=task,enum=bug,enum=feature,enum=hotfix (or custom types)"`
 	Category      string `json:"category,omitempty" jsonschema:"filter by category (comma-separated for multi-select)"`
 	MinPriority   *int64 `json:"min_priority,omitempty" jsonschema:"minimum priority filter"`
 	CreatedAfter  string `json:"created_after,omitempty" jsonschema:"filter tasks created after this date (ISO 8601)"`
@@ -47,7 +47,7 @@ type TaskUpdateInput struct {
 	Title       string `json:"title,omitempty" jsonschema:"new title"`
 	Description string `json:"description,omitempty" jsonschema:"new description"`
 	Status      string `json:"status,omitempty" jsonschema:"new status,enum=todo,enum=doing,enum=done"`
-	Type        string `json:"type,omitempty" jsonschema:"new type,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Type        string `json:"type,omitempty" jsonschema:"new type (task, bug, feature, hotfix, or custom)"`
 	Priority    *int64 `json:"priority,omitempty" jsonschema:"new priority"`
 	Category    string `json:"category,omitempty" jsonschema:"new category"`
 }
@@ -95,7 +95,7 @@ type TaskBulkUpdateInput struct {
 	Project  string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	IDs      []int64 `json:"ids" jsonschema:"list of task IDs to update"`
 	Status   string `json:"status,omitempty" jsonschema:"new status for all,enum=todo,enum=doing,enum=done"`
-	Type     string `json:"type,omitempty" jsonschema:"new type for all,enum=task,enum=bug,enum=feature,enum=hotfix"`
+	Type     string `json:"type,omitempty" jsonschema:"new type for all (task, bug, feature, hotfix, or custom)"`
 	Priority *int64 `json:"priority,omitempty" jsonschema:"new priority for all"`
 	Category string `json:"category,omitempty" jsonschema:"new category for all"`
 }
