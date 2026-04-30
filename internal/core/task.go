@@ -57,7 +57,7 @@ func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, 
 		Status:      string(StatusTodo),
 		Priority:    input.Priority,
 		Source:      string(input.Source),
-		CreatedBy:   1, // default local user
+		CreatedBy:   userIDFromContext(ctx),
 		Category:    toNullString(input.Category),
 		Metadata:    serializeMetadata(input.ConversationID, input.SessionID),
 	})

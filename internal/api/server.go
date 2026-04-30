@@ -18,6 +18,7 @@ func NewRouter(projectService *core.ProjectService) http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.CORS)
 	r.Use(middleware.RequestID)
+	r.Use(middleware.BasicAuth(projectService.UserService()))
 
 	taskHandler := handlers.NewTaskHandler(projectService)
 	projectHandler := handlers.NewProjectHandler(projectService)

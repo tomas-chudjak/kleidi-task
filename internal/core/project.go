@@ -138,6 +138,11 @@ func (s *ProjectService) TaskServiceFor(projectPath string) (*TaskService, error
 	return ts, nil
 }
 
+// UserService returns a UserService using the registry database.
+func (s *ProjectService) UserService() *UserService {
+	return NewUserService(s.manager.RegistryDB())
+}
+
 // HookServiceFor returns a HookService for the given project path.
 func (s *ProjectService) HookServiceFor(projectPath string) *HookService {
 	return NewHookService(projectPath)
