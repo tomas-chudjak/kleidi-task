@@ -76,20 +76,17 @@ var addCmd = &cobra.Command{
 			taskType, title = core.DetectTypeFromTitle(title, core.TypeTask, extraPrefixes...)
 		}
 
-		// Auto-fill description from template if not provided
-		if description == "" {
-			tplService, tplErr := projectService.TemplateServiceFor(projectPath)
-			if tplErr == nil {
-				tpl, tplErr := tplService.GetByType(cmd.Context(), string(taskType))
-				if tplErr == nil && tpl.Description != "" {
-					description = tpl.Description
-				}
-			}
-		}
-
 		taskService, err := projectService.TaskServiceFor(projectPath)
 		if err != nil {
 			return err
+		}
+
+		// CLI has no AI — append empty template as scaffold
+		if description == "" {
+			templateDesc := taskService.GetTemplateForType(cmd.Context(), string(taskType))
+			if templateDesc != "" {
+				description = templateDesc
+			}
 		}
 
 		task, err := taskService.Create(cmd.Context(), core.CreateTaskInput{

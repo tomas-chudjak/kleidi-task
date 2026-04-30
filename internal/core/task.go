@@ -12,9 +12,10 @@ import (
 
 // TaskService handles task business logic.
 type TaskService struct {
-	db      *sql.DB
-	queries *generated.Queries
-	hooks   *HookService
+	db        *sql.DB
+	queries   *generated.Queries
+	hooks     *HookService
+	templates *TemplateService
 }
 
 // NewTaskService creates a new TaskService with the given database connection.
@@ -28,6 +29,24 @@ func NewTaskService(db *sql.DB) *TaskService {
 // SetHooks sets the hook service for firing lifecycle hooks.
 func (s *TaskService) SetHooks(hooks *HookService) {
 	s.hooks = hooks
+}
+
+// SetTemplates sets the template service for enriching task descriptions on create.
+func (s *TaskService) SetTemplates(templates *TemplateService) {
+	s.templates = templates
+}
+
+// GetTemplateForType returns the template description for a task type, if available.
+// Returns empty string if no template exists or templates are not configured.
+func (s *TaskService) GetTemplateForType(ctx context.Context, taskType string) string {
+	if s.templates == nil {
+		return ""
+	}
+	tpl, err := s.templates.GetByType(ctx, taskType)
+	if err != nil || tpl.Description == "" {
+		return ""
+	}
+	return tpl.Description
 }
 
 // fireHook fires a hook event if a HookService is configured.

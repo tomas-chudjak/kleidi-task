@@ -135,6 +135,7 @@ func (s *ProjectService) TaskServiceFor(projectPath string) (*TaskService, error
 	}
 	ts := NewTaskService(db)
 	ts.SetHooks(NewHookService(projectPath))
+	ts.SetTemplates(NewTemplateService(db))
 	return ts, nil
 }
 

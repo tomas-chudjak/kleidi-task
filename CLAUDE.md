@@ -66,6 +66,27 @@ kvt mcp                 # Start stdio MCP server
 - **HTMX + ahoylog-css** — server-rendered UI with `@ahoylog/ahoylog-css` design system
 - **SortableJS** — kanban drag & drop
 
+## Task Workflow (MANDATORY)
+
+When working on a kvik-tasks task, you MUST follow the task workflow:
+
+1. **Before starting work** — call `task_get` to read the task, its workflow context (current phase, phase instruction, next phase), and template-enriched description
+2. **Follow the phase instruction** — each workflow phase has a prompt/instruction. Execute what the phase requires before advancing
+3. **Advance when done** — after completing the current phase, call `task_advance` to move to the next phase. Read the suggested skills and next phase instruction
+4. **Repeat until complete** — continue through all phases until the workflow is finished
+5. **Template-driven descriptions** — when creating a task (`task_create`), if a template exists for the task type, fill in each template section with relevant content and call `task_update` to save it
+
+Example flow for a feature task:
+```
+task_get #66 → read workflow (phase: "todo", instruction: "...")
+  → do the work for this phase
+task_advance #66 → moves to next phase, returns new instruction
+  → do the work for next phase
+task_advance #66 → ... until complete
+```
+
+Never skip phases. Never ignore phase instructions. The workflow is the source of truth for how work progresses on a task.
+
 ## Key Conventions
 
 - **sqlc workflow:** modify SQL in `internal/db/queries/` → run `sqlc generate` → use generated code in `internal/db/generated/`

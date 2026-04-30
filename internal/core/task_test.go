@@ -486,6 +486,50 @@ func TestDeleteTaskNotFound(t *testing.T) {
 	}
 }
 
+func TestGetTemplateForType(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	tplService := NewTemplateService(testDB)
+	svc.SetTemplates(tplService)
+	ctx := context.Background()
+
+	// Custom type with known template
+	_, err := tplService.Create(ctx, "Spike Template", "spike", 3, "## Goal\n\n## Timebox\n\n## Findings")
+	if err != nil {
+		t.Fatalf("creating template: %v", err)
+	}
+
+	// Should return template description
+	got := svc.GetTemplateForType(ctx, "spike")
+	if got != "## Goal\n\n## Timebox\n\n## Findings" {
+		t.Errorf("expected spike template, got: %q", got)
+	}
+
+	// Unknown type — should return empty
+	got2 := svc.GetTemplateForType(ctx, "epic")
+	if got2 != "" {
+		t.Errorf("expected empty for unknown type, got: %q", got2)
+	}
+
+	// Pre-seeded bug template should exist
+	got3 := svc.GetTemplateForType(ctx, "bug")
+	if got3 == "" {
+		t.Error("expected pre-seeded bug template, got empty")
+	}
+}
+
+func TestGetTemplateForTypeWithoutTemplates(t *testing.T) {
+	testDB := db.NewTestProjectDB(t)
+	svc := NewTaskService(testDB)
+	// No SetTemplates called
+	ctx := context.Background()
+
+	got := svc.GetTemplateForType(ctx, "bug")
+	if got != "" {
+		t.Errorf("expected empty when templates not configured, got: %q", got)
+	}
+}
+
 func TestStats(t *testing.T) {
 	testDB := db.NewTestProjectDB(t)
 	svc := NewTaskService(testDB)
