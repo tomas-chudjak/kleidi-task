@@ -1,4 +1,7 @@
-# Installation
+---
+title: Installation
+weight: 1
+---
 
 ## Prerequisites
 
@@ -8,7 +11,7 @@
 ## Install via Go
 
 ```bash
-go install github.com/ahoylog/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kvik-tasks/cmd/kvt@latest
 ```
 
 Verify:
@@ -20,7 +23,7 @@ kvt version
 ## Build from source
 
 ```bash
-git clone https://github.com/ahoylog/kvik-tasks.git
+git clone https://github.com/tomas-chudjak/kvik-tasks.git
 cd kvik-tasks
 ```
 
@@ -52,7 +55,7 @@ ln -sf $(pwd)/kvt /usr/local/bin/kvt
 No Go installation needed. See [docker.md](docker.md) for full details.
 
 ```bash
-git clone https://github.com/ahoylog/kvik-tasks.git
+git clone https://github.com/tomas-chudjak/kvik-tasks.git
 cd kvik-tasks
 docker compose up -d
 ```

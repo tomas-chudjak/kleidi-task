@@ -1,4 +1,7 @@
-# Git Integration
+---
+title: Git Integration
+weight: 9
+---
 
 kvik-tasks automatically links git commits to tasks by scanning commit messages for task references. No configuration or hooks needed — it works out of the box in any git repository.
 

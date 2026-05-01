@@ -1,4 +1,7 @@
-# kvik-tasks MCP Server — Usage Guide
+---
+title: MCP Integration
+weight: 3
+---
 
 ## Setup
 

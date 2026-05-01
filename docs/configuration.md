@@ -1,4 +1,7 @@
-# Configuration
+---
+title: Configuration
+weight: 5
+---
 
 kvik-tasks uses a layered configuration system. Project config overrides global config.
 

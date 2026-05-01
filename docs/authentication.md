@@ -1,4 +1,7 @@
-# Authentication
+---
+title: Authentication
+weight: 8
+---
 
 kvik-tasks supports optional HTTP Basic Auth for team deployments. When no users are configured, the app runs in open-access mode — no credentials needed.
 

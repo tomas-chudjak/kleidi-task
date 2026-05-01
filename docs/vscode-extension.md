@@ -1,4 +1,7 @@
-# VS Code Extension
+---
+title: VS Code Extension
+weight: 11
+---
 
 kvik-tasks includes a VS Code extension that brings your tasks directly into the editor. It works in both VS Code and Cursor.
 

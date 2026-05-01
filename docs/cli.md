@@ -1,4 +1,7 @@
-# CLI Reference
+---
+title: CLI Reference
+weight: 2
+---
 
 The `kvt` command-line interface provides full task management from the terminal.
 

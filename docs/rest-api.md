@@ -1,4 +1,7 @@
-# REST API
+---
+title: REST API
+weight: 4
+---
 
 The REST API is available when `kvt serve` is running. All endpoints are prefixed with `/api/v1`.
 

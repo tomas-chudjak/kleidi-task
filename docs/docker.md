@@ -1,11 +1,14 @@
-# Docker Deployment
+---
+title: Docker Deployment
+weight: 10
+---
 
 kvik-tasks can run as a Docker container for team deployments.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/ahoylog/kvik-tasks.git
+git clone https://github.com/tomas-chudjak/kvik-tasks.git
 cd kvik-tasks
 docker compose up -d
 ```

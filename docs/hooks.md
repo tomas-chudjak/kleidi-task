@@ -1,4 +1,7 @@
-# Script Hooks
+---
+title: Script Hooks
+weight: 7
+---
 
 kvik-tasks supports project-level script hooks that run automatically on task lifecycle events. Hooks are shell commands executed asynchronously — they never block the task operation.
 

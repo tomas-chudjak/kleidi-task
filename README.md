@@ -49,13 +49,13 @@ Existing task managers are designed for humans clicking buttons. kvik-tasks is d
 ### Go install
 
 ```bash
-go install github.com/ahoylog/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kvik-tasks/cmd/kvt@latest
 ```
 
 ### Build from source
 
 ```bash
-git clone https://github.com/ahoylog/kvik-tasks.git
+git clone https://github.com/tomas-chudjak/kvik-tasks.git
 cd kvik-tasks
 task setup    # installs templ, sqlc, goose, air
 task build    # builds the kvt binary
@@ -67,7 +67,7 @@ Requires Go 1.22+.
 ### Docker
 
 ```bash
-git clone https://github.com/ahoylog/kvik-tasks.git
+git clone https://github.com/tomas-chudjak/kvik-tasks.git
 cd kvik-tasks
 docker compose up -d
 ```

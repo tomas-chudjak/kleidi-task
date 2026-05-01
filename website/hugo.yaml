@@ -1,0 +1,52 @@
+baseURL: https://kvik-tasks.pages.dev/
+languageCode: en
+title: kvik-tasks
+
+module:
+  imports:
+    - path: github.com/imfing/hextra
+  mounts:
+    - source: content
+      target: content
+    - source: ../docs
+      target: content/docs
+    - source: static
+      target: static
+
+enableRobotsTXT: true
+enableGitInfo: true
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
+
+menu:
+  main:
+    - name: Documentation
+      pageRef: /docs
+      weight: 1
+    - name: GitHub
+      url: https://github.com/tomas-chudjak/kvik-tasks
+      weight: 2
+    - name: Search
+      weight: 3
+      params:
+        type: search
+
+params:
+  description: Local-first, single-binary task tracker for developers who use AI assistants.
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+
+  footer:
+    displayCopyright: false
+    displayPoweredBy: false
+
+  editURL:
+    enable: true
+    base: https://github.com/tomas-chudjak/kvik-tasks/edit/main/docs

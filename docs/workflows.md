@@ -1,4 +1,7 @@
-# Task Workflows
+---
+title: Task Workflows
+weight: 6
+---
 
 Every task type has a phase-based workflow defining the stages it goes through from creation to completion.
 
