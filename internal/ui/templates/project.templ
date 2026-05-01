@@ -7,6 +7,7 @@ import "strings"
 type ProjectFilter struct {
 	Status        string
 	Type          string
+	Category      string
 	MinPriority   string
 	CreatedAfter  string
 	CreatedBefore string
@@ -27,6 +28,7 @@ func buildFilterURL(slug string, f ProjectFilter, overrides map[string]string) s
 	params := map[string]string{
 		"status":         f.Status,
 		"type":           f.Type,
+		"category":       f.Category,
 		"min_priority":   f.MinPriority,
 		"created_after":  f.CreatedAfter,
 		"created_before": f.CreatedBefore,
@@ -41,7 +43,7 @@ func buildFilterURL(slug string, f ProjectFilter, overrides map[string]string) s
 
 	base := "/p/" + slug
 	q := ""
-	for _, k := range []string{"status", "type", "min_priority", "created_after", "created_before", "page"} {
+	for _, k := range []string{"status", "type", "category", "min_priority", "created_after", "created_before", "page"} {
 		if v, ok := params[k]; ok && v != "" {
 			if q == "" {
 				q = "?"
@@ -182,7 +184,7 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 
 		<!-- Advanced filters (collapsible) -->
 		<details id="advanced-filters" class="kvt-advanced-toggle"
-			if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" {
+			if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" || filter.Category != "" {
 				open
 			}
 		>
@@ -198,6 +200,17 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 						<option value="8" selected?={ filter.MinPriority == "8" }>P8+</option>
 					</select>
 				</div>
+				if len(categories) > 0 {
+					<div class="kvt-filter-group">
+						<label class="kvt-filter-label" for="filter-category">Category</label>
+						<select class="kvt-filter-select" name="category" id="filter-category">
+							<option value="">All</option>
+							for _, c := range categories {
+								<option value={ c.Name } selected?={ filter.Category == c.Name }>{ c.Name }</option>
+							}
+						</select>
+					</div>
+				}
 				<div class="kvt-filter-group">
 					<label class="kvt-filter-label" for="filter-after">From</label>
 					<input type="date" class="kvt-filter-date" name="created_after" id="filter-after" value={ filter.CreatedAfter } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
@@ -207,7 +220,7 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 					<input type="date" class="kvt-filter-date" name="created_before" id="filter-before" value={ filter.CreatedBefore } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 				</div>
 				<button type="button" class="kvt-filter-apply" onclick="applyAdvancedFilters(this)">Apply</button>
-				if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" {
+				if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" || filter.Category != "" {
 					<a href={ templ.SafeURL(buildFilterURL(project.Slug, ProjectFilter{Status: filter.Status, Type: filter.Type}, map[string]string{})) } class="kvt-filter-clear">Clear</a>
 				}
 			</div>

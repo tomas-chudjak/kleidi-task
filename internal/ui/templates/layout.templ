@@ -54,6 +54,8 @@ templ layoutScripts() {
 		var url = new URL(window.location.href);
 		var pri = container.querySelector('[name="min_priority"]');
 		if (pri) { pri.value ? url.searchParams.set('min_priority', pri.value) : url.searchParams.delete('min_priority'); }
+		var cat = container.querySelector('[name="category"]');
+		if (cat) { cat.value ? url.searchParams.set('category', cat.value) : url.searchParams.delete('category'); }
 		var after = container.querySelector('[name="created_after"]');
 		if (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }
 		var before = container.querySelector('[name="created_before"]');

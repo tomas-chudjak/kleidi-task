@@ -89,6 +89,9 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	if t := r.URL.Query().Get("type"); t != "" {
 		filter.Type = t
 	}
+	if c := r.URL.Query().Get("category"); c != "" {
+		filter.Category = c
+	}
 	if p := r.URL.Query().Get("min_priority"); p != "" {
 		if pri, err := strconv.ParseInt(p, 10, 64); err == nil {
 			filter.MinPriority = &pri
@@ -123,6 +126,7 @@ func (h *UIHandler) Project(w http.ResponseWriter, r *http.Request) {
 	pf := templates.ProjectFilter{
 		Status:        filter.Status,
 		Type:          r.URL.Query().Get("type"),
+		Category:      r.URL.Query().Get("category"),
 		MinPriority:   r.URL.Query().Get("min_priority"),
 		CreatedAfter:  r.URL.Query().Get("created_after"),
 		CreatedBefore: r.URL.Query().Get("created_before"),
