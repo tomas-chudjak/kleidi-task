@@ -82,14 +82,36 @@ templ TaskNewPage(project core.Project, categories []core.Category, config core.
 											e.detail.parameters.description = mde.value();
 										});
 										// applyTemplate function
+										var _applyingTemplate = false;
 										window.applyTemplate = function(sel) {
 											var opt = sel.options[sel.selectedIndex];
 											if (!opt.value) { mde.value(''); return; }
+											_applyingTemplate = true;
 											mde.value(opt.getAttribute('data-description') || '');
-											var typeEl = document.querySelector('.klt-task-sidebar select');
+											var typeEl = document.getElementById('type-select');
 											if (typeEl) { typeEl.value = opt.getAttribute('data-type'); typeEl.dispatchEvent(new Event('change')); }
 											var priEl = document.querySelector('.klt-task-sidebar input[type="number"]');
 											if (priEl) { priEl.value = opt.getAttribute('data-priority'); priEl.dispatchEvent(new Event('change')); }
+											_applyingTemplate = false;
+										};
+										// Sync template when type changes in sidebar
+										window.syncTemplateFromType = function(type) {
+											if (_applyingTemplate) return;
+											var tplSel = document.getElementById('template-select');
+											if (!tplSel) return;
+											var found = false;
+											for (var i = 1; i < tplSel.options.length; i++) {
+												if (tplSel.options[i].getAttribute('data-type') === type) {
+													tplSel.selectedIndex = i;
+													window.applyTemplate(tplSel);
+													found = true;
+													break;
+												}
+											}
+											if (!found) {
+												tplSel.selectedIndex = 0;
+												mde.value('');
+											}
 										};
 										// Auto-apply default template on load
 										var tplSel = document.getElementById('template-select');
@@ -117,7 +139,7 @@ templ TaskNewPage(project core.Project, categories []core.Category, config core.
 						<div class="klt-field">
 							<label class="klt-field-label">Type</label>
 							<div class="klt-select-wrap">
-								<select class="klt-select" onchange="document.getElementById('new-type-hidden').value=this.value">
+								<select class="klt-select" id="type-select" onchange="document.getElementById('new-type-hidden').value=this.value; if(window.syncTemplateFromType) syncTemplateFromType(this.value)">
 									@TypeOptions(config.DefaultType, workflows)
 								</select>
 								<i class="icon icon-chevron-down klt-select-icon"></i>

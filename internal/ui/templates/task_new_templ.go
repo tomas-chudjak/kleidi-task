@@ -178,14 +178,14 @@ func TaskNewPage(project core.Project, categories []core.Category, config core.P
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"klt-field\" style=\"margin-bottom:16px;\"><label class=\"klt-field-label\" for=\"new-title\">Title</label> <input type=\"text\" class=\"klt-input klt-input--title\" id=\"new-title\" name=\"title\" placeholder=\"Task title (BUG:, FEAT:, HOTFIX:)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"new-desc-editor\">Description</label> <textarea class=\"klt-textarea\" id=\"new-desc-editor\" name=\"description\" rows=\"6\" placeholder=\"Add a description...\"></textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('new-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Add a description...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '150px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t// Sync EasyMDE value to textarea before form submit\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('new-task-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t// applyTemplate function\n\t\t\t\t\t\t\t\t\t\twindow.applyTemplate = function(sel) {\n\t\t\t\t\t\t\t\t\t\t\tvar opt = sel.options[sel.selectedIndex];\n\t\t\t\t\t\t\t\t\t\t\tif (!opt.value) { mde.value(''); return; }\n\t\t\t\t\t\t\t\t\t\t\tmde.value(opt.getAttribute('data-description') || '');\n\t\t\t\t\t\t\t\t\t\t\tvar typeEl = document.querySelector('.klt-task-sidebar select');\n\t\t\t\t\t\t\t\t\t\t\tif (typeEl) { typeEl.value = opt.getAttribute('data-type'); typeEl.dispatchEvent(new Event('change')); }\n\t\t\t\t\t\t\t\t\t\t\tvar priEl = document.querySelector('.klt-task-sidebar input[type=\"number\"]');\n\t\t\t\t\t\t\t\t\t\t\tif (priEl) { priEl.value = opt.getAttribute('data-priority'); priEl.dispatchEvent(new Event('change')); }\n\t\t\t\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\t\t\t\t// Auto-apply default template on load\n\t\t\t\t\t\t\t\t\t\tvar tplSel = document.getElementById('template-select');\n\t\t\t\t\t\t\t\t\t\tif (tplSel && tplSel.selectedIndex > 0) { window.applyTemplate(tplSel); }\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div><!-- Sidebar fields rendered inside form for submission --><input type=\"hidden\" name=\"type\" id=\"new-type-hidden\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"klt-field\" style=\"margin-bottom:16px;\"><label class=\"klt-field-label\" for=\"new-title\">Title</label> <input type=\"text\" class=\"klt-input klt-input--title\" id=\"new-title\" name=\"title\" placeholder=\"Task title (BUG:, FEAT:, HOTFIX:)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"new-desc-editor\">Description</label> <textarea class=\"klt-textarea\" id=\"new-desc-editor\" name=\"description\" rows=\"6\" placeholder=\"Add a description...\"></textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('new-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Add a description...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '150px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t// Sync EasyMDE value to textarea before form submit\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('new-task-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t// applyTemplate function\n\t\t\t\t\t\t\t\t\t\tvar _applyingTemplate = false;\n\t\t\t\t\t\t\t\t\t\twindow.applyTemplate = function(sel) {\n\t\t\t\t\t\t\t\t\t\t\tvar opt = sel.options[sel.selectedIndex];\n\t\t\t\t\t\t\t\t\t\t\tif (!opt.value) { mde.value(''); return; }\n\t\t\t\t\t\t\t\t\t\t\t_applyingTemplate = true;\n\t\t\t\t\t\t\t\t\t\t\tmde.value(opt.getAttribute('data-description') || '');\n\t\t\t\t\t\t\t\t\t\t\tvar typeEl = document.getElementById('type-select');\n\t\t\t\t\t\t\t\t\t\t\tif (typeEl) { typeEl.value = opt.getAttribute('data-type'); typeEl.dispatchEvent(new Event('change')); }\n\t\t\t\t\t\t\t\t\t\t\tvar priEl = document.querySelector('.klt-task-sidebar input[type=\"number\"]');\n\t\t\t\t\t\t\t\t\t\t\tif (priEl) { priEl.value = opt.getAttribute('data-priority'); priEl.dispatchEvent(new Event('change')); }\n\t\t\t\t\t\t\t\t\t\t\t_applyingTemplate = false;\n\t\t\t\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\t\t\t\t// Sync template when type changes in sidebar\n\t\t\t\t\t\t\t\t\t\twindow.syncTemplateFromType = function(type) {\n\t\t\t\t\t\t\t\t\t\t\tif (_applyingTemplate) return;\n\t\t\t\t\t\t\t\t\t\t\tvar tplSel = document.getElementById('template-select');\n\t\t\t\t\t\t\t\t\t\t\tif (!tplSel) return;\n\t\t\t\t\t\t\t\t\t\t\tvar found = false;\n\t\t\t\t\t\t\t\t\t\t\tfor (var i = 1; i < tplSel.options.length; i++) {\n\t\t\t\t\t\t\t\t\t\t\t\tif (tplSel.options[i].getAttribute('data-type') === type) {\n\t\t\t\t\t\t\t\t\t\t\t\t\ttplSel.selectedIndex = i;\n\t\t\t\t\t\t\t\t\t\t\t\t\twindow.applyTemplate(tplSel);\n\t\t\t\t\t\t\t\t\t\t\t\t\tfound = true;\n\t\t\t\t\t\t\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\tif (!found) {\n\t\t\t\t\t\t\t\t\t\t\t\ttplSel.selectedIndex = 0;\n\t\t\t\t\t\t\t\t\t\t\t\tmde.value('');\n\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\t\t\t\t// Auto-apply default template on load\n\t\t\t\t\t\t\t\t\t\tvar tplSel = document.getElementById('template-select');\n\t\t\t\t\t\t\t\t\t\tif (tplSel && tplSel.selectedIndex > 0) { window.applyTemplate(tplSel); }\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div><!-- Sidebar fields rendered inside form for submission --><input type=\"hidden\" name=\"type\" id=\"new-type-hidden\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(config.DefaultType)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 104, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 126, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -198,13 +198,13 @@ func TaskNewPage(project core.Project, categories []core.Category, config core.P
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", config.DefaultPriority))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 105, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 127, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"> <input type=\"hidden\" name=\"category\" id=\"new-category-hidden\" value=\"\"></form></div><!-- Properties sidebar (right) --><div class=\"klt-task-sidebar\"><button type=\"submit\" form=\"new-task-form\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-plus\"></i> Create task</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" onchange=\"document.getElementById('new-type-hidden').value=this.value\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"> <input type=\"hidden\" name=\"category\" id=\"new-category-hidden\" value=\"\"></form></div><!-- Properties sidebar (right) --><div class=\"klt-task-sidebar\"><button type=\"submit\" form=\"new-task-form\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-plus\"></i> Create task</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" id=\"type-select\" onchange=\"document.getElementById('new-type-hidden').value=this.value; if(window.syncTemplateFromType) syncTemplateFromType(this.value)\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -219,7 +219,7 @@ func TaskNewPage(project core.Project, categories []core.Category, config core.P
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", config.DefaultPriority))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 131, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 153, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -242,7 +242,7 @@ func TaskNewPage(project core.Project, categories []core.Category, config core.P
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 144, Col: 33}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 166, Col: 33}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -255,7 +255,7 @@ func TaskNewPage(project core.Project, categories []core.Category, config core.P
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 144, Col: 44}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/task_new.templ`, Line: 166, Col: 44}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
