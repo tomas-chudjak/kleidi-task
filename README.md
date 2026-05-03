@@ -7,6 +7,8 @@
 
 Local-first, single-binary task tracker for developers who use AI assistants. Built with MCP-first design — the AI integration is a primary interface, not an afterthought.
 
+![Kleidi Task Dashboard](docs/images/dashboard.png)
+
 ## Why kleidi-task?
 
 Existing task managers are designed for humans clicking buttons. kleidi-task is designed for developers who work alongside AI assistants like Claude, Cursor, and Copilot. Tasks live with your project (per-project SQLite), sync across AI sessions via MCP, and everything runs locally — no cloud, no vendor lock-in.
