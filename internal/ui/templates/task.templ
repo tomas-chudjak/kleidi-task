@@ -1,28 +1,28 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 func workflowPhaseClass(phase, current string, idx, currentIdx int) string {
 	if phase == current {
-		return " kvt-workflow-phase--active"
+		return " klt-workflow-phase--active"
 	}
 	if idx < currentIdx {
-		return " kvt-workflow-phase--done"
+		return " klt-workflow-phase--done"
 	}
 	return ""
 }
 
 func timelineEntryClass(success bool) string {
 	if !success {
-		return " kvt-timeline-entry--fail"
+		return " klt-timeline-entry--fail"
 	}
 	return ""
 }
 
 func workflowConnectorClass(idx, currentIdx int) string {
 	if idx <= currentIdx {
-		return " kvt-workflow-connector--done"
+		return " klt-workflow-connector--done"
 	}
 	return ""
 }
@@ -31,17 +31,17 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 	@Layout(fmt.Sprintf("#%d %s", task.ID, task.Title), project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Task toolbar -->
-		<div class="kvt-toolbar">
-			<div class="kvt-toolbar-left">
-				<a href={ templ.SafeURL("/p/" + project.Slug) } onclick="if(document.referrer){event.preventDefault();history.back()}" class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+		<div class="klt-toolbar">
+			<div class="klt-toolbar-left">
+				<a href={ templ.SafeURL("/p/" + project.Slug) } onclick="if(document.referrer){event.preventDefault();history.back()}" class="klt-back-link"><i class="icon icon-arrow-left"></i></a>
 				@TypeBadge(string(task.Type), workflows)
-				<span class="kvt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
-				<span class={ "kvt-badge kvt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
+				<span class="klt-toolbar-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+				<span class={ "klt-badge klt-badge-" + string(task.Status) }>{ string(task.Status) }</span>
 			</div>
-			<div class="kvt-toolbar-right">
+			<div class="klt-toolbar-right">
 				if task.Status != core.StatusDone {
 					<button
-						class="kvt-toolbar-btn kvt-toolbar-btn--success"
+						class="klt-toolbar-btn klt-toolbar-btn--success"
 						hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", project.Slug, task.ID) }
 						hx-target="body"
 						hx-swap="outerHTML"
@@ -53,7 +53,7 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 				if task.Status == core.StatusDone {
 					<a
 						href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/archive", project.Slug, task.ID)) }
-						class="kvt-toolbar-btn"
+						class="klt-toolbar-btn"
 						onclick="return confirm('Archive this task?')"
 					>
 						<i class="icon icon-archive"></i> Archive
@@ -61,7 +61,7 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 				}
 				<a
 					href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/delete", project.Slug, task.ID)) }
-					class="kvt-toolbar-btn kvt-toolbar-btn--danger"
+					class="klt-toolbar-btn klt-toolbar-btn--danger"
 					onclick="return confirm('Delete this task? This cannot be undone.')"
 				>
 					<i class="icon icon-trash-2"></i> Delete
@@ -71,19 +71,19 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 
 		<!-- Workflow progress bar -->
 		if len(workflow.Phases) > 1 {
-			<div class="kvt-workflow-bar">
+			<div class="klt-workflow-bar">
 				for i, phase := range workflow.Phases {
 					if i > 0 {
-						<span class={ "kvt-workflow-connector" + workflowConnectorClass(i, workflow.PhaseIndex) }></span>
+						<span class={ "klt-workflow-connector" + workflowConnectorClass(i, workflow.PhaseIndex) }></span>
 					}
-					<span class={ "kvt-workflow-phase" + workflowPhaseClass(phase, workflow.CurrentPhase, i, workflow.PhaseIndex) }>
+					<span class={ "klt-workflow-phase" + workflowPhaseClass(phase, workflow.CurrentPhase, i, workflow.PhaseIndex) }>
 						{ phase }
 					</span>
 				}
 				if workflow.NextPhase != "" {
 					<a
 						href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/advance", project.Slug, task.ID)) }
-						class="kvt-workflow-advance"
+						class="klt-workflow-advance"
 						onclick="return confirm('Advance to next phase?')"
 						title={ "Advance to: " + workflow.NextPhase }
 					>
@@ -94,18 +94,18 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 		}
 
 		<!-- Save indicator -->
-		<div id="save-indicator" class="kvt-save-indicator"></div>
+		<div id="save-indicator" class="klt-save-indicator"></div>
 
 		<!-- Two-column layout: content + sidebar -->
-		<div class="kvt-task-layout">
+		<div class="klt-task-layout">
 			<!-- Main content (left) -->
-			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
-				<div class="kvt-detail-card">
-					<div class="kvt-field" style="margin-bottom:16px;">
-						<label class="kvt-field-label">Title</label>
+			<div class="klt-task-main" style="display:flex;flex-direction:column;gap:16px;">
+				<div class="klt-detail-card">
+					<div class="klt-field" style="margin-bottom:16px;">
+						<label class="klt-field-label">Title</label>
 						<input
 							type="text"
-							class="kvt-input kvt-input--title"
+							class="klt-input klt-input--title"
 							value={ task.Title }
 							hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 							hx-target="body"
@@ -115,10 +115,10 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 							hx-trigger="change"
 						/>
 					</div>
-					<div class="kvt-field">
-						<label class="kvt-field-label">Description</label>
+					<div class="klt-field">
+						<label class="klt-field-label">Description</label>
 						<textarea
-							class="kvt-textarea"
+							class="klt-textarea"
 							id="desc-editor"
 							name="description"
 							rows="6"
@@ -137,7 +137,7 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 										sideBySideFullscreen: false,
 										minHeight: '150px',
 									});
-									var patchUrl = ta.closest('.kvt-detail-card').querySelector('input[name="title"]')
+									var patchUrl = ta.closest('.klt-detail-card').querySelector('input[name="title"]')
 										? '/p/' + document.querySelector('[data-slug]').getAttribute('data-slug') + '/tasks/' + window.location.pathname.split('/').pop() + '/field'
 										: '';
 									mde.codemirror.on('blur', function() {
@@ -150,9 +150,9 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 												var el = document.getElementById('save-indicator');
 												if (el) {
 													el.textContent = 'Saved';
-													el.classList.add('kvt-save-indicator--visible');
+													el.classList.add('klt-save-indicator--visible');
 													clearTimeout(el._t);
-													el._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);
+													el._t = setTimeout(function() { el.classList.remove('klt-save-indicator--visible'); }, 2000);
 												}
 											});
 										}
@@ -164,17 +164,17 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 				</div>
 
 				<!-- Git Activity -->
-				<div class="kvt-detail-card">
-					<h4 class="kvt-detail-card-title"><i class="icon icon-git-commit-horizontal"></i> Git Activity</h4>
+				<div class="klt-detail-card">
+					<h4 class="klt-detail-card-title"><i class="icon icon-git-commit-horizontal"></i> Git Activity</h4>
 					if len(commits) == 0 {
-						<div class="kvt-empty" style="font-size:0.8rem;">No commits reference this task. Use <code>#{ fmt.Sprintf("%d", task.ID) }</code> in commit messages.</div>
+						<div class="klt-empty" style="font-size:0.8rem;">No commits reference this task. Use <code>#{ fmt.Sprintf("%d", task.ID) }</code> in commit messages.</div>
 					} else {
-						<div class="kvt-commit-list">
+						<div class="klt-commit-list">
 							for _, c := range commits {
-								<div class="kvt-commit-row">
-									<code class="kvt-commit-hash">{ c.ShortHash }</code>
-									<span class="kvt-commit-msg">{ c.Message }</span>
-									<span class="kvt-commit-meta">{ c.Author } · { c.Date.Format("Jan 2 15:04") }</span>
+								<div class="klt-commit-row">
+									<code class="klt-commit-hash">{ c.ShortHash }</code>
+									<span class="klt-commit-msg">{ c.Message }</span>
+									<span class="klt-commit-meta">{ c.Author } · { c.Date.Format("Jan 2 15:04") }</span>
 								</div>
 							}
 						</div>
@@ -182,26 +182,26 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 				</div>
 			<!-- Workflow Timeline -->
 				if len(history) > 0 {
-					<div class="kvt-detail-card">
-						<h4 class="kvt-detail-card-title">
+					<div class="klt-detail-card">
+						<h4 class="klt-detail-card-title">
 						<i class="icon icon-clock"></i> Workflow Timeline
 						<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/history", project.Slug, task.ID)) } style="font-size:0.7rem;margin-left:auto;font-weight:400;">View full history</a>
 					</h4>
-						<div class="kvt-timeline">
+						<div class="klt-timeline">
 							for _, h := range history {
-								<div class={ "kvt-timeline-entry" + timelineEntryClass(h.Success) }>
-									<div class="kvt-timeline-dot"></div>
-									<div class="kvt-timeline-content">
-										<div class="kvt-timeline-header">
-											<span class="kvt-timeline-phase">{ h.Phase }</span>
-											<span class="kvt-timeline-action">{ h.Action }</span>
+								<div class={ "klt-timeline-entry" + timelineEntryClass(h.Success) }>
+									<div class="klt-timeline-dot"></div>
+									<div class="klt-timeline-content">
+										<div class="klt-timeline-header">
+											<span class="klt-timeline-phase">{ h.Phase }</span>
+											<span class="klt-timeline-action">{ h.Action }</span>
 											if h.DurationMs > 0 {
-												<span class="kvt-timeline-duration">{ fmt.Sprintf("%dms", h.DurationMs) }</span>
+												<span class="klt-timeline-duration">{ fmt.Sprintf("%dms", h.DurationMs) }</span>
 											}
-											<span class="kvt-timeline-time">{ h.CreatedAt.Format("15:04:05") }</span>
+											<span class="klt-timeline-time">{ h.CreatedAt.Format("15:04:05") }</span>
 										</div>
 										if h.Output != "" && h.ActionType == "shell" {
-											<pre class="kvt-timeline-output">{ h.Output }</pre>
+											<pre class="klt-timeline-output">{ h.Output }</pre>
 										}
 									</div>
 								</div>
@@ -212,14 +212,14 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 			</div>
 
 			<!-- Properties sidebar (right) -->
-			<div class="kvt-task-sidebar">
-				<div class="kvt-detail-card">
-					<div class="kvt-detail-fields">
-						<div class="kvt-field">
-							<label class="kvt-field-label">Status</label>
-							<div class="kvt-select-wrap">
+			<div class="klt-task-sidebar">
+				<div class="klt-detail-card">
+					<div class="klt-detail-fields">
+						<div class="klt-field">
+							<label class="klt-field-label">Status</label>
+							<div class="klt-select-wrap">
 								<select
-									class="kvt-select"
+									class="klt-select"
 									hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 									hx-target="body"
 									hx-swap="outerHTML"
@@ -231,14 +231,14 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 									<option value="doing" selected?={ task.Status == core.StatusDoing }>In Progress</option>
 									<option value="done" selected?={ task.Status == core.StatusDone }>Done</option>
 								</select>
-								<i class="icon icon-chevron-down kvt-select-icon"></i>
+								<i class="icon icon-chevron-down klt-select-icon"></i>
 							</div>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Type</label>
-							<div class="kvt-select-wrap">
+						<div class="klt-field">
+							<label class="klt-field-label">Type</label>
+							<div class="klt-select-wrap">
 								<select
-									class="kvt-select"
+									class="klt-select"
 									hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 									hx-target="body"
 									hx-swap="outerHTML"
@@ -248,14 +248,14 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 								>
 									@TypeOptions(string(task.Type), workflows)
 								</select>
-								<i class="icon icon-chevron-down kvt-select-icon"></i>
+								<i class="icon icon-chevron-down klt-select-icon"></i>
 							</div>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Priority</label>
+						<div class="klt-field">
+							<label class="klt-field-label">Priority</label>
 							<input
 								type="number"
-								class="kvt-input"
+								class="klt-input"
 								value={ fmt.Sprintf("%d", task.Priority) }
 								hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 								hx-target="body"
@@ -267,11 +267,11 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 								placeholder="0"
 							/>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Category</label>
-							<div class="kvt-select-wrap">
+						<div class="klt-field">
+							<label class="klt-field-label">Category</label>
+							<div class="klt-select-wrap">
 								<select
-									class="kvt-select"
+									class="klt-select"
 									hx-patch={ fmt.Sprintf("/p/%s/tasks/%d/field", project.Slug, task.ID) }
 									hx-target="body"
 									hx-swap="outerHTML"
@@ -284,30 +284,30 @@ templ TaskPage(project core.Project, task core.Task, categories []core.Category,
 										<option value={ c.Name } selected?={ task.Category == c.Name }>{ c.Name }</option>
 									}
 								</select>
-								<i class="icon icon-chevron-down kvt-select-icon"></i>
+								<i class="icon icon-chevron-down klt-select-icon"></i>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div class="kvt-detail-card">
-					<div class="kvt-detail-fields">
-						<div class="kvt-field">
-							<label class="kvt-field-label">Source</label>
-							<div class="kvt-field-value">{ string(task.Source) }</div>
+				<div class="klt-detail-card">
+					<div class="klt-detail-fields">
+						<div class="klt-field">
+							<label class="klt-field-label">Source</label>
+							<div class="klt-field-value">{ string(task.Source) }</div>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Created</label>
-							<div class="kvt-field-value kvt-field-value--mono">{ task.CreatedAt.Format("2006-01-02 15:04") }</div>
+						<div class="klt-field">
+							<label class="klt-field-label">Created</label>
+							<div class="klt-field-value klt-field-value--mono">{ task.CreatedAt.Format("2006-01-02 15:04") }</div>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Updated</label>
-							<div class="kvt-field-value kvt-field-value--mono">{ task.UpdatedAt.Format("2006-01-02 15:04") }</div>
+						<div class="klt-field">
+							<label class="klt-field-label">Updated</label>
+							<div class="klt-field-value klt-field-value--mono">{ task.UpdatedAt.Format("2006-01-02 15:04") }</div>
 						</div>
 						if task.CompletedAt != nil {
-							<div class="kvt-field">
-								<label class="kvt-field-label">Completed</label>
-								<div class="kvt-field-value kvt-field-value--mono">{ task.CompletedAt.Format("2006-01-02 15:04") }</div>
+							<div class="klt-field">
+								<label class="klt-field-label">Completed</label>
+								<div class="klt-field-value klt-field-value--mono">{ task.CompletedAt.Format("2006-01-02 15:04") }</div>
 							</div>
 						}
 					</div>

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"strconv"
 
-	"github.com/ahoylog/kvik-tasks/internal/db/generated"
+	"github.com/tomas-chudjak/kleidi-task/internal/db/generated"
 )
 
 // ProjectConfig holds project-level configuration.

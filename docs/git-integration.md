@@ -3,11 +3,11 @@ title: Git Integration
 weight: 9
 ---
 
-kvik-tasks automatically links git commits to tasks by scanning commit messages for task references. No configuration or hooks needed — it works out of the box in any git repository.
+kleidi-task automatically links git commits to tasks by scanning commit messages for task references. No configuration or hooks needed — it works out of the box in any git repository.
 
 ## How it works
 
-When you open a task detail page, kvik-tasks runs `git log` against the project repository and finds all commits that reference that task ID. Results are displayed in the "Git Activity" card on the task detail page.
+When you open a task detail page, kleidi-task runs `git log` against the project repository and finds all commits that reference that task ID. Results are displayed in the "Git Activity" card on the task detail page.
 
 This is **on-demand** — there is no background sync, no database table, and no git hooks to install. Every time you view a task, the git log is scanned fresh, so results are always up to date.
 
@@ -18,16 +18,16 @@ Include a task reference anywhere in your commit message. Supported formats:
 | Format | Example | Description |
 |--------|---------|-------------|
 | `#ID` | `#15` | Basic reference |
-| `kvt:ID` | `kvt:15` | Explicit kvik-tasks reference |
+| `klt:ID` | `klt:15` | Explicit kleidi-task reference |
 | `fixes #ID` | `fixes #15` | Marks commit as a fix |
 | `closes #ID` | `closes #15` | Marks commit as closing the task |
 | `refs #ID` | `refs #15` | General reference |
 | `re #ID` | `re #15` | Short reference |
 
-Prefixes (`fixes`, `closes`, `refs`, `re`) work with both `#ID` and `kvt:ID` notation:
+Prefixes (`fixes`, `closes`, `refs`, `re`) work with both `#ID` and `klt:ID` notation:
 
 ```
-fixes kvt:15
+fixes klt:15
 closes #42
 refs #7
 ```
@@ -42,7 +42,7 @@ feat: add search bar and keyboard shortcuts #7 #10
 
 ### Regex pattern
 
-The full pattern used for matching: `(?:(?:fixes|closes|refs|re)\s+)?(?:#|kvt:)(\d+)`
+The full pattern used for matching: `(?:(?:fixes|closes|refs|re)\s+)?(?:#|klt:)(\d+)`
 
 ## Usage examples
 
@@ -56,8 +56,8 @@ git commit -m "fixes #24 — date inputs were autofilled by password manager"
 # Multiple tasks
 git commit -m "feat: filtering UI with multi-select #8 #21"
 
-# Explicit kvik-tasks reference (useful if #ID is ambiguous with GitHub issues)
-git commit -m "refactor task service kvt:12"
+# Explicit kleidi-task reference (useful if #ID is ambiguous with GitHub issues)
+git commit -m "refactor task service klt:12"
 ```
 
 ## What you see

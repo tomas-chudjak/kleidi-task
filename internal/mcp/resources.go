@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -14,7 +14,7 @@ func (s *Server) registerResources() {
 	s.mcpServer.AddResource(&mcp.Resource{
 		URI:         "tasks://projects",
 		Name:        "All projects",
-		Description: "List of all registered kvik-tasks projects",
+		Description: "List of all registered kleidi-task projects",
 		MIMEType:    "application/json",
 	}, s.resourceProjects)
 

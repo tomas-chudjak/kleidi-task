@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to kvik-tasks are documented in this file.
+All notable changes to kleidi-task are documented in this file.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
@@ -20,20 +20,20 @@ Initial release.
 - Full-text search with SQLite FTS5
 
 **CLI**
-- `kvt init` — project initialization
-- `kvt add` — create tasks with type flags and prefix detection
-- `kvt list` — list tasks with status/type filters
-- `kvt show`, `kvt done`, `kvt update`, `kvt delete` — task CRUD
-- `kvt advance` — advance task to next workflow phase
-- `kvt archive` / `kvt unarchive` — archive management
-- `kvt suggest` — scan source code for TODO/FIXME/HACK/XXX comments
-- `kvt export` / `kvt import` — JSON and Markdown formats
-- `kvt backup` — database backup
-- `kvt serve` — HTTP server with `--host` and `--port` flags
-- `kvt mcp` — MCP stdio server
-- `kvt user add` / `kvt user list` — user management
-- `kvt project list` / `kvt project stats` — project management
-- `kvt version` — version info
+- `klt init` — project initialization
+- `klt add` — create tasks with type flags and prefix detection
+- `klt list` — list tasks with status/type filters
+- `klt show`, `klt done`, `klt update`, `klt delete` — task CRUD
+- `klt advance` — advance task to next workflow phase
+- `klt archive` / `klt unarchive` — archive management
+- `klt suggest` — scan source code for TODO/FIXME/HACK/XXX comments
+- `klt export` / `klt import` — JSON and Markdown formats
+- `klt backup` — database backup
+- `klt serve` — HTTP server with `--host` and `--port` flags
+- `klt mcp` — MCP stdio server
+- `klt user add` / `klt user list` — user management
+- `klt project list` / `klt project stats` — project management
+- `klt version` — version info
 
 **MCP Server**
 - stdio transport for Claude Desktop, Cursor, VS Code
@@ -76,7 +76,7 @@ Initial release.
 - Template-based task creation in web UI
 
 **Git Integration**
-- Commit to task linking via message references (#ID, kvt:ID, fixes #ID, etc.)
+- Commit to task linking via message references (#ID, klt:ID, fixes #ID, etc.)
 - Git activity displayed on task detail page
 
 **Script Hooks**

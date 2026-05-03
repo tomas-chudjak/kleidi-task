@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ahoylog/kvik-tasks/internal/api"
-	"github.com/ahoylog/kvik-tasks/internal/config"
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/api"
+	"github.com/tomas-chudjak/kleidi-task/internal/config"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/spf13/cobra"
 )
 

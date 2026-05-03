@@ -1,14 +1,15 @@
-# kvik-tasks
+# kleidi-task
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
+[![Docs](https://img.shields.io/badge/Docs-kleidi--task.pages.dev-blue)](https://kleidi-task.pages.dev)
 
 Local-first, single-binary task tracker for developers who use AI assistants. Built with MCP-first design — the AI integration is a primary interface, not an afterthought.
 
-## Why kvik-tasks?
+## Why kleidi-task?
 
-Existing task managers are designed for humans clicking buttons. kvik-tasks is designed for developers who work alongside AI assistants like Claude, Cursor, and Copilot. Tasks live with your project (per-project SQLite), sync across AI sessions via MCP, and everything runs locally — no cloud, no vendor lock-in.
+Existing task managers are designed for humans clicking buttons. kleidi-task is designed for developers who work alongside AI assistants like Claude, Cursor, and Copilot. Tasks live with your project (per-project SQLite), sync across AI sessions via MCP, and everything runs locally — no cloud, no vendor lock-in.
 
 ## Features
 
@@ -49,16 +50,16 @@ Existing task managers are designed for humans clicking buttons. kvik-tasks is d
 ### Go install
 
 ```bash
-go install github.com/tomas-chudjak/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kleidi-task/cmd/klt@latest
 ```
 
 ### Build from source
 
 ```bash
-git clone https://github.com/tomas-chudjak/kvik-tasks.git
-cd kvik-tasks
+git clone https://github.com/tomas-chudjak/kleidi-task.git
+cd kleidi-task
 task setup    # installs templ, sqlc, goose, air
-task build    # builds the kvt binary
+task build    # builds the klt binary
 task install  # symlinks to /usr/local/bin
 ```
 
@@ -67,8 +68,8 @@ Requires Go 1.22+.
 ### Docker
 
 ```bash
-git clone https://github.com/tomas-chudjak/kvik-tasks.git
-cd kvik-tasks
+git clone https://github.com/tomas-chudjak/kleidi-task.git
+cd kleidi-task
 docker compose up -d
 ```
 
@@ -79,28 +80,28 @@ Web UI available at http://localhost:7842. See [docs/docker.md](docs/docker.md) 
 ```bash
 # Initialize a project
 cd my-project
-kvt init
+klt init
 
 # Add tasks
-kvt add "Implement user authentication"
-kvt add "BUG: Login fails on Firefox"        # auto-detected as bug
-kvt add --feature "Dark mode support"
+klt add "Implement user authentication"
+klt add "BUG: Login fails on Firefox"        # auto-detected as bug
+klt add --feature "Dark mode support"
 
 # View tasks
-kvt list
-kvt list --status todo --type bug
+klt list
+klt list --status todo --type bug
 
 # Work on tasks
-kvt done 1
+klt done 1
 
 # Start web UI
-kvt serve
+klt serve
 # Open http://localhost:7842
 ```
 
 ## MCP setup
 
-Add kvik-tasks as an MCP server in your AI tool:
+Add kleidi-task as an MCP server in your AI tool:
 
 ### Claude Desktop
 
@@ -109,8 +110,8 @@ Add to `~/.claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "kvik-tasks": {
-      "command": "kvt",
+    "kleidi-task": {
+      "command": "klt",
       "args": ["mcp"]
     }
   }
@@ -120,7 +121,7 @@ Add to `~/.claude/claude_desktop_config.json`:
 ### Claude Code
 
 ```bash
-claude mcp add --scope project --transport stdio kvik-tasks -- kvt mcp
+claude mcp add --scope project --transport stdio kleidi-task -- klt mcp
 ```
 
 ### Cursor
@@ -130,8 +131,8 @@ Add to `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "kvik-tasks": {
-      "command": "kvt",
+    "kleidi-task": {
+      "command": "klt",
       "args": ["mcp"]
     }
   }
@@ -146,23 +147,23 @@ See [docs/mcp-usage.md](docs/mcp-usage.md) for the full MCP tool reference.
 
 | Command | Description |
 |---------|-------------|
-| `kvt init` | Initialize `.tasks/` in current directory |
-| `kvt add <title>` | Create a task (`--bug`, `--feature`, `--hotfix`, or prefix detection) |
-| `kvt list` | List tasks (`--status`, `--type` filters) |
-| `kvt show <id>` | Show task detail |
-| `kvt done <id>` | Mark task as complete |
-| `kvt update <id>` | Update task fields |
-| `kvt delete <id>` | Delete a task |
-| `kvt advance <id>` | Advance task to next workflow phase |
-| `kvt archive <id>` | Archive a completed task |
-| `kvt suggest` | Scan source code for TODO/FIXME comments |
-| `kvt export` | Export tasks as JSON or Markdown |
-| `kvt import <file>` | Import tasks from file |
-| `kvt serve` | Start HTTP server (UI + API) |
-| `kvt mcp` | Start MCP stdio server |
-| `kvt user add <name>` | Add a user (enables Basic Auth) |
-| `kvt backup` | Backup project database |
-| `kvt version` | Show version |
+| `klt init` | Initialize `.tasks/` in current directory |
+| `klt add <title>` | Create a task (`--bug`, `--feature`, `--hotfix`, or prefix detection) |
+| `klt list` | List tasks (`--status`, `--type` filters) |
+| `klt show <id>` | Show task detail |
+| `klt done <id>` | Mark task as complete |
+| `klt update <id>` | Update task fields |
+| `klt delete <id>` | Delete a task |
+| `klt advance <id>` | Advance task to next workflow phase |
+| `klt archive <id>` | Archive a completed task |
+| `klt suggest` | Scan source code for TODO/FIXME comments |
+| `klt export` | Export tasks as JSON or Markdown |
+| `klt import <file>` | Import tasks from file |
+| `klt serve` | Start HTTP server (UI + API) |
+| `klt mcp` | Start MCP stdio server |
+| `klt user add <name>` | Add a user (enables Basic Auth) |
+| `klt backup` | Backup project database |
+| `klt version` | Show version |
 
 See [docs/cli.md](docs/cli.md) for all flags and examples.
 
@@ -171,7 +172,7 @@ See [docs/cli.md](docs/cli.md) for all flags and examples.
 ```
 You (CLI / Browser / Claude)
     |
-  kvt binary
+  klt binary
     |
   Service Layer (TaskService, ProjectService, WorkflowService)
     |

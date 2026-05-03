@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 func boardTypeURL(slug, typ, current string) string {
@@ -55,7 +55,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"kvt-board-header\"><h2 class=\"kvt-title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"klt-board-header\"><h2 class=\"klt-title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -68,7 +68,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2><div class=\"kvt-view-toggle\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2><div class=\"klt-view-toggle\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -81,7 +81,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"kvt-view-btn\"><i class=\"icon icon-list\"></i> List</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"klt-view-btn\"><i class=\"icon icon-list\"></i> List</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -94,7 +94,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"kvt-view-btn kvt-view-btn--active\"><i class=\"icon icon-columns-3\"></i> Board</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"klt-view-btn klt-view-btn--active\"><i class=\"icon icon-columns-3\"></i> Board</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -102,7 +102,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " <!-- Type filter for board --> <div class=\"kvt-filters\" style=\"margin-bottom: 12px;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " <!-- Type filter for board --> <div class=\"klt-filters\" style=\"margin-bottom: 12px;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -277,7 +277,7 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Hotfixes</a></div><div class=\"k-grid k-grid--3 kvt-board\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Hotfixes</a></div><div class=\"k-grid k-grid--3 klt-board\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -313,13 +313,13 @@ func BoardPage(project core.Project, todo []core.Task, doing []core.Task, done [
 
 func boardScript() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_boardScript_62c0`,
-		Function: `function __templ_boardScript_62c0(){document.querySelectorAll('.kvt-board-cards').forEach(function(el) {
+		Name: `__templ_boardScript_7585`,
+		Function: `function __templ_boardScript_7585(){document.querySelectorAll('.klt-board-cards').forEach(function(el) {
 		new Sortable(el, {
 			group: 'kanban',
 			animation: 150,
-			ghostClass: 'kvt-card-ghost',
-			dragClass: 'kvt-card-drag',
+			ghostClass: 'klt-card-ghost',
+			dragClass: 'klt-card-drag',
 			onEnd: function(evt) {
 				var taskId = evt.item.dataset.taskId;
 				var newStatus = evt.to.dataset.status;
@@ -344,17 +344,17 @@ func boardScript() templ.ComponentScript {
 						}
 					}
 					// Update column counts
-					document.querySelectorAll('.kvt-board-cards').forEach(function(col) {
+					document.querySelectorAll('.klt-board-cards').forEach(function(col) {
 						var count = col.children.length;
-						col.closest('.kvt-board-column').querySelector('.kvt-board-count').textContent = count;
+						col.closest('.klt-board-column').querySelector('.klt-board-count').textContent = count;
 					});
 				});
 			}
 		});
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_boardScript_62c0`),
-		CallInline: templ.SafeScriptInline(`__templ_boardScript_62c0`),
+		Call:       templ.SafeScript(`__templ_boardScript_7585`),
+		CallInline: templ.SafeScriptInline(`__templ_boardScript_7585`),
 	}
 }
 
@@ -379,7 +379,7 @@ func BoardColumn(title string, status string, tasks []core.Task, slug string, wo
 			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var22 = []any{"kvt-board-column kvt-board-column--" + status}
+		var templ_7745c5c3_Var22 = []any{"klt-board-column klt-board-column--" + status}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var22...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -397,11 +397,11 @@ func BoardColumn(title string, status string, tasks []core.Task, slug string, wo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"><div class=\"kvt-board-column-header\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"><div class=\"klt-board-column-header\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var24 = []any{"kvt-board-dot kvt-board-dot--" + status}
+		var templ_7745c5c3_Var24 = []any{"klt-board-dot klt-board-dot--" + status}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var24...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -419,7 +419,7 @@ func BoardColumn(title string, status string, tasks []core.Task, slug string, wo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"></span> <span class=\"kvt-board-column-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"></span> <span class=\"klt-board-column-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -432,7 +432,7 @@ func BoardColumn(title string, status string, tasks []core.Task, slug string, wo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span> <span class=\"kvt-board-count\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span> <span class=\"klt-board-count\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -445,7 +445,7 @@ func BoardColumn(title string, status string, tasks []core.Task, slug string, wo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</span></div><div class=\"kvt-board-cards\" data-status=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</span></div><div class=\"klt-board-cards\" data-status=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -510,7 +510,7 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 			templ_7745c5c3_Var30 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var31 = []any{"kvt-board-card kvt-board-card--" + string(task.Type)}
+		var templ_7745c5c3_Var31 = []any{"klt-board-card klt-board-card--" + string(task.Type)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var31...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -541,7 +541,7 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><div class=\"kvt-board-card-top\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><div class=\"klt-board-card-top\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -549,7 +549,7 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"kvt-board-card-id\">#")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"klt-board-card-id\">#")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -575,7 +575,7 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" class=\"kvt-board-card-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" class=\"klt-board-card-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -593,12 +593,12 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 			return templ_7745c5c3_Err
 		}
 		if task.Priority > 0 || task.Category != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"kvt-board-card-meta\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"klt-board-card-meta\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if task.Category != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"kvt-category-tag\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"klt-category-tag\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -617,7 +617,7 @@ func BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) templ.
 				}
 			}
 			if task.Priority > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"kvt-task-priority\">P")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"klt-task-priority\">P")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

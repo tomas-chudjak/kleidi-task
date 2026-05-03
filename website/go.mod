@@ -1,4 +1,4 @@
-module github.com/tomas-chudjak/kvik-tasks/website
+module github.com/tomas-chudjak/kleidi-task/website
 
 go 1.22.0
 

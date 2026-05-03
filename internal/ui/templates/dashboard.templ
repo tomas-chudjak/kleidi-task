@@ -1,6 +1,6 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 type DashboardProject struct {
@@ -20,47 +20,47 @@ type GlobalStats struct {
 
 templ Dashboard(projects []DashboardProject, global GlobalStats) {
 	@LayoutMinimal("Dashboard") {
-		<h2 class="kvt-title">Dashboard</h2>
+		<h2 class="klt-title">Dashboard</h2>
 
 		if len(projects) == 0 {
-			<div class="kvt-card kvt-empty">
+			<div class="klt-card klt-empty">
 				<p>No projects registered.</p>
-				<p>Run <code>kvt init</code> in a project directory to get started.</p>
+				<p>Run <code>klt init</code> in a project directory to get started.</p>
 			</div>
 		} else {
 			<!-- Global stats -->
-			<div class="k-grid k-grid--12 kvt-global-stats">
-				<div class="k-col-span-2 kvt-global-stat">
-					<div class="kvt-global-stat-value">{ fmt.Sprintf("%d", global.Total) }</div>
-					<div class="kvt-global-stat-label">Total tasks</div>
+			<div class="k-grid k-grid--12 klt-global-stats">
+				<div class="k-col-span-2 klt-global-stat">
+					<div class="klt-global-stat-value">{ fmt.Sprintf("%d", global.Total) }</div>
+					<div class="klt-global-stat-label">Total tasks</div>
 				</div>
-				<div class="k-col-span-2 kvt-global-stat">
-					<div class="kvt-global-stat-value">{ fmt.Sprintf("%d", global.Todo) }</div>
-					<div class="kvt-global-stat-label">Todo</div>
+				<div class="k-col-span-2 klt-global-stat">
+					<div class="klt-global-stat-value">{ fmt.Sprintf("%d", global.Todo) }</div>
+					<div class="klt-global-stat-label">Todo</div>
 				</div>
-				<div class="k-col-span-2 kvt-global-stat">
-					<div class="kvt-global-stat-value">{ fmt.Sprintf("%d", global.Doing) }</div>
-					<div class="kvt-global-stat-label">In progress</div>
+				<div class="k-col-span-2 klt-global-stat">
+					<div class="klt-global-stat-value">{ fmt.Sprintf("%d", global.Doing) }</div>
+					<div class="klt-global-stat-label">In progress</div>
 				</div>
-				<div class="k-col-span-2 kvt-global-stat">
-					<div class="kvt-global-stat-value">{ fmt.Sprintf("%d", global.Done) }</div>
-					<div class="kvt-global-stat-label">Done</div>
+				<div class="k-col-span-2 klt-global-stat">
+					<div class="klt-global-stat-value">{ fmt.Sprintf("%d", global.Done) }</div>
+					<div class="klt-global-stat-label">Done</div>
 				</div>
-				<div class="k-col-span-2 kvt-global-stat">
-					<div class="kvt-global-stat-value kvt-global-stat-value--accent">{ fmt.Sprintf("%d", global.CompletedThisWeek) }</div>
-					<div class="kvt-global-stat-label">This week</div>
+				<div class="k-col-span-2 klt-global-stat">
+					<div class="klt-global-stat-value klt-global-stat-value--accent">{ fmt.Sprintf("%d", global.CompletedThisWeek) }</div>
+					<div class="klt-global-stat-label">This week</div>
 				</div>
 				if global.BugsOpen > 0 {
-					<div class="k-col-span-2 kvt-global-stat">
-						<div class="kvt-global-stat-value kvt-global-stat-value--danger">{ fmt.Sprintf("%d", global.BugsOpen) }</div>
-						<div class="kvt-global-stat-label">Open bugs</div>
+					<div class="k-col-span-2 klt-global-stat">
+						<div class="klt-global-stat-value klt-global-stat-value--danger">{ fmt.Sprintf("%d", global.BugsOpen) }</div>
+						<div class="klt-global-stat-label">Open bugs</div>
 					</div>
 				}
 			</div>
 
 			<!-- Projects -->
-			<h3 class="kvt-section-title">Projects</h3>
-			<div class="kvt-projects-grid">
+			<h3 class="klt-section-title">Projects</h3>
+			<div class="klt-projects-grid">
 				for _, dp := range projects {
 					@ProjectCard(dp)
 				}
@@ -73,39 +73,39 @@ templ Dashboard(projects []DashboardProject, global GlobalStats) {
 }
 
 templ ProjectCard(dp DashboardProject) {
-	<a href={ templ.SafeURL("/p/" + dp.Project.Slug) } class="kvt-project-card">
-		<div class="kvt-project-name">{ dp.Project.Name }</div>
-		<div class="kvt-project-meta">{ dp.Project.Slug }</div>
+	<a href={ templ.SafeURL("/p/" + dp.Project.Slug) } class="klt-project-card">
+		<div class="klt-project-name">{ dp.Project.Name }</div>
+		<div class="klt-project-meta">{ dp.Project.Slug }</div>
 		<!-- Type breakdown bar -->
 		if dp.ExtStats.Total > 0 {
-			<div class="kvt-type-bar">
+			<div class="klt-type-bar">
 				for _, tc := range dp.ExtStats.TypeBreakdown {
-					<div class={ "kvt-type-bar-seg kvt-type-bar-seg--" + string(tc.Type) } style={ fmt.Sprintf("width:%.0f%%", float64(tc.Count)/float64(dp.ExtStats.Total)*100) } title={ fmt.Sprintf("%s: %d", tc.Type, tc.Count) }></div>
+					<div class={ "klt-type-bar-seg klt-type-bar-seg--" + string(tc.Type) } style={ fmt.Sprintf("width:%.0f%%", float64(tc.Count)/float64(dp.ExtStats.Total)*100) } title={ fmt.Sprintf("%s: %d", tc.Type, tc.Count) }></div>
 				}
 			</div>
 		}
-		<div class="kvt-project-stats-row">
-			<div class="kvt-mini-stat">
-				<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Todo) }</span>
-				<span class="kvt-mini-stat-label">todo</span>
+		<div class="klt-project-stats-row">
+			<div class="klt-mini-stat">
+				<span class="klt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Todo) }</span>
+				<span class="klt-mini-stat-label">todo</span>
 			</div>
-			<div class="kvt-mini-stat">
-				<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Doing) }</span>
-				<span class="kvt-mini-stat-label">doing</span>
+			<div class="klt-mini-stat">
+				<span class="klt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Doing) }</span>
+				<span class="klt-mini-stat-label">doing</span>
 			</div>
-			<div class="kvt-mini-stat">
-				<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Done) }</span>
-				<span class="kvt-mini-stat-label">done</span>
+			<div class="klt-mini-stat">
+				<span class="klt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.Done) }</span>
+				<span class="klt-mini-stat-label">done</span>
 			</div>
 			if dp.Stats.BugsOpen > 0 {
-				<div class="kvt-mini-stat kvt-mini-stat--danger">
-					<span class="kvt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.BugsOpen) }</span>
-					<span class="kvt-mini-stat-label">bugs</span>
+				<div class="klt-mini-stat klt-mini-stat--danger">
+					<span class="klt-mini-stat-value">{ fmt.Sprintf("%d", dp.Stats.BugsOpen) }</span>
+					<span class="klt-mini-stat-label">bugs</span>
 				</div>
 			}
 		</div>
 		if dp.ExtStats.CompletedThisWeek > 0 {
-			<div class="kvt-project-velocity">
+			<div class="klt-project-velocity">
 				<i class="icon icon-trending-up"></i> { fmt.Sprintf("%d", dp.ExtStats.CompletedThisWeek) } this week
 			</div>
 		}
@@ -114,16 +114,16 @@ templ ProjectCard(dp DashboardProject) {
 
 templ RecentActivity(projects []DashboardProject) {
 	<!-- Collect recent completed from all projects -->
-	<h3 class="kvt-section-title">Recent completions</h3>
-	<div class="kvt-recent-list">
+	<h3 class="klt-section-title">Recent completions</h3>
+	<div class="klt-recent-list">
 		for _, dp := range projects {
 			for _, t := range dp.ExtStats.RecentCompleted {
-				<div class="kvt-recent-row">
-					<span class="kvt-recent-check"><i class="icon icon-check-circle"></i></span>
-					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", dp.Project.Slug, t.ID)) } class="kvt-recent-title">{ t.Title }</a>
-					<span class="kvt-recent-project">{ dp.Project.Name }</span>
+				<div class="klt-recent-row">
+					<span class="klt-recent-check"><i class="icon icon-check-circle"></i></span>
+					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", dp.Project.Slug, t.ID)) } class="klt-recent-title">{ t.Title }</a>
+					<span class="klt-recent-project">{ dp.Project.Name }</span>
 					if t.CompletedAt != nil {
-						<span class="kvt-recent-date">{ t.CompletedAt.Format("Jan 2 15:04") }</span>
+						<span class="klt-recent-date">{ t.CompletedAt.Format("Jan 2 15:04") }</span>
 					}
 				</div>
 			}

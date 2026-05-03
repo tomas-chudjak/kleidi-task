@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ahoylog/kvik-tasks/internal/api/handlers"
-	"github.com/ahoylog/kvik-tasks/internal/api/middleware"
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/ui"
+	"github.com/tomas-chudjak/kleidi-task/internal/api/handlers"
+	"github.com/tomas-chudjak/kleidi-task/internal/api/middleware"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/ui"
 	"github.com/go-chi/chi/v5"
 )
 

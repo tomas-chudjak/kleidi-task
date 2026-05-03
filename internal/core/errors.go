@@ -7,5 +7,5 @@ var (
 	ErrAlreadyExists   = errors.New("already exists")
 	ErrInvalidInput    = errors.New("invalid input")
 	ErrProjectNotFound = errors.New("project not found")
-	ErrNoProject       = errors.New("no project found in current directory (run 'kvt init' first)")
+	ErrNoProject       = errors.New("no project found in current directory (run 'klt init' first)")
 )

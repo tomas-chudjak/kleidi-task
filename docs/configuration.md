@@ -3,7 +3,7 @@ title: Configuration
 weight: 5
 ---
 
-kvik-tasks uses a layered configuration system. Project config overrides global config.
+kleidi-task uses a layered configuration system. Project config overrides global config.
 
 ## Config files
 
@@ -24,7 +24,7 @@ kvik-tasks uses a layered configuration system. Project config overrides global 
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `port` | `7842` | HTTP server port for `kvt serve` |
+| `port` | `7842` | HTTP server port for `klt serve` |
 | `default_priority` | `0` | Default priority for new tasks |
 | `default_project` | `""` | Default project slug for MCP when not in a project directory |
 

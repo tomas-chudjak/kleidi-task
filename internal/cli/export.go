@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/spf13/cobra"
 )
 

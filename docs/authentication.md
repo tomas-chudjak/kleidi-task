@@ -3,11 +3,11 @@ title: Authentication
 weight: 8
 ---
 
-kvik-tasks supports optional HTTP Basic Auth for team deployments. When no users are configured, the app runs in open-access mode — no credentials needed.
+kleidi-task supports optional HTTP Basic Auth for team deployments. When no users are configured, the app runs in open-access mode — no credentials needed.
 
 ## How it works
 
-1. Admin creates users via CLI: `kvt user add <username>`
+1. Admin creates users via CLI: `klt user add <username>`
 2. Server detects users with passwords exist → enables auth
 3. Browser shows native username/password popup on first request
 4. Credentials are verified against bcrypt hashes in the registry database
@@ -19,7 +19,7 @@ No login pages, no registration forms, no sessions — the browser handles the U
 ### Add a user
 
 ```bash
-kvt user add tomas
+klt user add tomas
 # Password for tomas: ****
 # User "tomas" created (ID: 2)
 ```
@@ -29,7 +29,7 @@ The password is read securely (hidden input) and stored as a bcrypt hash.
 ### List users
 
 ```bash
-kvt user list
+klt user list
 # ID  Username  Created
 # 2   tomas     2026-04-30
 # 3   peter     2026-04-30
@@ -43,7 +43,7 @@ Auth is **automatically enabled** when at least one user with a password exists 
 
 This means:
 - **Fresh install** → no auth (open access)
-- **After `kvt user add`** → auth enabled (browser popup)
+- **After `klt user add`** → auth enabled (browser popup)
 - **Delete all users from DB** → back to open access
 
 ## Docker deployment
@@ -52,10 +52,10 @@ For Docker deployments, create users after the container starts:
 
 ```bash
 # Enter the running container
-docker exec -it kvt-container kvt user add tomas
+docker exec -it klt-container klt user add tomas
 
 # Or use docker compose
-docker compose exec kvt kvt user add tomas
+docker compose exec klt klt user add tomas
 ```
 
 Alternatively, create users in a startup script or init container.
@@ -81,6 +81,6 @@ Future enhancements (not yet implemented):
 
 ## Security considerations
 
-- HTTP Basic Auth sends credentials in base64 (not encrypted). For production use over the internet, always put kvik-tasks behind a **reverse proxy with TLS** (Nginx, Caddy, Traefik).
+- HTTP Basic Auth sends credentials in base64 (not encrypted). For production use over the internet, always put kleidi-task behind a **reverse proxy with TLS** (Nginx, Caddy, Traefik).
 - For local network / VPN use, Basic Auth provides sufficient protection.
 - There is no rate limiting on auth attempts. For public-facing deployments, use a reverse proxy with rate limiting.

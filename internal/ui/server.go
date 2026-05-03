@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/go-chi/chi/v5"
 )
 

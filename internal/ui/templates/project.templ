@@ -1,6 +1,6 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 import "strings"
 
@@ -18,9 +18,9 @@ type ProjectFilter struct {
 
 func filterClass(active bool) string {
 	if active {
-		return "kvt-filter-link kvt-filter-link--active"
+		return "klt-filter-link klt-filter-link--active"
 	}
-	return "kvt-filter-link"
+	return "klt-filter-link"
 }
 
 // buildFilterURL builds a URL preserving all current filter params, overriding the specified ones.
@@ -120,22 +120,22 @@ func pageURL(slug string, page int64, f ProjectFilter) string {
 templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStats, filter ProjectFilter, categories []core.Category, workflows []core.WorkflowDef) {
 	@Layout(project.Name, project.Slug) {
 		<div data-slug={ project.Slug }></div>
-		<div class="kvt-board-header">
-			<h2 class="kvt-title">{ project.Name }</h2>
+		<div class="klt-board-header">
+			<h2 class="klt-title">{ project.Name }</h2>
 			<div style="display:flex;gap:8px;align-items:center;">
-				<div class="kvt-view-toggle">
-					<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn kvt-view-btn--active">
+				<div class="klt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug) } class="klt-view-btn klt-view-btn--active">
 						<i class="icon icon-list"></i> List
 					</a>
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="kvt-view-btn">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/board") } class="klt-view-btn">
 						<i class="icon icon-columns-3"></i> Board
 					</a>
 				</div>
-				<div class="kvt-view-toggle">
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&status=" + filter.Status + "&type=" + filter.Type) } class="kvt-view-btn" title="Export JSON" onclick="return confirm('Export filtered tasks as JSON?')">
+				<div class="klt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&status=" + filter.Status + "&type=" + filter.Type) } class="klt-view-btn" title="Export JSON" onclick="return confirm('Export filtered tasks as JSON?')">
 						<i class="icon icon-download"></i> JSON
 					</a>
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&status=" + filter.Status + "&type=" + filter.Type) } class="kvt-view-btn" title="Export Markdown" onclick="return confirm('Export filtered tasks as Markdown?')">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&status=" + filter.Status + "&type=" + filter.Type) } class="klt-view-btn" title="Export Markdown" onclick="return confirm('Export filtered tasks as Markdown?')">
 						<i class="icon icon-download"></i> MD
 					</a>
 				</div>
@@ -145,13 +145,13 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 		@StatsBar(stats)
 
 		<!-- Search bar -->
-		<div class="kvt-search">
-			<i class="icon icon-search kvt-search-icon"></i>
+		<div class="klt-search">
+			<i class="icon icon-search klt-search-icon"></i>
 			<input
 				type="search"
 				name="q"
 				placeholder="Search tasks..."
-				class="kvt-search-input"
+				class="klt-search-input"
 				hx-get={ "/p/" + project.Slug + "/search" }
 				hx-target="#task-list"
 				hx-swap="innerHTML"
@@ -164,35 +164,35 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 		</div>
 
 		<!-- Filter bar with inline advanced toggle -->
-		<div class="kvt-filters-row">
-			<div class="kvt-filters">
+		<div class="klt-filters-row">
+			<div class="klt-filters">
 				<a href={ templ.SafeURL(statusURL(project.Slug, "", filter)) } class={ filterClass(filter.Status == "") }>All</a>
 				<a href={ templ.SafeURL(statusURL(project.Slug, "todo", filter)) } class={ filterClass(hasFilter(filter.Status, "todo")) }>Todo</a>
 				<a href={ templ.SafeURL(statusURL(project.Slug, "doing", filter)) } class={ filterClass(hasFilter(filter.Status, "doing")) }>Doing</a>
 				<a href={ templ.SafeURL(statusURL(project.Slug, "done", filter)) } class={ filterClass(hasFilter(filter.Status, "done")) }>Done</a>
-				<span class="kvt-filter-sep">|</span>
+				<span class="klt-filter-sep">|</span>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "", filter)) } class={ filterClass(filter.Type == "") }>All types</a>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "task", filter)) } class={ filterClass(hasFilter(filter.Type, "task")) }>Tasks</a>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "bug", filter)) } class={ filterClass(hasFilter(filter.Type, "bug")) }>Bugs</a>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "feature", filter)) } class={ filterClass(hasFilter(filter.Type, "feature")) }>Features</a>
 				<a href={ templ.SafeURL(typeURL(project.Slug, "hotfix", filter)) } class={ filterClass(hasFilter(filter.Type, "hotfix")) }>Hotfixes</a>
 			</div>
-			<button type="button" class="kvt-advanced-btn" onclick="document.getElementById('advanced-filters').toggleAttribute('open')">
+			<button type="button" class="klt-advanced-btn" onclick="document.getElementById('advanced-filters').toggleAttribute('open')">
 				<i class="icon icon-sliders-horizontal"></i>
 			</button>
 		</div>
 
 		<!-- Advanced filters (collapsible) -->
-		<details id="advanced-filters" class="kvt-advanced-toggle"
+		<details id="advanced-filters" class="klt-advanced-toggle"
 			if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" || filter.Category != "" {
 				open
 			}
 		>
 			<summary style="display:none;"></summary>
-			<div class="kvt-advanced-filters">
-				<div class="kvt-filter-group">
-					<label class="kvt-filter-label" for="filter-priority">Priority</label>
-					<select class="kvt-filter-select" name="min_priority" id="filter-priority">
+			<div class="klt-advanced-filters">
+				<div class="klt-filter-group">
+					<label class="klt-filter-label" for="filter-priority">Priority</label>
+					<select class="klt-filter-select" name="min_priority" id="filter-priority">
 						<option value="">Any</option>
 						<option value="1" selected?={ filter.MinPriority == "1" }>P1+</option>
 						<option value="3" selected?={ filter.MinPriority == "3" }>P3+</option>
@@ -201,9 +201,9 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 					</select>
 				</div>
 				if len(categories) > 0 {
-					<div class="kvt-filter-group">
-						<label class="kvt-filter-label" for="filter-category">Category</label>
-						<select class="kvt-filter-select" name="category" id="filter-category">
+					<div class="klt-filter-group">
+						<label class="klt-filter-label" for="filter-category">Category</label>
+						<select class="klt-filter-select" name="category" id="filter-category">
 							<option value="">All</option>
 							for _, c := range categories {
 								<option value={ c.Name } selected?={ filter.Category == c.Name }>{ c.Name }</option>
@@ -211,24 +211,24 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 						</select>
 					</div>
 				}
-				<div class="kvt-filter-group">
-					<label class="kvt-filter-label" for="filter-after">From</label>
-					<input type="date" class="kvt-filter-date" name="created_after" id="filter-after" value={ filter.CreatedAfter } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+				<div class="klt-filter-group">
+					<label class="klt-filter-label" for="filter-after">From</label>
+					<input type="date" class="klt-filter-date" name="created_after" id="filter-after" value={ filter.CreatedAfter } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 				</div>
-				<div class="kvt-filter-group">
-					<label class="kvt-filter-label" for="filter-before">To</label>
-					<input type="date" class="kvt-filter-date" name="created_before" id="filter-before" value={ filter.CreatedBefore } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+				<div class="klt-filter-group">
+					<label class="klt-filter-label" for="filter-before">To</label>
+					<input type="date" class="klt-filter-date" name="created_before" id="filter-before" value={ filter.CreatedBefore } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 				</div>
-				<button type="button" class="kvt-filter-apply" onclick="applyAdvancedFilters(this)">Apply</button>
+				<button type="button" class="klt-filter-apply" onclick="applyAdvancedFilters(this)">Apply</button>
 				if filter.MinPriority != "" || filter.CreatedAfter != "" || filter.CreatedBefore != "" || filter.Category != "" {
-					<a href={ templ.SafeURL(buildFilterURL(project.Slug, ProjectFilter{Status: filter.Status, Type: filter.Type}, map[string]string{})) } class="kvt-filter-clear">Clear</a>
+					<a href={ templ.SafeURL(buildFilterURL(project.Slug, ProjectFilter{Status: filter.Status, Type: filter.Type}, map[string]string{})) } class="klt-filter-clear">Clear</a>
 				}
 			</div>
 		</details>
 
-		<div class="k-grid k-grid--12 kvt-project-grid">
-			<div class="k-col-span-9 kvt-project-main">
-				<div id="task-list" class="kvt-task-list">
+		<div class="k-grid k-grid--12 klt-project-grid">
+			<div class="k-col-span-9 klt-project-main">
+				<div id="task-list" class="klt-task-list">
 					@TaskList(tasks, project.Slug, workflows)
 				</div>
 
@@ -238,42 +238,42 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 					@Pagination(project.Slug, filter)
 				}
 
-				<div class="kvt-total-count">{ fmt.Sprintf("%d tasks total", filter.Total) }</div>
+				<div class="klt-total-count">{ fmt.Sprintf("%d tasks total", filter.Total) }</div>
 			</div>
 
 			<aside class="k-col-span-3">
-				<div class="kvt-add-card">
-					<h3 class="kvt-add-card-title">New task</h3>
+				<div class="klt-add-card">
+					<h3 class="klt-add-card-title">New task</h3>
 					<form
 						hx-post={ "/p/" + project.Slug + "/tasks" }
 						hx-target="#task-list"
 						hx-swap="innerHTML"
 						hx-on::after-request="this.reset(); document.getElementById('add-details').removeAttribute('open');"
 						hx-ext="json-enc"
-						class="kvt-add-form"
+						class="klt-add-form"
 					>
 						<input type="text" name="title" placeholder="Title (BUG:, FEAT:, HOTFIX:)" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
-						<details id="add-details" class="kvt-add-details">
-							<summary class="kvt-add-details-toggle">+ Details</summary>
-							<textarea name="description" class="kvt-add-textarea" placeholder="Add description..." rows="4"></textarea>
+						<details id="add-details" class="klt-add-details">
+							<summary class="klt-add-details-toggle">+ Details</summary>
+							<textarea name="description" class="klt-add-textarea" placeholder="Add description..." rows="4"></textarea>
 							if len(categories) > 0 {
-								<div class="kvt-field" style="margin-top:8px;">
-									<label class="kvt-field-label" for="new-task-cat">Category</label>
-									<div class="kvt-select-wrap">
-										<select name="category" id="new-task-cat" class="kvt-select">
+								<div class="klt-field" style="margin-top:8px;">
+									<label class="klt-field-label" for="new-task-cat">Category</label>
+									<div class="klt-select-wrap">
+										<select name="category" id="new-task-cat" class="klt-select">
 											<option value="">None</option>
 											for _, c := range categories {
 												<option value={ c.Name }>{ c.Name }</option>
 											}
 										</select>
-										<i class="icon icon-chevron-down kvt-select-icon"></i>
+										<i class="icon icon-chevron-down klt-select-icon"></i>
 									</div>
 								</div>
 							}
 						</details>
-						<button type="submit" class="kvt-add-btn">Add task</button>
+						<button type="submit" class="klt-add-btn">Add task</button>
 					</form>
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/t/new") } class="kvt-add-btn kvt-add-btn--outline">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/t/new") } class="klt-add-btn klt-add-btn--outline">
 						<i class="icon icon-file-plus"></i> Detailed task
 					</a>
 				</div>
@@ -284,66 +284,66 @@ templ ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectSta
 }
 
 templ StatsBar(stats core.ProjectStats) {
-	<div id="stats-bar" class="k-grid k-grid--4 kvt-stats">
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
+	<div id="stats-bar" class="k-grid k-grid--4 klt-stats">
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
-				<div class="kvt-stat-label">Todo</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+				<div class="klt-stat-label">Todo</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--doing"><i class="icon icon-play"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--doing"><i class="icon icon-play"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
-				<div class="kvt-stat-label">In Progress</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+				<div class="klt-stat-label">In Progress</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
-				<div class="kvt-stat-label">Done</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+				<div class="klt-stat-label">Done</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
-				<div class="kvt-stat-label">Open Bugs</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+				<div class="klt-stat-label">Open Bugs</div>
 			</div>
 		</div>
 	</div>
 }
 
 templ StatsBarOOB(stats core.ProjectStats) {
-	<div id="stats-bar" hx-swap-oob="true" class="k-grid k-grid--4 kvt-stats">
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
+	<div id="stats-bar" hx-swap-oob="true" class="k-grid k-grid--4 klt-stats">
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--todo"><i class="icon icon-square-check"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
-				<div class="kvt-stat-label">Todo</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</div>
+				<div class="klt-stat-label">Todo</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--doing"><i class="icon icon-play"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--doing"><i class="icon icon-play"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
-				<div class="kvt-stat-label">In Progress</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</div>
+				<div class="klt-stat-label">In Progress</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--done"><i class="icon icon-check-circle"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
-				<div class="kvt-stat-label">Done</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.Done) }</div>
+				<div class="klt-stat-label">Done</div>
 			</div>
 		</div>
-		<div class="kvt-stat-card">
-			<div class="kvt-stat-icon kvt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
+		<div class="klt-stat-card">
+			<div class="klt-stat-icon klt-stat-icon--bugs"><i class="icon icon-bug"></i></div>
 			<div>
-				<div class="kvt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
-				<div class="kvt-stat-label">Open Bugs</div>
+				<div class="klt-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</div>
+				<div class="klt-stat-label">Open Bugs</div>
 			</div>
 		</div>
 	</div>
@@ -351,18 +351,18 @@ templ StatsBarOOB(stats core.ProjectStats) {
 
 templ TaskList(tasks []core.Task, slug string, workflows []core.WorkflowDef) {
 	if len(tasks) == 0 {
-		<div class="kvt-empty">No tasks yet.</div>
+		<div class="klt-empty">No tasks yet.</div>
 	} else {
-		<div class="kvt-task-header">
-			<label class="kvt-bulk-checkbox">
+		<div class="klt-task-header">
+			<label class="klt-bulk-checkbox">
 				<input type="checkbox" id="bulk-select-all" onchange="kvtBulk.toggleAll(this)"/>
 			</label>
-			<span class="kvt-task-header-label">ID</span>
-			<span class="kvt-task-header-label">Type</span>
-			<span class="kvt-task-header-label">Title</span>
-			<span class="kvt-task-header-label">Category</span>
-			<span class="kvt-task-header-label">Status</span>
-			<span class="kvt-task-header-label">Priority</span>
+			<span class="klt-task-header-label">ID</span>
+			<span class="klt-task-header-label">Type</span>
+			<span class="klt-task-header-label">Title</span>
+			<span class="klt-task-header-label">Category</span>
+			<span class="klt-task-header-label">Status</span>
+			<span class="klt-task-header-label">Priority</span>
 			<span></span>
 		</div>
 		for _, t := range tasks {
@@ -372,54 +372,54 @@ templ TaskList(tasks []core.Task, slug string, workflows []core.WorkflowDef) {
 }
 
 templ Pagination(slug string, filter ProjectFilter) {
-	<nav class="kvt-pagination">
+	<nav class="klt-pagination">
 		if filter.Page > 1 {
-			<a href={ templ.SafeURL(pageURL(slug, filter.Page-1, filter)) } class="kvt-page-link">&laquo; Prev</a>
+			<a href={ templ.SafeURL(pageURL(slug, filter.Page-1, filter)) } class="klt-page-link">&laquo; Prev</a>
 		} else {
-			<span class="kvt-page-link kvt-page-link--disabled">&laquo; Prev</span>
+			<span class="klt-page-link klt-page-link--disabled">&laquo; Prev</span>
 		}
 
 		for i := int64(1); i <= filter.TotalPages; i++ {
 			if i == filter.Page {
-				<span class="kvt-page-link kvt-page-link--active">{ fmt.Sprintf("%d", i) }</span>
+				<span class="klt-page-link klt-page-link--active">{ fmt.Sprintf("%d", i) }</span>
 			} else {
-				<a href={ templ.SafeURL(pageURL(slug, i, filter)) } class="kvt-page-link">{ fmt.Sprintf("%d", i) }</a>
+				<a href={ templ.SafeURL(pageURL(slug, i, filter)) } class="klt-page-link">{ fmt.Sprintf("%d", i) }</a>
 			}
 		}
 
 		if filter.Page < filter.TotalPages {
-			<a href={ templ.SafeURL(pageURL(slug, filter.Page+1, filter)) } class="kvt-page-link">Next &raquo;</a>
+			<a href={ templ.SafeURL(pageURL(slug, filter.Page+1, filter)) } class="klt-page-link">Next &raquo;</a>
 		} else {
-			<span class="kvt-page-link kvt-page-link--disabled">Next &raquo;</span>
+			<span class="klt-page-link klt-page-link--disabled">Next &raquo;</span>
 		}
 	</nav>
 }
 
 templ TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) {
-	<div class="kvt-task-row kvt-task-row--bulk" id={ fmt.Sprintf("task-%d", task.ID) }>
-		<label class="kvt-bulk-checkbox">
-			<input type="checkbox" class="kvt-bulk-cb" value={ fmt.Sprintf("%d", task.ID) } onchange="kvtBulk.toggle(this)"/>
+	<div class="klt-task-row klt-task-row--bulk" id={ fmt.Sprintf("task-%d", task.ID) }>
+		<label class="klt-bulk-checkbox">
+			<input type="checkbox" class="klt-bulk-cb" value={ fmt.Sprintf("%d", task.ID) } onchange="kvtBulk.toggle(this)"/>
 		</label>
-		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+		<span class="klt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		@TypeBadge(string(task.Type), workflows)
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
 		if task.Category != "" {
-			<span class="kvt-category-tag">{ task.Category }</span>
+			<span class="klt-category-tag">{ task.Category }</span>
 		} else {
-			<span class="kvt-category-tag kvt-category-tag--empty"></span>
+			<span class="klt-category-tag klt-category-tag--empty"></span>
 		}
-		<span class={ "kvt-task-status kvt-task-status--" + string(task.Status) }>{ string(task.Status) }</span>
-		<span class="kvt-task-priority">
+		<span class={ "klt-task-status klt-task-status--" + string(task.Status) }>{ string(task.Status) }</span>
+		<span class="klt-task-priority">
 			if task.Priority > 0 {
 				P{ fmt.Sprintf("%d", task.Priority) }
 			} else {
 				—
 			}
 		</span>
-		<div class="kvt-task-actions">
+		<div class="klt-task-actions">
 			if task.Status != core.StatusDone {
 				<button
-					class="kvt-btn-done"
+					class="klt-btn-done"
 					hx-post={ fmt.Sprintf("/p/%s/tasks/%d/complete", slug, task.ID) }
 					hx-target={ fmt.Sprintf("#task-%d", task.ID) }
 					hx-swap="outerHTML"
@@ -431,7 +431,7 @@ templ TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 			if task.Status == core.StatusDone {
 				<a
 					href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/archive", slug, task.ID)) }
-					class="kvt-btn-archive"
+					class="klt-btn-archive"
 					title="Archive"
 				>
 					<i class="icon icon-archive"></i>
@@ -456,19 +456,19 @@ script bulkDropdown(slug string, action string) {
 }
 
 templ BulkBar(slug string, workflows []core.WorkflowDef) {
-	<div id="bulk-bar" class="kvt-bulk-bar" style="display:none;">
-		<div class="kvt-bulk-bar-left">
+	<div id="bulk-bar" class="klt-bulk-bar" style="display:none;">
+		<div class="klt-bulk-bar-left">
 			<span id="bulk-count">0</span> selected
-			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--clear" onclick="kvtBulk.clear()">Clear</button>
+			<button type="button" class="klt-bulk-btn klt-bulk-btn--clear" onclick="kvtBulk.clear()">Clear</button>
 		</div>
-		<div class="kvt-bulk-bar-right">
-			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--success" onclick={ bulkAction(slug, "complete") }>
+		<div class="klt-bulk-bar-right">
+			<button type="button" class="klt-bulk-btn klt-bulk-btn--success" onclick={ bulkAction(slug, "complete") }>
 				<i class="icon icon-check"></i> Complete
 			</button>
-			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--archive" onclick={ bulkAction(slug, "archive") }>
+			<button type="button" class="klt-bulk-btn klt-bulk-btn--archive" onclick={ bulkAction(slug, "archive") }>
 				<i class="icon icon-archive"></i> Archive
 			</button>
-			<div class="kvt-bulk-dropdown">
+			<div class="klt-bulk-dropdown">
 				<select onchange={ bulkDropdown(slug, "status") }>
 					<option value="">Status...</option>
 					<option value="todo">Todo</option>
@@ -476,13 +476,13 @@ templ BulkBar(slug string, workflows []core.WorkflowDef) {
 					<option value="done">Done</option>
 				</select>
 			</div>
-			<div class="kvt-bulk-dropdown">
+			<div class="klt-bulk-dropdown">
 				<select onchange={ bulkDropdown(slug, "type") }>
 					<option value="">Type...</option>
 					@TypeOptions("", workflows)
 				</select>
 			</div>
-			<button type="button" class="kvt-bulk-btn kvt-bulk-btn--danger" onclick={ bulkAction(slug, "delete") }>
+			<button type="button" class="klt-bulk-btn klt-bulk-btn--danger" onclick={ bulkAction(slug, "delete") }>
 				<i class="icon icon-trash-2"></i> Delete
 			</button>
 		</div>
@@ -490,32 +490,32 @@ templ BulkBar(slug string, workflows []core.WorkflowDef) {
 }
 
 templ KeyboardHelp() {
-	<div id="kbd-help" class="kvt-kbd-help" onclick="if(event.target===this)this.classList.remove('kvt-kbd-help--visible')">
-		<div class="kvt-kbd-help-card">
-			<h3 class="kvt-kbd-help-title">
+	<div id="kbd-help" class="klt-kbd-help" onclick="if(event.target===this)this.classList.remove('klt-kbd-help--visible')">
+		<div class="klt-kbd-help-card">
+			<h3 class="klt-kbd-help-title">
 				Keyboard shortcuts
-				<button class="kvt-kbd-help-close" onclick="document.getElementById('kbd-help').classList.remove('kvt-kbd-help--visible')">
+				<button class="klt-kbd-help-close" onclick="document.getElementById('kbd-help').classList.remove('klt-kbd-help--visible')">
 					<i class="icon icon-x"></i>
 				</button>
 			</h3>
-			<div class="kvt-kbd-help-group">
-				<div class="kvt-kbd-help-group-title">Navigation</div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">j</span><span class="kvt-kbd-desc">Move down</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">k</span><span class="kvt-kbd-desc">Move up</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">e</span><span class="kvt-kbd-desc">Open task detail</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">&#9003;</span><span class="kvt-kbd-desc">Go back</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">n</span><span class="kvt-kbd-desc">New task</span></div>
+			<div class="klt-kbd-help-group">
+				<div class="klt-kbd-help-group-title">Navigation</div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">j</span><span class="klt-kbd-desc">Move down</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">k</span><span class="klt-kbd-desc">Move up</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">e</span><span class="klt-kbd-desc">Open task detail</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">&#9003;</span><span class="klt-kbd-desc">Go back</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">n</span><span class="klt-kbd-desc">New task</span></div>
 			</div>
-			<div class="kvt-kbd-help-group">
-				<div class="kvt-kbd-help-group-title">Actions</div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">x</span><span class="kvt-kbd-desc">Mark as done</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">d</span><span class="kvt-kbd-desc">Delete task</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">a</span><span class="kvt-kbd-desc">Archive task</span></div>
+			<div class="klt-kbd-help-group">
+				<div class="klt-kbd-help-group-title">Actions</div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">x</span><span class="klt-kbd-desc">Mark as done</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">d</span><span class="klt-kbd-desc">Delete task</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">a</span><span class="klt-kbd-desc">Archive task</span></div>
 			</div>
-			<div class="kvt-kbd-help-group">
-				<div class="kvt-kbd-help-group-title">Other</div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">?</span><span class="kvt-kbd-desc">Show this help</span></div>
-				<div class="kvt-kbd-row"><span class="kvt-kbd-key">Esc</span><span class="kvt-kbd-desc">Close overlay</span></div>
+			<div class="klt-kbd-help-group">
+				<div class="klt-kbd-help-group-title">Other</div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">?</span><span class="klt-kbd-desc">Show this help</span></div>
+				<div class="klt-kbd-row"><span class="klt-kbd-key">Esc</span><span class="klt-kbd-desc">Close overlay</span></div>
 			</div>
 		</div>
 	</div>

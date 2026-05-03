@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	mcpserver "github.com/ahoylog/kvik-tasks/internal/mcp"
+	mcpserver "github.com/tomas-chudjak/kleidi-task/internal/mcp"
 	"github.com/spf13/cobra"
 )
 

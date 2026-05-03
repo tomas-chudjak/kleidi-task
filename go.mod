@@ -1,4 +1,4 @@
-module github.com/ahoylog/kvik-tasks
+module github.com/tomas-chudjak/kleidi-task
 
 go 1.25.7
 

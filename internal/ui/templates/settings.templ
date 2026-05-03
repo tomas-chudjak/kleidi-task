@@ -1,76 +1,76 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 templ SettingsPage(project core.Project, categories []core.Category, stats core.ProjectStats, config core.ProjectConfig, taskTemplates []core.TaskTemplate, workflows []core.WorkflowDef, hooks []core.Hook) {
 	@Layout(project.Name+" — Settings", project.Slug) {
-		<div class="kvt-board-header">
-			<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
-			<h2 class="kvt-title">Settings</h2>
+		<div class="klt-board-header">
+			<a href={ templ.SafeURL("/p/" + project.Slug) } class="klt-back-link"><i class="icon icon-arrow-left"></i></a>
+			<h2 class="klt-title">Settings</h2>
 		</div>
 
-		<div class="kvt-settings-layout">
+		<div class="klt-settings-layout">
 			<!-- Section nav -->
-			<nav class="kvt-settings-nav">
-				<a href="#project-info" class="kvt-settings-nav-link"><i class="icon icon-folder"></i> Project</a>
-				<a href="#categories" class="kvt-settings-nav-link"><i class="icon icon-tag"></i> Categories</a>
-				<a href="#configuration" class="kvt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
-					<a href="#workflows" class="kvt-settings-nav-link"><i class="icon icon-git-branch"></i> Workflows</a>
-					<a href="#templates" class="kvt-settings-nav-link"><i class="icon icon-file-text"></i> Templates</a>
-					<a href="#hooks" class="kvt-settings-nav-link"><i class="icon icon-zap"></i> Hooks</a>
-					<a href="#danger" class="kvt-settings-nav-link kvt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
+			<nav class="klt-settings-nav">
+				<a href="#project-info" class="klt-settings-nav-link"><i class="icon icon-folder"></i> Project</a>
+				<a href="#categories" class="klt-settings-nav-link"><i class="icon icon-tag"></i> Categories</a>
+				<a href="#configuration" class="klt-settings-nav-link"><i class="icon icon-sliders-horizontal"></i> Configuration</a>
+					<a href="#workflows" class="klt-settings-nav-link"><i class="icon icon-git-branch"></i> Workflows</a>
+					<a href="#templates" class="klt-settings-nav-link"><i class="icon icon-file-text"></i> Templates</a>
+					<a href="#hooks" class="klt-settings-nav-link"><i class="icon icon-zap"></i> Hooks</a>
+					<a href="#danger" class="klt-settings-nav-link klt-settings-nav-link--danger"><i class="icon icon-alert-triangle"></i> Danger zone</a>
 			</nav>
 
 			<!-- Sections -->
-			<div class="kvt-settings-content">
+			<div class="klt-settings-content">
 				<!-- Project info -->
-				<section class="kvt-settings-section" id="project-info">
-					<h3 class="kvt-settings-heading"><i class="icon icon-folder"></i> Project</h3>
-					<div class="kvt-settings-grid">
-						<div class="kvt-settings-field">
-							<label class="kvt-field-label">Name</label>
-							<div class="kvt-field-value">{ project.Name }</div>
+				<section class="klt-settings-section" id="project-info">
+					<h3 class="klt-settings-heading"><i class="icon icon-folder"></i> Project</h3>
+					<div class="klt-settings-grid">
+						<div class="klt-settings-field">
+							<label class="klt-field-label">Name</label>
+							<div class="klt-field-value">{ project.Name }</div>
 						</div>
-						<div class="kvt-settings-field">
-							<label class="kvt-field-label">Slug</label>
-							<div class="kvt-field-value kvt-field-value--mono">{ project.Slug }</div>
+						<div class="klt-settings-field">
+							<label class="klt-field-label">Slug</label>
+							<div class="klt-field-value klt-field-value--mono">{ project.Slug }</div>
 						</div>
-						<div class="kvt-settings-field">
-							<label class="kvt-field-label">Path</label>
-							<div class="kvt-field-value kvt-field-value--mono" style="font-size:0.75rem;">{ project.Path }</div>
+						<div class="klt-settings-field">
+							<label class="klt-field-label">Path</label>
+							<div class="klt-field-value klt-field-value--mono" style="font-size:0.75rem;">{ project.Path }</div>
 						</div>
-						<div class="kvt-settings-field">
-							<label class="kvt-field-label">Created</label>
-							<div class="kvt-field-value kvt-field-value--mono">{ project.CreatedAt.Format("2006-01-02") }</div>
+						<div class="klt-settings-field">
+							<label class="klt-field-label">Created</label>
+							<div class="klt-field-value klt-field-value--mono">{ project.CreatedAt.Format("2006-01-02") }</div>
 						</div>
 					</div>
-					<div class="kvt-settings-stats">
-						<div class="kvt-settings-stat">
-							<span class="kvt-settings-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</span>
-							<span class="kvt-settings-stat-label">Todo</span>
+					<div class="klt-settings-stats">
+						<div class="klt-settings-stat">
+							<span class="klt-settings-stat-value">{ fmt.Sprintf("%d", stats.Todo) }</span>
+							<span class="klt-settings-stat-label">Todo</span>
 						</div>
-						<div class="kvt-settings-stat">
-							<span class="kvt-settings-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</span>
-							<span class="kvt-settings-stat-label">In Progress</span>
+						<div class="klt-settings-stat">
+							<span class="klt-settings-stat-value">{ fmt.Sprintf("%d", stats.Doing) }</span>
+							<span class="klt-settings-stat-label">In Progress</span>
 						</div>
-						<div class="kvt-settings-stat">
-							<span class="kvt-settings-stat-value">{ fmt.Sprintf("%d", stats.Done) }</span>
-							<span class="kvt-settings-stat-label">Done</span>
+						<div class="klt-settings-stat">
+							<span class="klt-settings-stat-value">{ fmt.Sprintf("%d", stats.Done) }</span>
+							<span class="klt-settings-stat-label">Done</span>
 						</div>
-						<div class="kvt-settings-stat">
-							<span class="kvt-settings-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</span>
-							<span class="kvt-settings-stat-label">Open Bugs</span>
+						<div class="klt-settings-stat">
+							<span class="klt-settings-stat-value">{ fmt.Sprintf("%d", stats.BugsOpen) }</span>
+							<span class="klt-settings-stat-label">Open Bugs</span>
 						</div>
 					</div>
 				</section>
 
 				<!-- Categories -->
-				<section class="kvt-settings-section" id="categories">
-					<h3 class="kvt-settings-heading"><i class="icon icon-tag"></i> Categories</h3>
-					<p class="kvt-settings-desc">Custom categories for organizing tasks by area of work.</p>
+				<section class="klt-settings-section" id="categories">
+					<h3 class="klt-settings-heading"><i class="icon icon-tag"></i> Categories</h3>
+					<p class="klt-settings-desc">Custom categories for organizing tasks by area of work.</p>
 
-					<div id="category-list" class="kvt-cat-list">
+					<div id="category-list" class="klt-cat-list">
 						@CategoryList(categories, project.Slug)
 					</div>
 
@@ -80,59 +80,59 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 						hx-swap="innerHTML"
 						hx-on::after-request="this.reset();"
 						hx-ext="json-enc"
-						class="kvt-cat-form"
+						class="klt-cat-form"
 					>
-						<div class="kvt-cat-form-row">
-							<input type="text" name="name" placeholder="New category name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
-							<input type="color" name="color" value="#8a8dab" class="kvt-cat-color"/>
-							<button type="submit" class="kvt-cat-add-btn" title="Add category"><i class="icon icon-plus"></i></button>
+						<div class="klt-cat-form-row">
+							<input type="text" name="name" placeholder="New category name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="klt-cat-input"/>
+							<input type="color" name="color" value="#8a8dab" class="klt-cat-color"/>
+							<button type="submit" class="klt-cat-add-btn" title="Add category"><i class="icon icon-plus"></i></button>
 						</div>
 					</form>
 				</section>
 
 				<!-- Configuration -->
-					<section class="kvt-settings-section" id="configuration">
-						<h3 class="kvt-settings-heading"><i class="icon icon-sliders-horizontal"></i> Configuration</h3>
-						<p class="kvt-settings-desc">Project defaults and automation settings.</p>
+					<section class="klt-settings-section" id="configuration">
+						<h3 class="klt-settings-heading"><i class="icon icon-sliders-horizontal"></i> Configuration</h3>
+						<p class="klt-settings-desc">Project defaults and automation settings.</p>
 						<form
 							hx-post={ "/p/" + project.Slug + "/settings/config" }
 							hx-target="#config-saved"
 							hx-swap="innerHTML"
 							hx-ext="json-enc"
-							class="kvt-detail-fields"
+							class="klt-detail-fields"
 						>
-							<div class="kvt-field">
-								<label class="kvt-field-label" for="cfg-priority">Default priority</label>
-								<input type="number" class="kvt-input" id="cfg-priority" name="default_priority" value={ fmt.Sprintf("%d", config.DefaultPriority) } min="0" max="10"/>
+							<div class="klt-field">
+								<label class="klt-field-label" for="cfg-priority">Default priority</label>
+								<input type="number" class="klt-input" id="cfg-priority" name="default_priority" value={ fmt.Sprintf("%d", config.DefaultPriority) } min="0" max="10"/>
 							</div>
-							<div class="kvt-field">
-								<label class="kvt-field-label" for="cfg-type">Default task type</label>
-								<div class="kvt-select-wrap">
-									<select class="kvt-select" id="cfg-type" name="default_type">
+							<div class="klt-field">
+								<label class="klt-field-label" for="cfg-type">Default task type</label>
+								<div class="klt-select-wrap">
+									<select class="klt-select" id="cfg-type" name="default_type">
 										@TypeOptions(config.DefaultType, workflows)
 									</select>
-									<i class="icon icon-chevron-down kvt-select-icon"></i>
+									<i class="icon icon-chevron-down klt-select-icon"></i>
 								</div>
 							</div>
-							<div class="kvt-field">
-								<label class="kvt-field-label" for="cfg-archive">Auto-archive after (days)</label>
-								<input type="number" class="kvt-input" id="cfg-archive" name="auto_archive_days" value={ fmt.Sprintf("%d", config.AutoArchiveDays) } min="0" placeholder="0 = disabled"/>
+							<div class="klt-field">
+								<label class="klt-field-label" for="cfg-archive">Auto-archive after (days)</label>
+								<input type="number" class="klt-input" id="cfg-archive" name="auto_archive_days" value={ fmt.Sprintf("%d", config.AutoArchiveDays) } min="0" placeholder="0 = disabled"/>
 							</div>
-							<button type="submit" class="kvt-add-btn" style="max-width:200px;">Save configuration</button>
+							<button type="submit" class="klt-add-btn" style="max-width:200px;">Save configuration</button>
 							<span id="config-saved"></span>
 						</form>
 					</section>
 
 					<!-- Workflows -->
-					<section class="kvt-settings-section" id="workflows">
-						<h3 class="kvt-settings-heading"><i class="icon icon-git-branch"></i> Workflows</h3>
-						<p class="kvt-settings-desc">Phase-based workflows for each task type. Click to edit phases and AI prompts.</p>
-						<div class="kvt-cat-list">
+					<section class="klt-settings-section" id="workflows">
+						<h3 class="klt-settings-heading"><i class="icon icon-git-branch"></i> Workflows</h3>
+						<p class="klt-settings-desc">Phase-based workflows for each task type. Click to edit phases and AI prompts.</p>
+						<div class="klt-cat-list">
 							for _, wf := range workflows {
-								<div class="kvt-cat-row">
-									<div class="kvt-cat-display">
+								<div class="klt-cat-row">
+									<div class="klt-cat-display">
 										@TypeBadgeSmall(wf.TaskType, workflows)
-										<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">
+										<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)) } class="klt-cat-name" style="text-decoration:none;color:var(--klt-fg);">
 											{ fmt.Sprintf("%d phases", len(wf.Phases)) }
 										</a>
 									</div>
@@ -142,11 +142,11 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 					</section>
 
 					<!-- Templates -->
-					<section class="kvt-settings-section" id="templates">
-						<h3 class="kvt-settings-heading"><i class="icon icon-file-text"></i> Templates</h3>
-						<p class="kvt-settings-desc">Predefined templates for quick task creation.</p>
+					<section class="klt-settings-section" id="templates">
+						<h3 class="klt-settings-heading"><i class="icon icon-file-text"></i> Templates</h3>
+						<p class="klt-settings-desc">Predefined templates for quick task creation.</p>
 
-						<div id="template-list" class="kvt-cat-list">
+						<div id="template-list" class="klt-cat-list">
 							@TemplateList(taskTemplates, project.Slug, workflows)
 						</div>
 
@@ -156,24 +156,24 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 							hx-swap="innerHTML"
 							hx-on::after-request="this.reset();"
 							hx-ext="json-enc"
-							class="kvt-cat-form"
+							class="klt-cat-form"
 						>
-							<div class="kvt-cat-form-row">
-								<input type="text" name="name" placeholder="Template name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
-								<select name="type" class="kvt-cat-input" style="max-width:100px;">
+							<div class="klt-cat-form-row">
+								<input type="text" name="name" placeholder="Template name" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="klt-cat-input"/>
+								<select name="type" class="klt-cat-input" style="max-width:100px;">
 									@TypeOptions("task", workflows)
 								</select>
-								<button type="submit" class="kvt-cat-add-btn" title="Add template"><i class="icon icon-plus"></i></button>
+								<button type="submit" class="klt-cat-add-btn" title="Add template"><i class="icon icon-plus"></i></button>
 							</div>
 						</form>
 					</section>
 
 					<!-- Hooks -->
-					<section class="kvt-settings-section" id="hooks">
-						<h3 class="kvt-settings-heading"><i class="icon icon-zap"></i> Hooks</h3>
-						<p class="kvt-settings-desc">Run shell scripts on task lifecycle events. Hooks run asynchronously and don't block operations.</p>
+					<section class="klt-settings-section" id="hooks">
+						<h3 class="klt-settings-heading"><i class="icon icon-zap"></i> Hooks</h3>
+						<p class="klt-settings-desc">Run shell scripts on task lifecycle events. Hooks run asynchronously and don't block operations.</p>
 
-						<div id="hook-list" class="kvt-cat-list">
+						<div id="hook-list" class="klt-cat-list">
 							@HookList(hooks, project.Slug)
 						</div>
 
@@ -183,34 +183,34 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 							hx-swap="innerHTML"
 							hx-on::after-request="this.reset();"
 							hx-ext="json-enc"
-							class="kvt-cat-form"
+							class="klt-cat-form"
 						>
-							<div class="kvt-cat-form-row">
-								<select name="event" class="kvt-cat-input" style="max-width:130px;" required>
+							<div class="klt-cat-form-row">
+								<select name="event" class="klt-cat-input" style="max-width:130px;" required>
 									<option value="task.create">task.create</option>
 									<option value="task.complete">task.complete</option>
 									<option value="task.update">task.update</option>
 									<option value="task.delete">task.delete</option>
 									<option value="task.archive">task.archive</option>
 								</select>
-								<input type="text" name="command" placeholder="Shell command" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="kvt-cat-input"/>
-								<button type="submit" class="kvt-cat-add-btn" title="Add hook"><i class="icon icon-plus"></i></button>
+								<input type="text" name="command" placeholder="Shell command" required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other" class="klt-cat-input"/>
+								<button type="submit" class="klt-cat-add-btn" title="Add hook"><i class="icon icon-plus"></i></button>
 							</div>
 						</form>
-						<p class="kvt-settings-desc" style="margin-top:6px;font-size:0.7rem;">
+						<p class="klt-settings-desc" style="margin-top:6px;font-size:0.7rem;">
 							Environment: <code>KVT_EVENT</code>, <code>KVT_TASK_ID</code>, <code>KVT_TASK_TITLE</code>, <code>KVT_TASK_TYPE</code>, <code>KVT_TASK_STATUS</code>, <code>KVT_TASK_PRIORITY</code>. Task JSON on stdin.
 						</p>
 					</section>
 
 					<!-- Danger zone -->
-				<section class="kvt-settings-section kvt-settings-section--danger" id="danger">
-					<h3 class="kvt-settings-heading kvt-settings-heading--danger"><i class="icon icon-alert-triangle"></i> Danger zone</h3>
-					<div class="kvt-danger-item">
+				<section class="klt-settings-section klt-settings-section--danger" id="danger">
+					<h3 class="klt-settings-heading klt-settings-heading--danger"><i class="icon icon-alert-triangle"></i> Danger zone</h3>
+					<div class="klt-danger-item">
 						<div>
-							<div class="kvt-danger-title">Delete this project</div>
-							<div class="kvt-danger-desc">Remove project from registry. Task database in <code>.tasks/</code> will not be deleted.</div>
+							<div class="klt-danger-title">Delete this project</div>
+							<div class="klt-danger-desc">Remove project from registry. Task database in <code>.tasks/</code> will not be deleted.</div>
 						</div>
-						<button class="kvt-danger-btn" disabled title="Coming soon">Delete project</button>
+						<button class="klt-danger-btn" disabled title="Coming soon">Delete project</button>
 					</div>
 				</section>
 			</div>
@@ -220,7 +220,7 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 
 templ CategoryList(categories []core.Category, slug string) {
 	if len(categories) == 0 {
-		<div class="kvt-empty" style="font-size:0.85rem;">No categories yet. Add one below.</div>
+		<div class="klt-empty" style="font-size:0.85rem;">No categories yet. Add one below.</div>
 	} else {
 		for _, c := range categories {
 			@CategoryRow(c, slug)
@@ -229,19 +229,19 @@ templ CategoryList(categories []core.Category, slug string) {
 }
 
 templ CategoryRow(cat core.Category, slug string) {
-	<div class="kvt-cat-row" id={ fmt.Sprintf("cat-%d", cat.ID) }>
-		<div class="kvt-cat-display">
-			<span class="kvt-cat-dot" style={ fmt.Sprintf("background:%s", cat.Color) }></span>
-			<span class="kvt-cat-name">{ cat.Name }</span>
+	<div class="klt-cat-row" id={ fmt.Sprintf("cat-%d", cat.ID) }>
+		<div class="klt-cat-display">
+			<span class="klt-cat-dot" style={ fmt.Sprintf("background:%s", cat.Color) }></span>
+			<span class="klt-cat-name">{ cat.Name }</span>
 			<button
-				class="kvt-cat-edit-btn"
-				onclick="this.closest('.kvt-cat-row').querySelector('.kvt-cat-display').style.display='none';this.closest('.kvt-cat-row').querySelector('.kvt-cat-edit').style.display='flex';"
+				class="klt-cat-edit-btn"
+				onclick="this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='none';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='flex';"
 				title="Edit"
 			>
 				<i class="icon icon-pencil"></i>
 			</button>
 			<button
-				class="kvt-cat-del-btn"
+				class="klt-cat-del-btn"
 				hx-delete={ fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID) }
 				hx-target="#category-list"
 				hx-swap="innerHTML"
@@ -252,18 +252,18 @@ templ CategoryRow(cat core.Category, slug string) {
 			</button>
 		</div>
 		<form
-			class="kvt-cat-edit"
+			class="klt-cat-edit"
 			style="display:none;"
 			hx-patch={ fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID) }
 			hx-target="#category-list"
 			hx-swap="innerHTML"
 			hx-ext="json-enc"
 		>
-			<input type="text" name="name" value={ cat.Name } required class="kvt-cat-input" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
-			<input type="color" name="color" value={ cat.Color } class="kvt-cat-color"/>
-			<button type="submit" class="kvt-cat-add-btn" title="Save"><i class="icon icon-check"></i></button>
-			<button type="button" class="kvt-cat-del-btn" title="Cancel"
-				onclick="this.closest('.kvt-cat-row').querySelector('.kvt-cat-display').style.display='';this.closest('.kvt-cat-row').querySelector('.kvt-cat-edit').style.display='none';"
+			<input type="text" name="name" value={ cat.Name } required class="klt-cat-input" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+			<input type="color" name="color" value={ cat.Color } class="klt-cat-color"/>
+			<button type="submit" class="klt-cat-add-btn" title="Save"><i class="icon icon-check"></i></button>
+			<button type="button" class="klt-cat-del-btn" title="Cancel"
+				onclick="this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='none';"
 			><i class="icon icon-x"></i></button>
 		</form>
 	</div>
@@ -271,16 +271,16 @@ templ CategoryRow(cat core.Category, slug string) {
 
 templ TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.WorkflowDef) {
 	if len(tpls) == 0 {
-		<div class="kvt-empty" style="font-size:0.85rem;">No templates yet.</div>
+		<div class="klt-empty" style="font-size:0.85rem;">No templates yet.</div>
 	} else {
 		for _, t := range tpls {
-			<div class="kvt-cat-row" id={ fmt.Sprintf("tpl-%d", t.ID) }>
-				<div class="kvt-cat-display">
+			<div class="klt-cat-row" id={ fmt.Sprintf("tpl-%d", t.ID) }>
+				<div class="klt-cat-display">
 					@TypeBadgeSmall(t.Type, workflows)
-					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID)) } class="kvt-cat-name" style="text-decoration:none;color:var(--kvt-fg);">{ t.Name }</a>
-					<span style="font-size:0.65rem;color:var(--kvt-fg-muted);">P{ fmt.Sprintf("%d", t.Priority) }</span>
+					<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID)) } class="klt-cat-name" style="text-decoration:none;color:var(--klt-fg);">{ t.Name }</a>
+					<span style="font-size:0.65rem;color:var(--klt-fg-muted);">P{ fmt.Sprintf("%d", t.Priority) }</span>
 					<button
-						class="kvt-cat-del-btn"
+						class="klt-cat-del-btn"
 						hx-delete={ fmt.Sprintf("/p/%s/templates/%d", slug, t.ID) }
 						hx-target="#template-list"
 						hx-swap="innerHTML"
@@ -297,18 +297,18 @@ templ TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.Workf
 
 templ HookList(hooks []core.Hook, slug string) {
 	if len(hooks) == 0 {
-		<div class="kvt-empty" style="font-size:0.85rem;">No hooks configured.</div>
+		<div class="klt-empty" style="font-size:0.85rem;">No hooks configured.</div>
 	} else {
 		for _, h := range hooks {
-			<div class="kvt-cat-row" id={ fmt.Sprintf("hook-%d", h.ID) }>
-				<div class="kvt-cat-display">
-					<span class="kvt-badge kvt-badge-todo" style="font-size:0.6rem;">{ string(h.Event) }</span>
-					<span class="kvt-cat-name" style="font-family:var(--kvt-font-mono);font-size:0.75rem;">{ h.Command }</span>
+			<div class="klt-cat-row" id={ fmt.Sprintf("hook-%d", h.ID) }>
+				<div class="klt-cat-display">
+					<span class="klt-badge klt-badge-todo" style="font-size:0.6rem;">{ string(h.Event) }</span>
+					<span class="klt-cat-name" style="font-family:var(--klt-font-mono);font-size:0.75rem;">{ h.Command }</span>
 					if h.Description != "" {
-						<span style="font-size:0.65rem;color:var(--kvt-fg-muted);">{ h.Description }</span>
+						<span style="font-size:0.65rem;color:var(--klt-fg-muted);">{ h.Description }</span>
 					}
 					<button
-						class="kvt-cat-del-btn"
+						class="klt-cat-del-btn"
 						hx-delete={ fmt.Sprintf("/p/%s/hooks/%d", slug, h.ID) }
 						hx-target="#hook-list"
 						hx-swap="innerHTML"

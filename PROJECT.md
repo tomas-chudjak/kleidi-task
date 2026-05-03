@@ -1,9 +1,9 @@
-# kvik-tasks — Strategic Architecture Document
+# kleidi-task — Strategic Architecture Document
 
 > **Version:** 0.1 (draft)
 > **Status:** Draft for implementation
-> **Repository:** `ahoylog/kvik-tasks` *(provisional — final GitHub org to be confirmed before repo creation)*
-> **Binary name:** `kvt`
+> **Repository:** `tomas-chudjak/kleidi-task` *(provisional — final GitHub org to be confirmed before repo creation)*
+> **Binary name:** `klt`
 > **License:** MIT
 > **Goal:** Local task tracker with first-class Claude integration via MCP
 
@@ -15,20 +15,20 @@ This project has **two names** serving different purposes:
 
 | Name | Usage | Examples |
 |---|---|---|
-| **`kvik-tasks`** | Project name, repo, package name, documentation | `github.com/ahoylog/kvik-tasks`, `@ahoylog/kvik-tasks` (npm), README header, web `kvik-tasks.dev` |
-| **`kvt`** | Binary name, CLI command, daily usage | `kvt add "..."`, `kvt list`, `cmd/kvt/main.go`, Homebrew formula installs as `kvt` |
+| **`kleidi-task`** | Project name, repo, package name, documentation | `github.com/tomas-chudjak/kleidi-task`, `@ahoylog/kleidi-task` (npm), README header, web `kleidi-task.dev` |
+| **`klt`** | Binary name, CLI command, daily usage | `klt add "..."`, `klt list`, `cmd/klt/main.go`, Homebrew formula installs as `klt` |
 
-**Rationale:** The project needs a **searchable, distinctive name** (`kvik-tasks`) for discovery and brand. Users search for it on Google, npm registry, GitHub. But they type a **short command** (`kvt`) daily — dozens to hundreds of times. This dual-name pattern is common (`kubernetes` repo → `kubectl` binary, `terraform` project → `tf` alias).
+**Rationale:** The project needs a **searchable, distinctive name** (`kleidi-task`) for discovery and brand. Users search for it on Google, npm registry, GitHub. But they type a **short command** (`klt`) daily — dozens to hundreds of times. This dual-name pattern is common (`kubernetes` repo → `kubectl` binary, `terraform` project → `tf` alias).
 
 In this document:
-- "kvik-tasks" means the project as a whole (architecture, repo, documentation)
-- "kvt" means the CLI binary (commands, paths in `cmd/`)
+- "kleidi-task" means the project as a whole (architecture, repo, documentation)
+- "klt" means the CLI binary (commands, paths in `cmd/`)
 
 ---
 
 ## 1. Executive Summary
 
-**kvik-tasks** is a local, single-binary task tracker for developers who work with multiple projects and use AI assistants (Claude, Cursor, etc.) as part of their workflow.
+**kleidi-task** is a local, single-binary task tracker for developers who work with multiple projects and use AI assistants (Claude, Cursor, etc.) as part of their workflow.
 
 It solves a specific problem: AI assistants today lack a good way to track tasks and bugs across sessions and projects. Markdown files are a first step but quickly outgrow their usefulness. Existing task managers (Linear, Jira, Vikunja) are designed for humans, not for AI integration.
 
@@ -91,7 +91,7 @@ To stay focused:
           │                 │                  │
 ┌─────────▼─────────────────▼──────────────────▼──────────────────┐
 │                                                                  │
-│              kvik-tasks BINARY (single Go binary)               │
+│              kleidi-task BINARY (single Go binary)               │
 │                                                                  │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │
 │  │   MCP    │  │   CLI    │  │   REST   │  │    UI    │        │
@@ -327,7 +327,7 @@ CREATE INDEX idx_tokens_hash ON api_tokens(token_hash);
 
 ## 6. MCP Interface (most important part)
 
-MCP is the primary interface through which AI assistants access kvik-tasks.
+MCP is the primary interface through which AI assistants access kleidi-task.
 
 ### 6.1 Tools (actions)
 
@@ -398,7 +398,7 @@ Resources allow Claude to see context **without explicitly calling a tool**. Cla
 
 ### 6.4 Transport
 
-- **stdio** — primary mode for Claude Desktop, Cursor, Continue. User adds `kvt mcp` as MCP server in client config.
+- **stdio** — primary mode for Claude Desktop, Cursor, Continue. User adds `klt mcp` as MCP server in client config.
 - **HTTP** — secondary mode for remote or multi-client scenarios. Binds to `localhost:7842/mcp` (port configurable).
 
 ---
@@ -411,47 +411,47 @@ CLI is the primary human-facing interface. Based on the principle of "Git-style 
 
 ```bash
 # Initialization
-kvt init [--name <name>]    # Create .tasks/ in current dir
-kvt doctor                   # Verify setup, list projects
+klt init [--name <name>]    # Create .tasks/ in current dir
+klt doctor                   # Verify setup, list projects
 
 # Tasks (most common)
-kvt add "Title" [--bug|--feature|--hotfix] [--description "..."] [--project <slug>]
-kvt add "BUG: title"          # auto-detected from prefix (also: FEATURE:, FEAT:, HOTFIX:, TASK:)
-kvt list [--status todo] [--type bug] [--all] [--project <slug>]
-kvt done <id>
-kvt show <id>
-kvt update <id> [--title "..."] [--status doing] [--description "..."]
-kvt delete <id>
+klt add "Title" [--bug|--feature|--hotfix] [--description "..."] [--project <slug>]
+klt add "BUG: title"          # auto-detected from prefix (also: FEATURE:, FEAT:, HOTFIX:, TASK:)
+klt list [--status todo] [--type bug] [--all] [--project <slug>]
+klt done <id>
+klt show <id>
+klt update <id> [--title "..."] [--status doing] [--description "..."]
+klt delete <id>
 
 # Aliases for ergonomics
-kvt t add "..."     # alias for task add
-kvt b "..."         # alias for add --bug
-kvt ls              # alias for list
+klt t add "..."     # alias for task add
+klt b "..."         # alias for add --bug
+klt ls              # alias for list
 
 # Projects
-kvt project list
-kvt project show [<slug>]
-kvt project stats [<slug>]
+klt project list
+klt project show [<slug>]
+klt project stats [<slug>]
 
 # Servers
-kvt serve           # HTTP server (UI + REST API + MCP HTTP)
-kvt serve --port 7842
-kvt mcp             # stdio MCP server (for Claude Desktop)
+klt serve           # HTTP server (UI + REST API + MCP HTTP)
+klt serve --port 7842
+klt mcp             # stdio MCP server (for Claude Desktop)
 
 # Utility
-kvt export [--format json|markdown] [--project <slug>]
-kvt import <file> [--format json|markdown]
-kvt version
+klt export [--format json|markdown] [--project <slug>]
+klt import <file> [--format json|markdown]
+klt version
 ```
 
 ### 7.2 Project detection (key for UX)
 
-When you run `kvt add` without `--project`:
+When you run `klt add` without `--project`:
 
 ```
 1. Are you in a directory with .tasks/? → use this DB
 2. Are you in a subdirectory of a project with .tasks/? → walk up, use the found one
-3. No .tasks/ found? → error: "Run `kvt init` first"
+3. No .tasks/ found? → error: "Run `klt init` first"
 ```
 
 (Inspired by the Git pattern with `.git/`.)
@@ -461,9 +461,9 @@ When you run `kvt add` without `--project`:
 CLI default is human-friendly text. For scripting:
 
 ```bash
-kvt list --output json     # JSON output
-kvt list --output csv      # CSV output
-kvt list --output ids      # IDs only, one per line
+klt list --output json     # JSON output
+klt list --output csv      # CSV output
+klt list --output ids      # IDs only, one per line
 ```
 
 ---
@@ -597,10 +597,10 @@ JavaScript glue (~30 lines) to connect SortableJS with HTMX trigger.
 ## 10. Project Structure
 
 ```
-kvik-tasks/
+kleidi-task/
 ├── cmd/
-│   └── kvt/
-│       └── main.go                    # Entry point (binary name: kvt)
+│   └── klt/
+│       └── main.go                    # Entry point (binary name: klt)
 ├── internal/
 │   ├── core/                          # Service layer (business logic)
 │   │   ├── task.go                    # TaskService
@@ -799,11 +799,11 @@ The repository includes `claude-skill/SKILL.md`, which can be installed into Cla
 
 ```markdown
 ---
-name: kvik-tasks
-description: Use when user mentions tasks, bugs, todos, or wants to track work across projects. Connects to local kvik-tasks instance via MCP.
+name: kleidi-task
+description: Use when user mentions tasks, bugs, todos, or wants to track work across projects. Connects to local kleidi-task instance via MCP.
 ---
 
-# kvik-tasks Integration
+# kleidi-task Integration
 
 ## When to use
 - User says "task: ...", "bug: ...", "todo: ..."
@@ -812,9 +812,9 @@ description: Use when user mentions tasks, bugs, todos, or wants to track work a
 - User mentions tracking work in current project
 
 ## Prerequisites
-The user must have kvik-tasks installed and either:
+The user must have kleidi-task installed and either:
 - MCP server configured in Claude Desktop config, OR
-- `kvt serve` running locally
+- `klt serve` running locally
 
 ## How to use
 Use the MCP tools `task_create`, `task_list`, `task_complete`, etc.
@@ -913,7 +913,7 @@ Use the MCP tools `task_create`, `task_list`, `task_complete`, etc.
 - (+) `go install` or download binary = done
 - (+) No external assets
 - (−) Binary is larger (~30MB with embedded assets)
-- (−) Update ahoylog-css = rebuild kvik-tasks
+- (−) Update ahoylog-css = rebuild kleidi-task
 
 ### ADR-007: Source field automatically set by entry point
 
@@ -1002,16 +1002,16 @@ SQLite handles these numbers without issues with proper indexing.
 
 ```bash
 # Go users
-go install github.com/ahoylog/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kleidi-task/cmd/klt@latest
 
 # Curl install script
-curl -fsSL https://kvik-tasks.dev/install.sh | sh
+curl -fsSL https://kleidi-task.dev/install.sh | sh
 
 # Homebrew (future)
-brew install ahoylog/tap/kvik-tasks
+brew install tomas-chudjak/tap/kleidi-task
 
 # Manual download
-# Download from github.com/ahoylog/kvik-tasks/releases
+# Download from github.com/tomas-chudjak/kleidi-task/releases
 ```
 
 ### 16.3 Binary size budget
@@ -1037,7 +1037,7 @@ Things not resolved in this document that need to be decided during implementati
 1. **Timezones** — store UTC, display local? Configurable?
 2. **Soft delete** — `task delete` actually deletes, or just marks? (Proposal: actually deletes in MVP, soft delete in v0.4+)
 3. **Project rename** — ~~slug is primary key~~ Resolved: INTEGER PK + UNIQUE(slug), rename is just an UPDATE
-4. **WSL path handling** — can `kvt` handle `/mnt/c/...` paths? Yes, but in Claude Desktop config this needs to be accounted for.
+4. **WSL path handling** — can `klt` handle `/mnt/c/...` paths? Yes, but in Claude Desktop config this needs to be accounted for.
 5. **MCP discovery** — register on MCP marketplace when available?
 6. **Telemetry** — none in MVP. Decision will be made post-release.
 7. **Cross-project UX** — single-project view with switching vs. multi-project aggregation. Deferred to v0.2.
@@ -1066,12 +1066,12 @@ After v1.0 release we'll measure:
 | 2026-04-27 | HTMX + ahoylog-css (vs. React/Vue + Tailwind) | ✅ Approved |
 | 2026-04-27 | Go + SQLite + sqlc stack | ✅ Approved |
 | 2026-04-27 | MIT license | ✅ Approved |
-| 2026-04-27 | Project name `kvik-tasks` + binary name `kvt` | ✅ Approved |
+| 2026-04-27 | Project name `kleidi-task` + binary name `klt` | ✅ Approved |
 | 2026-04-27 | Priority as INTEGER (higher = more important) | ✅ Approved |
 | 2026-04-27 | Registry projects: INTEGER PK + UNIQUE(slug) | ✅ Approved |
 | 2026-04-27 | Source field automatically set by entry point | ✅ Approved |
 | 2026-04-27 | Single optimized trigger instead of two | ✅ Approved |
-| 2026-04-27 | Rename kviki-css → ahoylog-css | ✅ Approved |
+| 2026-04-27 | Rename kviky-css → ahoylog-css | ✅ Approved |
 | 2026-04-27 | Rename .tasky → .tasks, tasky:// → tasks:// | ✅ Approved |
 | 2026-04-27 | All code, comments, and docs in English | ✅ Approved |
 | 2026-04-27 | 4 task types: task, bug, feature, hotfix + title prefix auto-detection | ✅ Approved |
@@ -1110,7 +1110,7 @@ This document is the **authoritative source of truth** for the project architect
 3. **Test each layer independently.** Service layer has unit tests, API has integration tests, UI has smoke tests.
 4. **Follow the sqlc workflow:** edit SQL → `sqlc generate` → use generated code.
 5. **All migrations are embedded** via `go:embed`. Never execute SQL ad-hoc.
-6. **ahoylog-css component additions** are separate PRs to the `ahoylog/ahoylog-css` repo, not part of kvik-tasks.
+6. **ahoylog-css component additions** are separate PRs to the `ahoylog/ahoylog-css` repo, not part of kleidi-task.
 7. **For each new feature write an ADR** in `docs/adr/` — especially for decisions that contradict this document.
 
 In case of conflict between this document and code, **code is truth** and the document should be updated. This document is living — versioned in Git and updated with major changes.

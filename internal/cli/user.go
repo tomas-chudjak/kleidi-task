@@ -6,8 +6,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
@@ -69,7 +69,7 @@ var userListCmd = &cobra.Command{
 		}
 
 		if len(users) == 0 {
-			fmt.Println("No users registered. Use 'kvt user add <username>' to create one.")
+			fmt.Println("No users registered. Use 'klt user add <username>' to create one.")
 			return nil
 		}
 

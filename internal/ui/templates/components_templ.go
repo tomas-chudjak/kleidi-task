@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 import "strings"
 
@@ -35,7 +35,7 @@ func TypeBadge(typeName string, workflows []core.WorkflowDef) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"kvt-badge\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"klt-badge\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,7 +91,7 @@ func TypeBadgeSmall(typeName string, workflows []core.WorkflowDef) templ.Compone
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"kvt-badge\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"klt-badge\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -287,13 +287,13 @@ func typeBadgeStyle(typeName string, workflows []core.WorkflowDef) string {
 	// Fallback for built-in types (when workflows not loaded yet)
 	switch typeName {
 	case "bug":
-		return "background:#fde8ee;color:var(--kvt-danger);"
+		return "background:#fde8ee;color:var(--klt-danger);"
 	case "feature":
-		return "background:#f0e8ff;color:var(--kvt-purple);"
+		return "background:#f0e8ff;color:var(--klt-purple);"
 	case "hotfix":
-		return "background:#fff1e6;color:var(--kvt-orange);"
+		return "background:#fff1e6;color:var(--klt-orange);"
 	default:
-		return "background:var(--kvt-accent-light);color:var(--kvt-accent);"
+		return "background:var(--klt-accent-light);color:var(--klt-accent);"
 	}
 }
 
@@ -301,15 +301,15 @@ func typeBadgeStyle(typeName string, workflows []core.WorkflowDef) string {
 func typeBadgeFg(typeName string) string {
 	switch typeName {
 	case "task":
-		return "var(--kvt-accent)"
+		return "var(--klt-accent)"
 	case "bug":
-		return "var(--kvt-danger)"
+		return "var(--klt-danger)"
 	case "feature":
-		return "var(--kvt-purple)"
+		return "var(--klt-purple)"
 	case "hotfix":
-		return "var(--kvt-orange)"
+		return "var(--klt-orange)"
 	default:
-		return "var(--kvt-fg)"
+		return "var(--klt-fg)"
 	}
 }
 

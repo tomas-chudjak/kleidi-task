@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 )
 
 // BasicAuth returns middleware that enforces HTTP Basic Auth.
@@ -19,14 +19,14 @@ func BasicAuth(userService *core.UserService) func(http.Handler) http.Handler {
 
 			username, password, ok := r.BasicAuth()
 			if !ok {
-				w.Header().Set("WWW-Authenticate", `Basic realm="kvik-tasks"`)
+				w.Header().Set("WWW-Authenticate", `Basic realm="kleidi-task"`)
 				http.Error(w, "Authentication required", http.StatusUnauthorized)
 				return
 			}
 
 			user, valid := userService.Authenticate(r.Context(), username, password)
 			if !valid {
-				w.Header().Set("WWW-Authenticate", `Basic realm="kvik-tasks"`)
+				w.Header().Set("WWW-Authenticate", `Basic realm="kleidi-task"`)
 				http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 				return
 			}

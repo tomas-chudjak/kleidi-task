@@ -26,7 +26,7 @@ A task's phase determines its position in the workflow. The status (todo/doing/d
 Move a task to the next phase:
 
 ```bash
-kvt advance 42
+klt advance 42
 ```
 
 Via MCP:

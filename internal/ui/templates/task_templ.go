@@ -8,29 +8,29 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 func workflowPhaseClass(phase, current string, idx, currentIdx int) string {
 	if phase == current {
-		return " kvt-workflow-phase--active"
+		return " klt-workflow-phase--active"
 	}
 	if idx < currentIdx {
-		return " kvt-workflow-phase--done"
+		return " klt-workflow-phase--done"
 	}
 	return ""
 }
 
 func timelineEntryClass(success bool) string {
 	if !success {
-		return " kvt-timeline-entry--fail"
+		return " klt-timeline-entry--fail"
 	}
 	return ""
 }
 
 func workflowConnectorClass(idx, currentIdx int) string {
 	if idx <= currentIdx {
-		return " kvt-workflow-connector--done"
+		return " klt-workflow-connector--done"
 	}
 	return ""
 }
@@ -81,7 +81,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><!-- Task toolbar --> <div class=\"kvt-toolbar\"><div class=\"kvt-toolbar-left\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><!-- Task toolbar --> <div class=\"klt-toolbar\"><div class=\"klt-toolbar-left\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -94,7 +94,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" onclick=\"if(document.referrer){event.preventDefault();history.back()}\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" onclick=\"if(document.referrer){event.preventDefault();history.back()}\" class=\"klt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -102,7 +102,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"kvt-toolbar-id\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"klt-toolbar-id\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,7 +119,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"kvt-badge kvt-badge-" + string(task.Status)}
+			var templ_7745c5c3_Var6 = []any{"klt-badge klt-badge-" + string(task.Status)}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -150,12 +150,12 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></div><div class=\"kvt-toolbar-right\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></div><div class=\"klt-toolbar-right\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if task.Status != core.StatusDone {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"kvt-toolbar-btn kvt-toolbar-btn--success\" hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"klt-toolbar-btn klt-toolbar-btn--success\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -187,7 +187,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"kvt-toolbar-btn\" onclick=\"return confirm('Archive this task?')\"><i class=\"icon icon-archive\"></i> Archive</a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"klt-toolbar-btn\" onclick=\"return confirm('Archive this task?')\"><i class=\"icon icon-archive\"></i> Archive</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -205,18 +205,18 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"kvt-toolbar-btn kvt-toolbar-btn--danger\" onclick=\"return confirm('Delete this task? This cannot be undone.')\"><i class=\"icon icon-trash-2\"></i> Delete</a></div></div><!-- Workflow progress bar --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"klt-toolbar-btn klt-toolbar-btn--danger\" onclick=\"return confirm('Delete this task? This cannot be undone.')\"><i class=\"icon icon-trash-2\"></i> Delete</a></div></div><!-- Workflow progress bar --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(workflow.Phases) > 1 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"kvt-workflow-bar\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"klt-workflow-bar\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for i, phase := range workflow.Phases {
 					if i > 0 {
-						var templ_7745c5c3_Var12 = []any{"kvt-workflow-connector" + workflowConnectorClass(i, workflow.PhaseIndex)}
+						var templ_7745c5c3_Var12 = []any{"klt-workflow-connector" + workflowConnectorClass(i, workflow.PhaseIndex)}
 						templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var12...)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -243,7 +243,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var14 = []any{"kvt-workflow-phase" + workflowPhaseClass(phase, workflow.CurrentPhase, i, workflow.PhaseIndex)}
+					var templ_7745c5c3_Var14 = []any{"klt-workflow-phase" + workflowPhaseClass(phase, workflow.CurrentPhase, i, workflow.PhaseIndex)}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var14...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -293,7 +293,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"kvt-workflow-advance\" onclick=\"return confirm('Advance to next phase?')\" title=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"klt-workflow-advance\" onclick=\"return confirm('Advance to next phase?')\" title=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -316,7 +316,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " <!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"kvt-task-layout\"><!-- Main content (left) --><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\">Title</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " <!-- Save indicator --> <div id=\"save-indicator\" class=\"klt-save-indicator\"></div><!-- Two-column layout: content + sidebar --> <div class=\"klt-task-layout\"><!-- Main content (left) --><div class=\"klt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"klt-detail-card\"><div class=\"klt-field\" style=\"margin-bottom:16px;\"><label class=\"klt-field-label\">Title</label> <input type=\"text\" class=\"klt-input klt-input--title\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -342,7 +342,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"title\" hx-trigger=\"change\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Description</label> <textarea class=\"kvt-textarea\" id=\"desc-editor\" name=\"description\" rows=\"6\" placeholder=\"Add a description...\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"title\" hx-trigger=\"change\"></div><div class=\"klt-field\"><label class=\"klt-field-label\">Description</label> <textarea class=\"klt-textarea\" id=\"desc-editor\" name=\"description\" rows=\"6\" placeholder=\"Add a description...\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -355,12 +355,12 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</textarea><script>\n\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\tvar ta = document.getElementById('desc-editor');\n\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\tplaceholder: 'Add a description...',\n\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\tminHeight: '150px',\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\tvar patchUrl = ta.closest('.kvt-detail-card').querySelector('input[name=\"title\"]')\n\t\t\t\t\t\t\t\t\t\t? '/p/' + document.querySelector('[data-slug]').getAttribute('data-slug') + '/tasks/' + window.location.pathname.split('/').pop() + '/field'\n\t\t\t\t\t\t\t\t\t\t: '';\n\t\t\t\t\t\t\t\t\tmde.codemirror.on('blur', function() {\n\t\t\t\t\t\t\t\t\t\tif (patchUrl) {\n\t\t\t\t\t\t\t\t\t\t\tfetch(patchUrl, {\n\t\t\t\t\t\t\t\t\t\t\t\tmethod: 'PATCH',\n\t\t\t\t\t\t\t\t\t\t\t\theaders: {'Content-Type': 'application/json'},\n\t\t\t\t\t\t\t\t\t\t\t\tbody: JSON.stringify({description: mde.value()})\n\t\t\t\t\t\t\t\t\t\t\t}).then(function() {\n\t\t\t\t\t\t\t\t\t\t\t\tvar el = document.getElementById('save-indicator');\n\t\t\t\t\t\t\t\t\t\t\t\tif (el) {\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.textContent = 'Saved';\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.classList.add('kvt-save-indicator--visible');\n\t\t\t\t\t\t\t\t\t\t\t\t\tclearTimeout(el._t);\n\t\t\t\t\t\t\t\t\t\t\t\t\tel._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);\n\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t</script></div></div><!-- Git Activity --><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-git-commit-horizontal\"></i> Git Activity</h4>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</textarea><script>\n\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\tvar ta = document.getElementById('desc-editor');\n\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\tplaceholder: 'Add a description...',\n\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\tminHeight: '150px',\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\tvar patchUrl = ta.closest('.klt-detail-card').querySelector('input[name=\"title\"]')\n\t\t\t\t\t\t\t\t\t\t? '/p/' + document.querySelector('[data-slug]').getAttribute('data-slug') + '/tasks/' + window.location.pathname.split('/').pop() + '/field'\n\t\t\t\t\t\t\t\t\t\t: '';\n\t\t\t\t\t\t\t\t\tmde.codemirror.on('blur', function() {\n\t\t\t\t\t\t\t\t\t\tif (patchUrl) {\n\t\t\t\t\t\t\t\t\t\t\tfetch(patchUrl, {\n\t\t\t\t\t\t\t\t\t\t\t\tmethod: 'PATCH',\n\t\t\t\t\t\t\t\t\t\t\t\theaders: {'Content-Type': 'application/json'},\n\t\t\t\t\t\t\t\t\t\t\t\tbody: JSON.stringify({description: mde.value()})\n\t\t\t\t\t\t\t\t\t\t\t}).then(function() {\n\t\t\t\t\t\t\t\t\t\t\t\tvar el = document.getElementById('save-indicator');\n\t\t\t\t\t\t\t\t\t\t\t\tif (el) {\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.textContent = 'Saved';\n\t\t\t\t\t\t\t\t\t\t\t\t\tel.classList.add('klt-save-indicator--visible');\n\t\t\t\t\t\t\t\t\t\t\t\t\tclearTimeout(el._t);\n\t\t\t\t\t\t\t\t\t\t\t\t\tel._t = setTimeout(function() { el.classList.remove('klt-save-indicator--visible'); }, 2000);\n\t\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t</script></div></div><!-- Git Activity --><div class=\"klt-detail-card\"><h4 class=\"klt-detail-card-title\"><i class=\"icon icon-git-commit-horizontal\"></i> Git Activity</h4>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(commits) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"kvt-empty\" style=\"font-size:0.8rem;\">No commits reference this task. Use <code>#")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"klt-empty\" style=\"font-size:0.8rem;\">No commits reference this task. Use <code>#")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -378,12 +378,12 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"kvt-commit-list\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"klt-commit-list\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, c := range commits {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"kvt-commit-row\"><code class=\"kvt-commit-hash\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"klt-commit-row\"><code class=\"klt-commit-hash\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -396,7 +396,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</code> <span class=\"kvt-commit-msg\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</code> <span class=\"klt-commit-msg\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -409,7 +409,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</span> <span class=\"kvt-commit-meta\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</span> <span class=\"klt-commit-meta\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -450,7 +450,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				return templ_7745c5c3_Err
 			}
 			if len(history) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-clock\"></i> Workflow Timeline <a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"klt-detail-card\"><h4 class=\"klt-detail-card-title\"><i class=\"icon icon-clock\"></i> Workflow Timeline <a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -463,12 +463,12 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" style=\"font-size:0.7rem;margin-left:auto;font-weight:400;\">View full history</a></h4><div class=\"kvt-timeline\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" style=\"font-size:0.7rem;margin-left:auto;font-weight:400;\">View full history</a></h4><div class=\"klt-timeline\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, h := range history {
-					var templ_7745c5c3_Var28 = []any{"kvt-timeline-entry" + timelineEntryClass(h.Success)}
+					var templ_7745c5c3_Var28 = []any{"klt-timeline-entry" + timelineEntryClass(h.Success)}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var28...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -486,7 +486,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><div class=\"kvt-timeline-dot\"></div><div class=\"kvt-timeline-content\"><div class=\"kvt-timeline-header\"><span class=\"kvt-timeline-phase\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><div class=\"klt-timeline-dot\"></div><div class=\"klt-timeline-content\"><div class=\"klt-timeline-header\"><span class=\"klt-timeline-phase\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -499,7 +499,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span> <span class=\"kvt-timeline-action\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span> <span class=\"klt-timeline-action\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -517,7 +517,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 						return templ_7745c5c3_Err
 					}
 					if h.DurationMs > 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<span class=\"kvt-timeline-duration\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<span class=\"klt-timeline-duration\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -535,7 +535,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span class=\"kvt-timeline-time\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span class=\"klt-timeline-time\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -553,7 +553,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 						return templ_7745c5c3_Err
 					}
 					if h.Output != "" && h.ActionType == "shell" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<pre class=\"kvt-timeline-output\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<pre class=\"klt-timeline-output\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -581,7 +581,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><!-- Properties sidebar (right) --><div class=\"kvt-task-sidebar\"><div class=\"kvt-detail-card\"><div class=\"kvt-detail-fields\"><div class=\"kvt-field\"><label class=\"kvt-field-label\">Status</label><div class=\"kvt-select-wrap\"><select class=\"kvt-select\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><!-- Properties sidebar (right) --><div class=\"klt-task-sidebar\"><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Status</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -624,7 +624,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, ">Done</option></select> <i class=\"icon icon-chevron-down kvt-select-icon\"></i></div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Type</label><div class=\"kvt-select-wrap\"><select class=\"kvt-select\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, ">Done</option></select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -645,7 +645,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</select> <i class=\"icon icon-chevron-down kvt-select-icon\"></i></div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Priority</label> <input type=\"number\" class=\"kvt-input\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Priority</label> <input type=\"number\" class=\"klt-input\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -671,7 +671,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"priority\" hx-trigger=\"change\" min=\"0\" placeholder=\"0\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Category</label><div class=\"kvt-select-wrap\"><select class=\"kvt-select\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" name=\"priority\" hx-trigger=\"change\" min=\"0\" placeholder=\"0\"></div><div class=\"klt-field\"><label class=\"klt-field-label\">Category</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -730,7 +730,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</select> <i class=\"icon icon-chevron-down kvt-select-icon\"></i></div></div></div></div><div class=\"kvt-detail-card\"><div class=\"kvt-detail-fields\"><div class=\"kvt-field\"><label class=\"kvt-field-label\">Source</label><div class=\"kvt-field-value\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div></div></div><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Source</label><div class=\"klt-field-value\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -743,7 +743,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Created</label><div class=\"kvt-field-value kvt-field-value--mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Created</label><div class=\"klt-field-value klt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -756,7 +756,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Updated</label><div class=\"kvt-field-value kvt-field-value--mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Updated</label><div class=\"klt-field-value klt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -774,7 +774,7 @@ func TaskPage(project core.Project, task core.Task, categories []core.Category, 
 				return templ_7745c5c3_Err
 			}
 			if task.CompletedAt != nil {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div class=\"kvt-field\"><label class=\"kvt-field-label\">Completed</label><div class=\"kvt-field-value kvt-field-value--mono\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div class=\"klt-field\"><label class=\"klt-field-label\">Completed</label><div class=\"klt-field-value klt-field-value--mono\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -3,14 +3,14 @@ title: VS Code Extension
 weight: 11
 ---
 
-kvik-tasks includes a VS Code extension that brings your tasks directly into the editor. It works in both VS Code and Cursor.
+kleidi-task includes a VS Code extension that brings your tasks directly into the editor. It works in both VS Code and Cursor.
 
 ## Prerequisites
 
-The extension communicates with the kvt HTTP server. Make sure it's running before using the extension:
+The extension communicates with the klt HTTP server. Make sure it's running before using the extension:
 
 ```bash
-kvt serve
+klt serve
 ```
 
 By default, the server runs on `http://localhost:7842`.
@@ -33,7 +33,7 @@ Then create the `.vsix` package:
 npx @vscode/vsce package --allow-missing-repository
 ```
 
-This produces a file like `kvik-tasks-0.1.0.vsix` in the `vscode-extension/` directory.
+This produces a file like `kleidi-task-0.1.0.vsix` in the `vscode-extension/` directory.
 
 ### Step 2: Install into VS Code or Cursor
 
@@ -44,17 +44,17 @@ There are three ways to install the `.vsix` file:
 1. Open VS Code or Cursor
 2. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
 3. Type "Extensions: Install from VSIX..."
-4. Navigate to `vscode-extension/kvik-tasks-0.1.0.vsix` and select it
+4. Navigate to `vscode-extension/kleidi-task-0.1.0.vsix` and select it
 5. Reload the window when prompted
 
 **Option B — CLI**
 
 ```bash
 # VS Code
-code --install-extension vscode-extension/kvik-tasks-0.1.0.vsix
+code --install-extension vscode-extension/kleidi-task-0.1.0.vsix
 
 # Cursor
-cursor --install-extension vscode-extension/kvik-tasks-0.1.0.vsix
+cursor --install-extension vscode-extension/kleidi-task-0.1.0.vsix
 ```
 
 **Option C — Drag and drop**
@@ -65,7 +65,7 @@ Open the Extensions panel (`Ctrl+Shift+X`), then drag the `.vsix` file onto the 
 
 After installation, you should see:
 - A **Kvik Tasks** icon in the activity bar (left sidebar)
-- A **kvt: offline** or **kvt: X todo · Y doing** entry in the status bar (bottom)
+- A **klt: offline** or **klt: X todo · Y doing** entry in the status bar (bottom)
 
 If the activity bar icon doesn't appear, reload the window: `Ctrl+Shift+P` → "Developer: Reload Window".
 
@@ -76,7 +76,7 @@ To remove the extension:
 2. Find "Kvik Tasks"
 3. Click "Uninstall"
 
-Or via CLI: `code --uninstall-extension ahoylog.kvik-tasks`
+Or via CLI: `code --uninstall-extension tomas-chudjak.kleidi-task`
 
 ### Development mode
 
@@ -112,13 +112,13 @@ Each task shows:
 The bottom status bar shows a summary of your tasks across all projects:
 
 ```
-☑ kvt: 3 todo · 2 doing
+☑ klt: 3 todo · 2 doing
 ```
 
 If the server is not running, it shows:
 
 ```
-☑ kvt: offline
+☑ klt: offline
 ```
 
 Click the status bar item to show all tasks in the sidebar.
@@ -148,7 +148,7 @@ Sends the task context into the active terminal without pressing Enter:
 task: #42 Fix login bug (bug, P5, doing)
 ```
 
-This is useful for AI chat workflows — paste the task into a Claude Code session, Copilot chat, or any terminal-based assistant. The `task:` prefix triggers kvik-tasks' auto-creation behavior in Claude.
+This is useful for AI chat workflows — paste the task into a Claude Code session, Copilot chat, or any terminal-based assistant. The `task:` prefix triggers kleidi-task' auto-creation behavior in Claude.
 
 If no terminal is open, a new one is created.
 
@@ -183,16 +183,16 @@ Open VS Code Settings (`Ctrl+,`) and search for "Kvik Tasks":
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `kvikTasks.serverUrl` | `http://localhost:7842` | URL of the kvt server |
-| `kvikTasks.refreshInterval` | `10` | Auto-refresh interval in seconds. Set to `0` to disable |
+| `kleidiTask.serverUrl` | `http://localhost:7842` | URL of the klt server |
+| `kleidiTask.refreshInterval` | `10` | Auto-refresh interval in seconds. Set to `0` to disable |
 
 ### Custom server URL
 
-If you run kvt on a different port or host (e.g., Docker deployment):
+If you run klt on a different port or host (e.g., Docker deployment):
 
 ```json
 {
-  "kvikTasks.serverUrl": "http://192.168.1.100:7842"
+  "kleidiTask.serverUrl": "http://192.168.1.100:7842"
 }
 ```
 
@@ -202,7 +202,7 @@ If Basic Auth is enabled on the server, include credentials in the URL:
 
 ```json
 {
-  "kvikTasks.serverUrl": "http://tomas:password@localhost:7842"
+  "kleidiTask.serverUrl": "http://tomas:password@localhost:7842"
 }
 ```
 
@@ -226,12 +226,12 @@ If Basic Auth is enabled on the server, include credentials in the URL:
 
 1. Right-click task → "Copy Reference"
 2. Use `#42` in your commit message
-3. Git integration in kvt links the commit to the task automatically
+3. Git integration in klt links the commit to the task automatically
 
 ## Troubleshooting
 
-**Sidebar shows "Cannot connect to kvt serve"**
-- Make sure `kvt serve` is running
+**Sidebar shows "Cannot connect to klt serve"**
+- Make sure `klt serve` is running
 - Check the server URL in settings matches your setup
 - Try opening `http://localhost:7842` in a browser
 
@@ -241,4 +241,4 @@ If Basic Auth is enabled on the server, include credentials in the URL:
 
 **Extension not appearing in activity bar**
 - Reload VS Code window (`Ctrl+Shift+P` → "Developer: Reload Window")
-- Check the Extensions panel to verify kvik-tasks is enabled
+- Check the Extensions panel to verify kleidi-task is enabled

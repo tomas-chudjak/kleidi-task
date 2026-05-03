@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-// taskRefPattern matches #15, kvt:15, fixes #15, closes kvt:15, refs #15, etc.
-var taskRefPattern = regexp.MustCompile(`(?:(?:fixes|closes|refs|re)\s+)?(?:#|kvt:)(\d+)`)
+// taskRefPattern matches #15, klt:15, fixes #15, closes klt:15, refs #15, etc.
+var taskRefPattern = regexp.MustCompile(`(?:(?:fixes|closes|refs|re)\s+)?(?:#|klt:)(\d+)`)
 
 // GitService provides git integration without DB dependencies.
 type GitService struct{}
@@ -37,7 +37,7 @@ func (s *GitService) CommitsForTask(ctx context.Context, projectPath string, tas
 
 	// Use git grep patterns to let git do initial filtering
 	idStr := strconv.FormatInt(taskID, 10)
-	grepPattern := fmt.Sprintf("#%s\\|kvt:%s", idStr, idStr)
+	grepPattern := fmt.Sprintf("#%s\\|klt:%s", idStr, idStr)
 
 	// format: hash\x00subject\x00author\x00date(ISO)
 	cmd := exec.CommandContext(ctx, "git", "-C", projectPath,

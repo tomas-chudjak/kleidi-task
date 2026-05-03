@@ -1,5 +1,5 @@
 ---
-title: kvik-tasks
+title: kleidi-task
 layout: hextra-home
 ---
 
@@ -23,7 +23,13 @@ layout: hextra-home
 
 <div style="margin-top:1rem;">
 {{< hextra/hero-button text="Get Started" link="docs/installation" >}}
-{{< hextra/hero-button text="GitHub" link="https://github.com/tomas-chudjak/kvik-tasks" style="alt" >}}
+{{< hextra/hero-button text="GitHub" link="https://github.com/tomas-chudjak/kleidi-task" style="alt" >}}
+</div>
+
+<div style="margin-top: 2.5rem; margin-bottom: 2.5rem;">
+  <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 1px solid rgba(0,0,0,0.08);">
+    <img src="/images/screenshot-1.png" alt="kleidi-task dashboard" style="width: 100%; display: block;" />
+  </div>
 </div>
 
 <div style="margin-top: 2rem; margin-bottom: 2rem;">
@@ -71,18 +77,18 @@ layout: hextra-home
 
 ```bash
 # Install
-go install github.com/tomas-chudjak/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kleidi-task/cmd/klt@latest
 
 # Initialize in your project
 cd my-project
-kvt init
+klt init
 
 # Add tasks — AI or human
-kvt add "Implement user authentication"
-kvt add "BUG: Login fails on Firefox"
+klt add "Implement user authentication"
+klt add "BUG: Login fails on Firefox"
 
 # Connect your AI assistant
-claude mcp add kvik-tasks -- kvt mcp
+claude mcp add kleidi-task -- klt mcp
 ```
 
 ## How It Works
@@ -90,7 +96,7 @@ claude mcp add kvik-tasks -- kvt mcp
 ```
 You (CLI / Browser / Claude / Cursor)
     │
-  kvt binary (single process)
+  klt binary (single process)
     │
   Service Layer (TaskService, ProjectService, WorkflowService)
     │
@@ -99,9 +105,9 @@ You (CLI / Browser / Claude / Cursor)
 
 Tasks are stored locally in your project directory. A global registry maps projects by slug. Cross-project queries aggregate on demand.
 
-## Why kvik-tasks?
+## Why kleidi-task?
 
-Existing task managers are designed for humans clicking buttons. **kvik-tasks** is designed for the way modern developers actually work — with AI assistants in the loop.
+Existing task managers are designed for humans clicking buttons. **kleidi-task** is designed for the way modern developers actually work — with AI assistants in the loop.
 
 - Say `"task: implement search"` in Claude and the task is created instantly
 - AI assistants read your task context and follow phase-specific instructions

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -31,7 +31,7 @@ func setupTestServer(t *testing.T) (*mcp.ClientSession, string, func()) {
 	slug := project.Slug
 
 	mcpServer := mcp.NewServer(&mcp.Implementation{
-		Name:    "kvik-tasks-test",
+		Name:    "kleidi-task-test",
 		Version: "test",
 	}, nil)
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 )
 
 func TestCreateTask(t *testing.T) {

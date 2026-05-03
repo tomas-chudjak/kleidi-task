@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 )
 
 // printTaskTable prints a list of tasks in a standardized table format.

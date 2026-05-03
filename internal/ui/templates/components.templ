@@ -1,18 +1,18 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 import "strings"
 
 // TypeBadge renders a badge for a task type using inline colors from the workflow definition.
 // Falls back to neutral styling if no workflows are provided.
 templ TypeBadge(typeName string, workflows []core.WorkflowDef) {
-	<span class="kvt-badge" style={ typeBadgeStyle(typeName, workflows) }>{ typeName }</span>
+	<span class="klt-badge" style={ typeBadgeStyle(typeName, workflows) }>{ typeName }</span>
 }
 
 // TypeBadgeSmall renders a smaller badge variant.
 templ TypeBadgeSmall(typeName string, workflows []core.WorkflowDef) {
-	<span class="kvt-badge" style={ typeBadgeStyle(typeName, workflows) + "font-size:0.6rem;" }>{ typeName }</span>
+	<span class="klt-badge" style={ typeBadgeStyle(typeName, workflows) + "font-size:0.6rem;" }>{ typeName }</span>
 }
 
 // TypeSelect renders a <select> with all available task types from workflows.
@@ -41,13 +41,13 @@ func typeBadgeStyle(typeName string, workflows []core.WorkflowDef) string {
 	// Fallback for built-in types (when workflows not loaded yet)
 	switch typeName {
 	case "bug":
-		return "background:#fde8ee;color:var(--kvt-danger);"
+		return "background:#fde8ee;color:var(--klt-danger);"
 	case "feature":
-		return "background:#f0e8ff;color:var(--kvt-purple);"
+		return "background:#f0e8ff;color:var(--klt-purple);"
 	case "hotfix":
-		return "background:#fff1e6;color:var(--kvt-orange);"
+		return "background:#fff1e6;color:var(--klt-orange);"
 	default:
-		return "background:var(--kvt-accent-light);color:var(--kvt-accent);"
+		return "background:var(--klt-accent-light);color:var(--klt-accent);"
 	}
 }
 
@@ -55,15 +55,15 @@ func typeBadgeStyle(typeName string, workflows []core.WorkflowDef) string {
 func typeBadgeFg(typeName string) string {
 	switch typeName {
 	case "task":
-		return "var(--kvt-accent)"
+		return "var(--klt-accent)"
 	case "bug":
-		return "var(--kvt-danger)"
+		return "var(--klt-danger)"
 	case "feature":
-		return "var(--kvt-purple)"
+		return "var(--klt-purple)"
 	case "hotfix":
-		return "var(--kvt-orange)"
+		return "var(--klt-orange)"
 	default:
-		return "var(--kvt-fg)"
+		return "var(--klt-fg)"
 	}
 }
 

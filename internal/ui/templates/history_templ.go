@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 func HistoryPage(project core.Project, task core.Task, history []core.HistoryEntry, workflows []core.WorkflowDef) templ.Component {
@@ -44,7 +44,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"kvt-toolbar\"><div class=\"kvt-toolbar-left\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"klt-toolbar\"><div class=\"klt-toolbar-left\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -57,7 +57,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"klt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -65,7 +65,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"kvt-toolbar-id\">#")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"klt-toolbar-id\">#")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +78,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span style=\"color:var(--kvt-fg-muted);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span style=\"color:var(--klt-fg-muted);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -91,7 +91,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div></div><div class=\"kvt-task-layout\"><div class=\"kvt-task-main\"><div class=\"kvt-detail-card\"><h4 class=\"kvt-detail-card-title\"><i class=\"icon icon-clock\"></i> Workflow History (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div></div><div class=\"klt-task-layout\"><div class=\"klt-task-main\"><div class=\"klt-detail-card\"><h4 class=\"klt-detail-card-title\"><i class=\"icon icon-clock\"></i> Workflow History (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -109,17 +109,17 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 				return templ_7745c5c3_Err
 			}
 			if len(history) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"kvt-empty\">No workflow history for this task.</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"klt-empty\">No workflow history for this task.</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"kvt-timeline\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"klt-timeline\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, h := range history {
-					var templ_7745c5c3_Var7 = []any{"kvt-timeline-entry" + timelineEntryClass(h.Success)}
+					var templ_7745c5c3_Var7 = []any{"klt-timeline-entry" + timelineEntryClass(h.Success)}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -137,7 +137,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><div class=\"kvt-timeline-dot\"></div><div class=\"kvt-timeline-content\"><div class=\"kvt-timeline-header\"><span class=\"kvt-timeline-phase\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><div class=\"klt-timeline-dot\"></div><div class=\"klt-timeline-content\"><div class=\"klt-timeline-header\"><span class=\"klt-timeline-phase\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -150,7 +150,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> <span class=\"kvt-timeline-action\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> <span class=\"klt-timeline-action\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -168,7 +168,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 						return templ_7745c5c3_Err
 					}
 					if h.ActionType != "none" && h.ActionType != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"kvt-badge kvt-badge-todo\" style=\"font-size:0.55rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"klt-badge klt-badge-todo\" style=\"font-size:0.55rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -187,7 +187,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 						}
 					}
 					if h.DurationMs > 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"kvt-timeline-duration\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"klt-timeline-duration\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -206,12 +206,12 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 						}
 					}
 					if !h.Success {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"kvt-badge\" style=\"background:#fde8ee;color:var(--kvt-danger);font-size:0.55rem;\">FAILED</span> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"klt-badge\" style=\"background:#fde8ee;color:var(--klt-danger);font-size:0.55rem;\">FAILED</span> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"kvt-timeline-time\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"klt-timeline-time\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -229,7 +229,7 @@ func HistoryPage(project core.Project, task core.Task, history []core.HistoryEnt
 						return templ_7745c5c3_Err
 					}
 					if h.Output != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<pre class=\"kvt-timeline-output\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<pre class=\"klt-timeline-output\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 import "strings"
 
@@ -45,12 +45,12 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"kvt-board-header\"><h2 class=\"kvt-title\"><i class=\"icon icon-git-branch\"></i> Workflows</h2></div><div class=\"k-grid k-grid--12 kvt-project-grid\"><div class=\"k-col-span-9 kvt-project-main\"><div class=\"kvt-task-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"klt-board-header\"><h2 class=\"klt-title\"><i class=\"icon icon-git-branch\"></i> Workflows</h2></div><div class=\"k-grid k-grid--12 klt-project-grid\"><div class=\"k-col-span-9 klt-project-main\"><div class=\"klt-task-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, wf := range workflows {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"kvt-task-row\" style=\"grid-template-columns: 5.5rem 1fr 8rem 4.5rem;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"klt-task-row\" style=\"grid-template-columns: 5.5rem 1fr 8rem 4.5rem;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -58,7 +58,7 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"kvt-task-title\" style=\"cursor:default;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"klt-task-title\" style=\"cursor:default;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -71,7 +71,7 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"kvt-task-status\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"klt-task-status\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -84,7 +84,7 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span><div class=\"kvt-task-actions\" style=\"opacity:1;\"><a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span><div class=\"klt-task-actions\" style=\"opacity:1;\"><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -97,12 +97,12 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"kvt-btn-done\" style=\"opacity:1;\" title=\"Edit workflow\"><i class=\"icon icon-pencil\"></i></a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"klt-btn-done\" style=\"opacity:1;\" title=\"Edit workflow\"><i class=\"icon icon-pencil\"></i></a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if !wf.IsBuiltin {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<button class=\"kvt-cat-del-btn\" hx-delete=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<button class=\"klt-cat-del-btn\" hx-delete=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -138,7 +138,7 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Create new task type --><div class=\"kvt-detail-card\" style=\"margin-top:1rem;\"><h3 class=\"kvt-settings-heading\" style=\"margin-bottom:0.75rem;\">Create custom task type</h3><form hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Create new task type --><div class=\"klt-detail-card\" style=\"margin-top:1rem;\"><h3 class=\"klt-settings-heading\" style=\"margin-bottom:0.75rem;\">Create custom task type</h3><form hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,7 +151,7 @@ func WorkflowsPage(project core.Project, workflows []core.WorkflowDef) templ.Com
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" class=\"kvt-cat-form\"><div class=\"kvt-cat-form-row\"><input type=\"text\" name=\"task_type\" placeholder=\"Type name (e.g. spike)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"kvt-cat-input\" pattern=\"[a-z][a-z0-9-]*\" title=\"Lowercase letters, numbers, and hyphens\"> <input type=\"text\" name=\"prefix\" placeholder=\"PREFIX (optional)\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"kvt-cat-input\" style=\"max-width:120px;\" title=\"Title prefix for auto-detection (e.g. SPIKE)\"> <input type=\"color\" name=\"color\" value=\"#e0e7ef\" class=\"kvt-cat-color\"> <button type=\"submit\" class=\"kvt-cat-add-btn\" title=\"Create type\"><i class=\"icon icon-plus\"></i></button></div></form></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-target=\"body\" hx-swap=\"outerHTML\" hx-ext=\"json-enc\" class=\"klt-cat-form\"><div class=\"klt-cat-form-row\"><input type=\"text\" name=\"task_type\" placeholder=\"Type name (e.g. spike)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\" pattern=\"[a-z][a-z0-9-]*\" title=\"Lowercase letters, numbers, and hyphens\"> <input type=\"text\" name=\"prefix\" placeholder=\"PREFIX (optional)\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\" style=\"max-width:120px;\" title=\"Title prefix for auto-detection (e.g. SPIKE)\"> <input type=\"color\" name=\"color\" value=\"#e0e7ef\" class=\"klt-cat-color\"> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Create type\"><i class=\"icon icon-plus\"></i></button></div></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

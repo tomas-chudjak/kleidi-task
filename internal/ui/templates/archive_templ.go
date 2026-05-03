@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 type ArchiveFilter struct {
@@ -98,7 +98,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"kvt-board-header\"><h2 class=\"kvt-title\"><i class=\"icon icon-archive\"></i> Archive</h2><div style=\"display:flex;gap:8px;align-items:center;\"><div class=\"kvt-view-toggle\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"klt-board-header\"><h2 class=\"klt-title\"><i class=\"icon icon-archive\"></i> Archive</h2><div style=\"display:flex;gap:8px;align-items:center;\"><div class=\"klt-view-toggle\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -111,7 +111,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"kvt-view-btn\"><i class=\"icon icon-arrow-left\"></i> Back to project</a></div><div class=\"kvt-view-toggle\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"klt-view-btn\"><i class=\"icon icon-arrow-left\"></i> Back to project</a></div><div class=\"klt-view-toggle\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -124,7 +124,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"kvt-view-btn\" title=\"Export JSON\" onclick=\"return confirm('Export archived tasks as JSON?')\"><i class=\"icon icon-download\"></i> JSON</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"klt-view-btn\" title=\"Export JSON\" onclick=\"return confirm('Export archived tasks as JSON?')\"><i class=\"icon icon-download\"></i> JSON</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -137,7 +137,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"kvt-view-btn\" title=\"Export Markdown\" onclick=\"return confirm('Export archived tasks as Markdown?')\"><i class=\"icon icon-download\"></i> MD</a></div></div></div><div class=\"kvt-archive-summary\" style=\"margin-bottom:16px; color: var(--color-text-secondary); font-size: 0.85rem;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"klt-view-btn\" title=\"Export Markdown\" onclick=\"return confirm('Export archived tasks as Markdown?')\"><i class=\"icon icon-download\"></i> MD</a></div></div></div><div class=\"klt-archive-summary\" style=\"margin-bottom:16px; color: var(--color-text-secondary); font-size: 0.85rem;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -150,7 +150,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><!-- Filters --> <div class=\"kvt-filters-row\"><div class=\"kvt-filters\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><!-- Filters --> <div class=\"klt-filters-row\"><div class=\"klt-filters\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -325,7 +325,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Hotfixes</a></div><button type=\"button\" class=\"kvt-advanced-btn\" onclick=\"document.getElementById('archive-advanced-filters').toggleAttribute('open')\"><i class=\"icon icon-sliders-horizontal\"></i></button></div><details id=\"archive-advanced-filters\" class=\"kvt-advanced-toggle\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Hotfixes</a></div><button type=\"button\" class=\"klt-advanced-btn\" onclick=\"document.getElementById('archive-advanced-filters').toggleAttribute('open')\"><i class=\"icon icon-sliders-horizontal\"></i></button></div><details id=\"archive-advanced-filters\" class=\"klt-advanced-toggle\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -335,7 +335,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "><summary style=\"display:none;\"></summary><div class=\"kvt-advanced-filters\"><div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"archive-filter-after\">Completed after</label> <input type=\"date\" class=\"kvt-filter-date\" name=\"created_after\" id=\"archive-filter-after\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "><summary style=\"display:none;\"></summary><div class=\"klt-advanced-filters\"><div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"archive-filter-after\">Completed after</label> <input type=\"date\" class=\"klt-filter-date\" name=\"created_after\" id=\"archive-filter-after\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -348,7 +348,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"archive-filter-before\">Completed before</label> <input type=\"date\" class=\"kvt-filter-date\" name=\"created_before\" id=\"archive-filter-before\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"archive-filter-before\">Completed before</label> <input type=\"date\" class=\"klt-filter-date\" name=\"created_before\" id=\"archive-filter-before\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -361,7 +361,7 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><button type=\"button\" class=\"kvt-filter-apply\" onclick=\"applyArchiveFilters(this)\">Apply</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><button type=\"button\" class=\"klt-filter-apply\" onclick=\"applyArchiveFilters(this)\">Apply</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -379,17 +379,17 @@ func ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"kvt-filter-clear\">Clear</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"klt-filter-clear\">Clear</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></details><!-- Archive table --> <div class=\"kvt-task-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></details><!-- Archive table --> <div class=\"klt-task-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(tasks) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"kvt-empty\">No archived tasks.</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"klt-empty\">No archived tasks.</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -442,7 +442,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 			templ_7745c5c3_Var25 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"kvt-task-row\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"klt-task-row\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -455,7 +455,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><span class=\"kvt-task-id\">#")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><span class=\"klt-task-id\">#")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -489,7 +489,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"kvt-task-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"klt-task-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -507,7 +507,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 			return templ_7745c5c3_Err
 		}
 		if task.Category != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span class=\"kvt-category-tag\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span class=\"klt-category-tag\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -525,12 +525,12 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"kvt-category-tag kvt-category-tag--empty\"></span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"klt-category-tag klt-category-tag--empty\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"kvt-task-date\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"klt-task-date\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -545,7 +545,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</span><div class=\"kvt-task-actions\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</span><div class=\"klt-task-actions\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -558,7 +558,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"kvt-btn-archive\" title=\"Unarchive (restore to done)\"><i class=\"icon icon-archive-restore\"></i></a> <a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"klt-btn-archive\" title=\"Unarchive (restore to done)\"><i class=\"icon icon-archive-restore\"></i></a> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -571,7 +571,7 @@ func ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"kvt-btn-delete\" onclick=\"return confirm('Permanently delete this task?')\" title=\"Delete permanently\"><i class=\"icon icon-trash-2\"></i></a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"klt-btn-delete\" onclick=\"return confirm('Permanently delete this task?')\" title=\"Delete permanently\"><i class=\"icon icon-trash-2\"></i></a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -600,7 +600,7 @@ func ArchivePagination(slug string, filter ArchiveFilter) templ.Component {
 			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<nav class=\"kvt-pagination\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<nav class=\"klt-pagination\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -618,19 +618,19 @@ func ArchivePagination(slug string, filter ArchiveFilter) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"kvt-page-link\">&laquo; Prev</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"klt-page-link\">&laquo; Prev</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<span class=\"kvt-page-link kvt-page-link--disabled\">&laquo; Prev</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<span class=\"klt-page-link klt-page-link--disabled\">&laquo; Prev</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		for i := int64(1); i <= filter.TotalPages; i++ {
 			if i == filter.Page {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<span class=\"kvt-page-link kvt-page-link--active\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<span class=\"klt-page-link klt-page-link--active\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -661,7 +661,7 @@ func ArchivePagination(slug string, filter ArchiveFilter) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"kvt-page-link\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"klt-page-link\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -694,12 +694,12 @@ func ArchivePagination(slug string, filter ArchiveFilter) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" class=\"kvt-page-link\">Next &raquo;</a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" class=\"klt-page-link\">Next &raquo;</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"kvt-page-link kvt-page-link--disabled\">Next &raquo;</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"klt-page-link klt-page-link--disabled\">Next &raquo;</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

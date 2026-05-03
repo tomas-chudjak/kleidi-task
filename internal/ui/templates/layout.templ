@@ -4,7 +4,7 @@ package templates
 templ layoutHead(title string) {
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>{ title } — kvik-tasks</title>
+	<title>{ title } — Kleidi Task</title>
 	<link rel="stylesheet" href="/static/css/kviky.css"/>
 	<link rel="stylesheet" href="/static/css/lucide.css"/>
 	<link rel="stylesheet" href="/static/css/style.css"/>
@@ -19,18 +19,18 @@ templ layoutScripts() {
 	<script>
 	document.body.addEventListener('htmx:afterRequest', function(e) {
 		var el = document.getElementById('save-indicator');
-		if (el && e.detail.elt.closest && e.detail.elt.closest('.kvt-task-layout, .kvt-toolbar')) {
+		if (el && e.detail.elt.closest && e.detail.elt.closest('.klt-task-layout, .klt-toolbar')) {
 			el.textContent = 'Saved';
-			el.classList.add('kvt-save-indicator--visible');
+			el.classList.add('klt-save-indicator--visible');
 			clearTimeout(el._t);
 			el._t = setTimeout(function() {
-				el.classList.remove('kvt-save-indicator--visible');
+				el.classList.remove('klt-save-indicator--visible');
 			}, 2000);
 		}
 	});
 	// Theme toggle
 	function initTheme() {
-		var saved = localStorage.getItem('kvt-theme');
+		var saved = localStorage.getItem('klt-theme');
 		if (!saved) saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 		document.documentElement.setAttribute('data-theme', saved);
 		updateThemeIcon(saved);
@@ -39,7 +39,7 @@ templ layoutScripts() {
 		var current = document.documentElement.getAttribute('data-theme') || 'light';
 		var next = current === 'dark' ? 'light' : 'dark';
 		document.documentElement.setAttribute('data-theme', next);
-		localStorage.setItem('kvt-theme', next);
+		localStorage.setItem('klt-theme', next);
 		updateThemeIcon(next);
 	}
 	function updateThemeIcon(theme) {
@@ -50,7 +50,7 @@ templ layoutScripts() {
 	}
 	initTheme();
 	function applyAdvancedFilters(btn) {
-		var container = btn.closest('.kvt-advanced-filters');
+		var container = btn.closest('.klt-advanced-filters');
 		var url = new URL(window.location.href);
 		var pri = container.querySelector('[name="min_priority"]');
 		if (pri) { pri.value ? url.searchParams.set('min_priority', pri.value) : url.searchParams.delete('min_priority'); }
@@ -64,7 +64,7 @@ templ layoutScripts() {
 		window.location.href = url.toString();
 	}
 	function applyArchiveFilters(btn) {
-		var container = btn.closest('.kvt-advanced-filters');
+		var container = btn.closest('.klt-advanced-filters');
 		var url = new URL(window.location.href);
 		var after = container.querySelector('[name="created_after"]');
 		if (after) { after.value ? url.searchParams.set('created_after', after.value) : url.searchParams.delete('created_after'); }
@@ -78,9 +78,9 @@ templ layoutScripts() {
 		var el = document.getElementById('save-indicator');
 		if (el) {
 			el.textContent = 'Saved';
-			el.classList.add('kvt-save-indicator--visible');
+			el.classList.add('klt-save-indicator--visible');
 			clearTimeout(el._t);
-			el._t = setTimeout(function() { el.classList.remove('kvt-save-indicator--visible'); }, 2000);
+			el._t = setTimeout(function() { el.classList.remove('klt-save-indicator--visible'); }, 2000);
 		}
 	});
 	// Bulk selection manager
@@ -99,7 +99,7 @@ templ layoutScripts() {
 			}
 			var sa = document.getElementById('bulk-select-all');
 			if (sa) {
-				var cbs = document.querySelectorAll('.kvt-bulk-cb');
+				var cbs = document.querySelectorAll('.klt-bulk-cb');
 				sa.checked = cbs.length > 0 && selected.size === cbs.length;
 				sa.indeterminate = selected.size > 0 && selected.size < cbs.length;
 			}
@@ -109,23 +109,23 @@ templ layoutScripts() {
 			toggle: function(cb) {
 				var id = parseInt(cb.value);
 				if (cb.checked) { selected.add(id); } else { selected.delete(id); }
-				cb.closest('.kvt-task-row').classList.toggle('kvt-task-row--selected', cb.checked);
+				cb.closest('.klt-task-row').classList.toggle('klt-task-row--selected', cb.checked);
 				update();
 			},
 			toggleAll: function(cb) {
-				document.querySelectorAll('.kvt-bulk-cb').forEach(function(c) {
+				document.querySelectorAll('.klt-bulk-cb').forEach(function(c) {
 					var id = parseInt(c.value);
 					c.checked = cb.checked;
 					if (cb.checked) { selected.add(id); } else { selected.delete(id); }
-					c.closest('.kvt-task-row').classList.toggle('kvt-task-row--selected', cb.checked);
+					c.closest('.klt-task-row').classList.toggle('klt-task-row--selected', cb.checked);
 				});
 				update();
 			},
 			clear: function() {
 				selected.clear();
-				document.querySelectorAll('.kvt-bulk-cb').forEach(function(cb) {
+				document.querySelectorAll('.klt-bulk-cb').forEach(function(cb) {
 					cb.checked = false;
-					cb.closest('.kvt-task-row').classList.remove('kvt-task-row--selected');
+					cb.closest('.klt-task-row').classList.remove('klt-task-row--selected');
 				});
 				var sa = document.getElementById('bulk-select-all');
 				if (sa) { sa.checked = false; sa.indeterminate = false; }
@@ -164,17 +164,17 @@ templ layoutScripts() {
 		var idx = -1;
 
 		function rows() {
-			return document.querySelectorAll('#task-list .kvt-task-row');
+			return document.querySelectorAll('#task-list .klt-task-row');
 		}
 
 		function focus(i) {
 			var r = rows();
 			if (r.length === 0) return;
 			// Remove previous focus
-			if (idx >= 0 && idx < r.length) r[idx].classList.remove('kvt-task-row--focused');
+			if (idx >= 0 && idx < r.length) r[idx].classList.remove('klt-task-row--focused');
 			// Clamp index
 			idx = Math.max(0, Math.min(i, r.length - 1));
-			r[idx].classList.add('kvt-task-row--focused');
+			r[idx].classList.add('klt-task-row--focused');
 			r[idx].scrollIntoView({ block: 'nearest' });
 		}
 
@@ -206,19 +206,19 @@ templ layoutScripts() {
 			if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
 				e.preventDefault();
 				var overlay = document.getElementById('kbd-help');
-				if (overlay) overlay.classList.toggle('kvt-kbd-help--visible');
+				if (overlay) overlay.classList.toggle('klt-kbd-help--visible');
 				return;
 			}
 			// Escape closes help overlay
 			if (e.key === 'Escape') {
 				var overlay = document.getElementById('kbd-help');
-				if (overlay) overlay.classList.remove('kvt-kbd-help--visible');
+				if (overlay) overlay.classList.remove('klt-kbd-help--visible');
 				return;
 			}
 
 			// Backspace works on any page (e.g. task detail → back to list)
 			if (e.key === 'Backspace') {
-				var back = document.querySelector('.kvt-back-link');
+				var back = document.querySelector('.klt-back-link');
 				if (back) { e.preventDefault(); back.click(); }
 				return;
 			}
@@ -239,7 +239,7 @@ templ layoutScripts() {
 					var row = current();
 					var id = taskId(row);
 					if (id) {
-						var btn = row.querySelector('.kvt-btn-done');
+						var btn = row.querySelector('.klt-btn-done');
 						if (btn) btn.click();
 					}
 					break;
@@ -247,7 +247,7 @@ templ layoutScripts() {
 				case 'Enter':
 					e.preventDefault();
 					var row = current();
-					var link = row ? row.querySelector('.kvt-task-title') : null;
+					var link = row ? row.querySelector('.klt-task-title') : null;
 					if (link) window.location.href = link.href;
 					break;
 				case 'd':
@@ -263,12 +263,12 @@ templ layoutScripts() {
 				case 'a':
 					e.preventDefault();
 					var row = current();
-					var archiveLink = row ? row.querySelector('.kvt-btn-archive') : null;
+					var archiveLink = row ? row.querySelector('.klt-btn-archive') : null;
 					if (archiveLink) window.location.href = archiveLink.href;
 					break;
 				case 'n':
 					e.preventDefault();
-					var input = document.querySelector('.kvt-add-form input[name="title"]');
+					var input = document.querySelector('.klt-add-form input[name="title"]');
 					if (input) input.focus();
 					break;
 			}
@@ -291,25 +291,25 @@ templ LayoutMinimal(title string) {
 		@layoutHead(title)
 	</head>
 	<body>
-		<div class="kvt-app">
-			<aside class="kvt-sidebar">
-				<a href="/" class="kvt-sidebar-logo">kvt</a>
-				<nav class="kvt-sidebar-nav"></nav>
-				<div class="kvt-sidebar-bottom">
-					<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+		<div class="klt-app">
+			<aside class="klt-sidebar">
+				<a href="/" class="klt-sidebar-logo">klt</a>
+				<nav class="klt-sidebar-nav"></nav>
+				<div class="klt-sidebar-bottom">
+					<button class="klt-sidebar-link klt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
 						<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
 						<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
 					</button>
 				</div>
 			</aside>
-			<div class="kvt-main">
-				<header class="kvt-topbar">
-					<div class="kvt-topbar-actions">
+			<div class="klt-main">
+				<header class="klt-topbar">
+					<div class="klt-topbar-actions">
 						<a href="/">All projects</a>
 					</div>
-					<div class="kvt-topbar-title">kvik-tasks</div>
+					<div class="klt-topbar-title">Kleidi Task</div>
 				</header>
-				<main class="kvt-content">
+				<main class="klt-content">
 					{ children... }
 				</main>
 			</div>
@@ -327,36 +327,36 @@ templ Layout(title string, slug string) {
 		@layoutHead(title)
 	</head>
 	<body>
-		<div class="kvt-app">
-			<aside class="kvt-sidebar">
-				<a href="/" class="kvt-sidebar-logo">kvt</a>
-				<nav class="kvt-sidebar-nav">
-					<a href={ templ.SafeURL("/p/" + slug) } class="kvt-sidebar-link" title="Dashboard"><i class="icon icon-layout-dashboard"></i></a>
-					<a href={ templ.SafeURL("/p/" + slug + "/board") } class="kvt-sidebar-link" title="Board"><i class="icon icon-columns-3"></i></a>
-					<a href={ templ.SafeURL("/p/" + slug + "/archive") } class="kvt-sidebar-link" title="Archive"><i class="icon icon-archive"></i></a>
-					<a href={ templ.SafeURL("/p/" + slug + "/workflows") } class="kvt-sidebar-link" title="Workflows"><i class="icon icon-git-branch"></i></a>
-					<a href={ templ.SafeURL("/p/" + slug + "/settings") } class="kvt-sidebar-link" title="Settings"><i class="icon icon-settings"></i></a>
+		<div class="klt-app">
+			<aside class="klt-sidebar">
+				<a href="/" class="klt-sidebar-logo">klt</a>
+				<nav class="klt-sidebar-nav">
+					<a href={ templ.SafeURL("/p/" + slug) } class="klt-sidebar-link" title="Dashboard"><i class="icon icon-layout-dashboard"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/board") } class="klt-sidebar-link" title="Board"><i class="icon icon-columns-3"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/archive") } class="klt-sidebar-link" title="Archive"><i class="icon icon-archive"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/workflows") } class="klt-sidebar-link" title="Workflows"><i class="icon icon-git-branch"></i></a>
+					<a href={ templ.SafeURL("/p/" + slug + "/settings") } class="klt-sidebar-link" title="Settings"><i class="icon icon-settings"></i></a>
 				</nav>
-				<div class="kvt-sidebar-bottom">
-					<button class="kvt-sidebar-link kvt-theme-toggle" onclick="var o=document.getElementById('kbd-help');if(o)o.classList.toggle('kvt-kbd-help--visible')" title="Keyboard shortcuts (?)">
+				<div class="klt-sidebar-bottom">
+					<button class="klt-sidebar-link klt-theme-toggle" onclick="var o=document.getElementById('kbd-help');if(o)o.classList.toggle('klt-kbd-help--visible')" title="Keyboard shortcuts (?)">
 						<i class="icon icon-help-circle"></i>
 					</button>
-					<button class="kvt-sidebar-link kvt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+					<button class="klt-sidebar-link klt-theme-toggle" onclick="toggleTheme()" title="Toggle theme">
 						<i class="icon icon-sun" id="theme-icon-light" style="display:none;"></i>
 						<i class="icon icon-moon" id="theme-icon-dark" style="display:none;"></i>
 					</button>
 				</div>
 			</aside>
-			<div class="kvt-main">
-				<header class="kvt-topbar">
-					<div class="kvt-topbar-actions">
+			<div class="klt-main">
+				<header class="klt-topbar">
+					<div class="klt-topbar-actions">
 						<a href={ templ.SafeURL("/p/" + slug) }>Dashboard</a>
-						<span class="kvt-topbar-sep">·</span>
-						<a href="/" class="kvt-topbar-link--secondary">All projects</a>
+						<span class="klt-topbar-sep">·</span>
+						<a href="/" class="klt-topbar-link--secondary">All projects</a>
 					</div>
-					<div class="kvt-topbar-title">kvik-tasks</div>
+					<div class="klt-topbar-title">Kleidi Task</div>
 				</header>
-				<main class="kvt-content">
+				<main class="klt-content">
 					{ children... }
 				</main>
 			</div>

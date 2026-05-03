@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 )
 
 // ProjectService handles project registration and detection.

@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 type DashboardProject struct {
@@ -59,17 +59,17 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h2 class=\"kvt-title\">Dashboard</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h2 class=\"klt-title\">Dashboard</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(projects) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"kvt-card kvt-empty\"><p>No projects registered.</p><p>Run <code>kvt init</code> in a project directory to get started.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"klt-card klt-empty\"><p>No projects registered.</p><p>Run <code>klt init</code> in a project directory to get started.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Global stats --> <div class=\"k-grid k-grid--12 kvt-global-stats\"><div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Global stats --> <div class=\"k-grid k-grid--12 klt-global-stats\"><div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -82,7 +82,7 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"kvt-global-stat-label\">Total tasks</div></div><div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"klt-global-stat-label\">Total tasks</div></div><div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -95,7 +95,7 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"kvt-global-stat-label\">Todo</div></div><div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"klt-global-stat-label\">Todo</div></div><div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -108,7 +108,7 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"kvt-global-stat-label\">In progress</div></div><div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"klt-global-stat-label\">In progress</div></div><div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -121,7 +121,7 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"kvt-global-stat-label\">Done</div></div><div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value kvt-global-stat-value--accent\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"klt-global-stat-label\">Done</div></div><div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value klt-global-stat-value--accent\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -134,12 +134,12 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"kvt-global-stat-label\">This week</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"klt-global-stat-label\">This week</div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if global.BugsOpen > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"k-col-span-2 kvt-global-stat\"><div class=\"kvt-global-stat-value kvt-global-stat-value--danger\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"k-col-span-2 klt-global-stat\"><div class=\"klt-global-stat-value klt-global-stat-value--danger\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -152,12 +152,12 @@ func Dashboard(projects []DashboardProject, global GlobalStats) templ.Component 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"kvt-global-stat-label\">Open bugs</div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"klt-global-stat-label\">Open bugs</div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Projects --> <h3 class=\"kvt-section-title\">Projects</h3><div class=\"kvt-projects-grid\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Projects --> <h3 class=\"klt-section-title\">Projects</h3><div class=\"klt-projects-grid\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -220,7 +220,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"kvt-project-card\"><div class=\"kvt-project-name\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"klt-project-card\"><div class=\"klt-project-name\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -233,7 +233,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div><div class=\"kvt-project-meta\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div><div class=\"klt-project-meta\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -251,12 +251,12 @@ func ProjectCard(dp DashboardProject) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if dp.ExtStats.Total > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"kvt-type-bar\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"klt-type-bar\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, tc := range dp.ExtStats.TypeBreakdown {
-				var templ_7745c5c3_Var13 = []any{"kvt-type-bar-seg kvt-type-bar-seg--" + string(tc.Type)}
+				var templ_7745c5c3_Var13 = []any{"klt-type-bar-seg klt-type-bar-seg--" + string(tc.Type)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var13...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -310,7 +310,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"kvt-project-stats-row\"><div class=\"kvt-mini-stat\"><span class=\"kvt-mini-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"klt-project-stats-row\"><div class=\"klt-mini-stat\"><span class=\"klt-mini-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -323,7 +323,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span> <span class=\"kvt-mini-stat-label\">todo</span></div><div class=\"kvt-mini-stat\"><span class=\"kvt-mini-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span> <span class=\"klt-mini-stat-label\">todo</span></div><div class=\"klt-mini-stat\"><span class=\"klt-mini-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -336,7 +336,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span> <span class=\"kvt-mini-stat-label\">doing</span></div><div class=\"kvt-mini-stat\"><span class=\"kvt-mini-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span> <span class=\"klt-mini-stat-label\">doing</span></div><div class=\"klt-mini-stat\"><span class=\"klt-mini-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -349,12 +349,12 @@ func ProjectCard(dp DashboardProject) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span> <span class=\"kvt-mini-stat-label\">done</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span> <span class=\"klt-mini-stat-label\">done</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if dp.Stats.BugsOpen > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"kvt-mini-stat kvt-mini-stat--danger\"><span class=\"kvt-mini-stat-value\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"klt-mini-stat klt-mini-stat--danger\"><span class=\"klt-mini-stat-value\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -367,7 +367,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</span> <span class=\"kvt-mini-stat-label\">bugs</span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</span> <span class=\"klt-mini-stat-label\">bugs</span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -377,7 +377,7 @@ func ProjectCard(dp DashboardProject) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if dp.ExtStats.CompletedThisWeek > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"kvt-project-velocity\"><i class=\"icon icon-trending-up\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"klt-project-velocity\"><i class=\"icon icon-trending-up\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -424,13 +424,13 @@ func RecentActivity(projects []DashboardProject) templ.Component {
 			templ_7745c5c3_Var22 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<!-- Collect recent completed from all projects --><h3 class=\"kvt-section-title\">Recent completions</h3><div class=\"kvt-recent-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<!-- Collect recent completed from all projects --><h3 class=\"klt-section-title\">Recent completions</h3><div class=\"klt-recent-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, dp := range projects {
 			for _, t := range dp.ExtStats.RecentCompleted {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"kvt-recent-row\"><span class=\"kvt-recent-check\"><i class=\"icon icon-check-circle\"></i></span> <a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"klt-recent-row\"><span class=\"klt-recent-check\"><i class=\"icon icon-check-circle\"></i></span> <a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -443,7 +443,7 @@ func RecentActivity(projects []DashboardProject) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" class=\"kvt-recent-title\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" class=\"klt-recent-title\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -456,7 +456,7 @@ func RecentActivity(projects []DashboardProject) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</a> <span class=\"kvt-recent-project\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</a> <span class=\"klt-recent-project\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -474,7 +474,7 @@ func RecentActivity(projects []DashboardProject) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if t.CompletedAt != nil {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"kvt-recent-date\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"klt-recent-date\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

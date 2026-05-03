@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ahoylog/kvik-tasks/internal/config"
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/config"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/spf13/cobra"
 )
 
@@ -15,13 +15,13 @@ var addCmd = &cobra.Command{
 	Use:   "add [title]",
 	Short: "Add a new task, bug, feature, or hotfix",
 	Long: `Add a new work item. Type is detected from flags or title prefix:
-  kvt add "Implement auth"                → task
-  kvt add --bug "Login broken"            → bug
-  kvt add --feature "Dark mode"           → feature
-  kvt add --hotfix "Fix crash on start"   → hotfix
-  kvt add "BUG: Login broken"             → bug (auto-detected, prefix stripped)
-  kvt add "FEATURE: Dark mode"            → feature (auto-detected)
-  kvt add "FEAT: Dark mode"               → feature (shorthand)`,
+  klt add "Implement auth"                → task
+  klt add --bug "Login broken"            → bug
+  klt add --feature "Dark mode"           → feature
+  klt add --hotfix "Fix crash on start"   → hotfix
+  klt add "BUG: Login broken"             → bug (auto-detected, prefix stripped)
+  klt add "FEATURE: Dark mode"            → feature (auto-detected)
+  klt add "FEAT: Dark mode"               → feature (shorthand)`,
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		title := strings.Join(args, " ")

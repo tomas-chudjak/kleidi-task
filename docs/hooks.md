@@ -3,7 +3,7 @@ title: Script Hooks
 weight: 7
 ---
 
-kvik-tasks supports project-level script hooks that run automatically on task lifecycle events. Hooks are shell commands executed asynchronously — they never block the task operation.
+kleidi-task supports project-level script hooks that run automatically on task lifecycle events. Hooks are shell commands executed asynchronously — they never block the task operation.
 
 ## Configuration
 
@@ -110,7 +110,7 @@ Edit `.tasks/hooks.json` directly. Assign a unique `id` to each hook. The file i
 ```json
 {
   "event": "task.complete",
-  "command": "notify-send 'kvt' \"Task #$KVT_TASK_ID completed: $KVT_TASK_TITLE\""
+  "command": "notify-send 'klt' \"Task #$KVT_TASK_ID completed: $KVT_TASK_TITLE\""
 }
 ```
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ahoylog/kvik-tasks/internal/db/generated"
+	"github.com/tomas-chudjak/kleidi-task/internal/db/generated"
 )
 
 // TaskTemplate represents a reusable task template.

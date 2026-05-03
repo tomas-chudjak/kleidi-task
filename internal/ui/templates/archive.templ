@@ -1,6 +1,6 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 type ArchiveFilter struct {
@@ -59,69 +59,69 @@ func archivePageURL(slug string, page int64, f ArchiveFilter) string {
 
 templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter, workflows []core.WorkflowDef) {
 	@Layout(project.Name+" — Archive", project.Slug) {
-		<div class="kvt-board-header">
-			<h2 class="kvt-title"><i class="icon icon-archive"></i> Archive</h2>
+		<div class="klt-board-header">
+			<h2 class="klt-title"><i class="icon icon-archive"></i> Archive</h2>
 			<div style="display:flex;gap:8px;align-items:center;">
-				<div class="kvt-view-toggle">
-					<a href={ templ.SafeURL("/p/" + project.Slug) } class="kvt-view-btn">
+				<div class="klt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug) } class="klt-view-btn">
 						<i class="icon icon-arrow-left"></i> Back to project
 					</a>
 				</div>
-				<div class="kvt-view-toggle">
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&archived=1") } class="kvt-view-btn" title="Export JSON" onclick="return confirm('Export archived tasks as JSON?')">
+				<div class="klt-view-toggle">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=json&archived=1") } class="klt-view-btn" title="Export JSON" onclick="return confirm('Export archived tasks as JSON?')">
 						<i class="icon icon-download"></i> JSON
 					</a>
-					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&archived=1") } class="kvt-view-btn" title="Export Markdown" onclick="return confirm('Export archived tasks as Markdown?')">
+					<a href={ templ.SafeURL("/p/" + project.Slug + "/export?format=md&archived=1") } class="klt-view-btn" title="Export Markdown" onclick="return confirm('Export archived tasks as Markdown?')">
 						<i class="icon icon-download"></i> MD
 					</a>
 				</div>
 			</div>
 		</div>
 
-		<div class="kvt-archive-summary" style="margin-bottom:16px; color: var(--color-text-secondary); font-size: 0.85rem;">
+		<div class="klt-archive-summary" style="margin-bottom:16px; color: var(--color-text-secondary); font-size: 0.85rem;">
 			{ fmt.Sprintf("%d archived tasks", filter.Total) }
 		</div>
 
 		<!-- Filters -->
-		<div class="kvt-filters-row">
-			<div class="kvt-filters">
+		<div class="klt-filters-row">
+			<div class="klt-filters">
 				<a href={ templ.SafeURL(archiveTypeURL(project.Slug, "", filter)) } class={ filterClass(filter.Type == "") }>All types</a>
 				<a href={ templ.SafeURL(archiveTypeURL(project.Slug, "task", filter)) } class={ filterClass(hasFilter(filter.Type, "task")) }>Tasks</a>
 				<a href={ templ.SafeURL(archiveTypeURL(project.Slug, "bug", filter)) } class={ filterClass(hasFilter(filter.Type, "bug")) }>Bugs</a>
 				<a href={ templ.SafeURL(archiveTypeURL(project.Slug, "feature", filter)) } class={ filterClass(hasFilter(filter.Type, "feature")) }>Features</a>
 				<a href={ templ.SafeURL(archiveTypeURL(project.Slug, "hotfix", filter)) } class={ filterClass(hasFilter(filter.Type, "hotfix")) }>Hotfixes</a>
 			</div>
-			<button type="button" class="kvt-advanced-btn" onclick="document.getElementById('archive-advanced-filters').toggleAttribute('open')">
+			<button type="button" class="klt-advanced-btn" onclick="document.getElementById('archive-advanced-filters').toggleAttribute('open')">
 				<i class="icon icon-sliders-horizontal"></i>
 			</button>
 		</div>
 
-		<details id="archive-advanced-filters" class="kvt-advanced-toggle"
+		<details id="archive-advanced-filters" class="klt-advanced-toggle"
 			if filter.CreatedAfter != "" || filter.CreatedBefore != "" {
 				open
 			}
 		>
 			<summary style="display:none;"></summary>
-			<div class="kvt-advanced-filters">
-				<div class="kvt-filter-group">
-					<label class="kvt-filter-label" for="archive-filter-after">Completed after</label>
-					<input type="date" class="kvt-filter-date" name="created_after" id="archive-filter-after" value={ filter.CreatedAfter } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+			<div class="klt-advanced-filters">
+				<div class="klt-filter-group">
+					<label class="klt-filter-label" for="archive-filter-after">Completed after</label>
+					<input type="date" class="klt-filter-date" name="created_after" id="archive-filter-after" value={ filter.CreatedAfter } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 				</div>
-				<div class="kvt-filter-group">
-					<label class="kvt-filter-label" for="archive-filter-before">Completed before</label>
-					<input type="date" class="kvt-filter-date" name="created_before" id="archive-filter-before" value={ filter.CreatedBefore } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+				<div class="klt-filter-group">
+					<label class="klt-filter-label" for="archive-filter-before">Completed before</label>
+					<input type="date" class="klt-filter-date" name="created_before" id="archive-filter-before" value={ filter.CreatedBefore } autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 				</div>
-				<button type="button" class="kvt-filter-apply" onclick="applyArchiveFilters(this)">Apply</button>
+				<button type="button" class="klt-filter-apply" onclick="applyArchiveFilters(this)">Apply</button>
 				if filter.CreatedAfter != "" || filter.CreatedBefore != "" {
-					<a href={ templ.SafeURL(archiveFilterURL(project.Slug, ArchiveFilter{Type: filter.Type}, map[string]string{})) } class="kvt-filter-clear">Clear</a>
+					<a href={ templ.SafeURL(archiveFilterURL(project.Slug, ArchiveFilter{Type: filter.Type}, map[string]string{})) } class="klt-filter-clear">Clear</a>
 				}
 			</div>
 		</details>
 
 		<!-- Archive table -->
-		<div class="kvt-task-list">
+		<div class="klt-task-list">
 			if len(tasks) == 0 {
-				<div class="kvt-empty">No archived tasks.</div>
+				<div class="klt-empty">No archived tasks.</div>
 			} else {
 				for _, t := range tasks {
 					@ArchiveRow(t, project.Slug, workflows)
@@ -136,31 +136,31 @@ templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter,
 }
 
 templ ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) {
-	<div class="kvt-task-row" id={ fmt.Sprintf("archive-%d", task.ID) }>
-		<span class="kvt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
+	<div class="klt-task-row" id={ fmt.Sprintf("archive-%d", task.ID) }>
+		<span class="klt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		@TypeBadge(string(task.Type), workflows)
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="kvt-task-title">{ task.Title }</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
 		if task.Category != "" {
-			<span class="kvt-category-tag">{ task.Category }</span>
+			<span class="klt-category-tag">{ task.Category }</span>
 		} else {
-			<span class="kvt-category-tag kvt-category-tag--empty"></span>
+			<span class="klt-category-tag klt-category-tag--empty"></span>
 		}
-		<span class="kvt-task-date">
+		<span class="klt-task-date">
 			if task.CompletedAt != nil {
 				{ task.CompletedAt.Format("2006-01-02") }
 			}
 		</span>
-		<div class="kvt-task-actions">
+		<div class="klt-task-actions">
 			<a
 				href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/unarchive", slug, task.ID)) }
-				class="kvt-btn-archive"
+				class="klt-btn-archive"
 				title="Unarchive (restore to done)"
 			>
 				<i class="icon icon-archive-restore"></i>
 			</a>
 			<a
 				href={ templ.SafeURL(fmt.Sprintf("/p/%s/tasks/%d/delete", slug, task.ID)) }
-				class="kvt-btn-delete"
+				class="klt-btn-delete"
 				onclick="return confirm('Permanently delete this task?')"
 				title="Delete permanently"
 			>
@@ -171,25 +171,25 @@ templ ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 }
 
 templ ArchivePagination(slug string, filter ArchiveFilter) {
-	<nav class="kvt-pagination">
+	<nav class="klt-pagination">
 		if filter.Page > 1 {
-			<a href={ templ.SafeURL(archivePageURL(slug, filter.Page-1, filter)) } class="kvt-page-link">&laquo; Prev</a>
+			<a href={ templ.SafeURL(archivePageURL(slug, filter.Page-1, filter)) } class="klt-page-link">&laquo; Prev</a>
 		} else {
-			<span class="kvt-page-link kvt-page-link--disabled">&laquo; Prev</span>
+			<span class="klt-page-link klt-page-link--disabled">&laquo; Prev</span>
 		}
 
 		for i := int64(1); i <= filter.TotalPages; i++ {
 			if i == filter.Page {
-				<span class="kvt-page-link kvt-page-link--active">{ fmt.Sprintf("%d", i) }</span>
+				<span class="klt-page-link klt-page-link--active">{ fmt.Sprintf("%d", i) }</span>
 			} else {
-				<a href={ templ.SafeURL(archivePageURL(slug, i, filter)) } class="kvt-page-link">{ fmt.Sprintf("%d", i) }</a>
+				<a href={ templ.SafeURL(archivePageURL(slug, i, filter)) } class="klt-page-link">{ fmt.Sprintf("%d", i) }</a>
 			}
 		}
 
 		if filter.Page < filter.TotalPages {
-			<a href={ templ.SafeURL(archivePageURL(slug, filter.Page+1, filter)) } class="kvt-page-link">Next &raquo;</a>
+			<a href={ templ.SafeURL(archivePageURL(slug, filter.Page+1, filter)) } class="klt-page-link">Next &raquo;</a>
 		} else {
-			<span class="kvt-page-link kvt-page-link--disabled">Next &raquo;</span>
+			<span class="klt-page-link klt-page-link--disabled">Next &raquo;</span>
 		}
 	</nav>
 }

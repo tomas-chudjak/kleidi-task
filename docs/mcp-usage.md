@@ -10,8 +10,8 @@ Add to your Claude Desktop or Claude Code configuration:
 ```json
 {
   "mcpServers": {
-    "kvik-tasks": {
-      "command": "kvt",
+    "kleidi-task": {
+      "command": "klt",
       "args": ["mcp"]
     }
   }
@@ -21,7 +21,7 @@ Add to your Claude Desktop or Claude Code configuration:
 Or via Claude Code CLI:
 
 ```bash
-claude mcp add kvik-tasks -- kvt mcp
+claude mcp add kleidi-task -- klt mcp
 ```
 
 ## Available Tools

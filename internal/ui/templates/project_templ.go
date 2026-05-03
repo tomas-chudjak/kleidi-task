@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 import "strings"
 
@@ -26,9 +26,9 @@ type ProjectFilter struct {
 
 func filterClass(active bool) string {
 	if active {
-		return "kvt-filter-link kvt-filter-link--active"
+		return "klt-filter-link klt-filter-link--active"
 	}
-	return "kvt-filter-link"
+	return "klt-filter-link"
 }
 
 // buildFilterURL builds a URL preserving all current filter params, overriding the specified ones.
@@ -171,7 +171,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><div class=\"kvt-board-header\"><h2 class=\"kvt-title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><div class=\"klt-board-header\"><h2 class=\"klt-title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -184,7 +184,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div style=\"display:flex;gap:8px;align-items:center;\"><div class=\"kvt-view-toggle\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div style=\"display:flex;gap:8px;align-items:center;\"><div class=\"klt-view-toggle\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"kvt-view-btn kvt-view-btn--active\"><i class=\"icon icon-list\"></i> List</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"klt-view-btn klt-view-btn--active\"><i class=\"icon icon-list\"></i> List</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -210,7 +210,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"kvt-view-btn\"><i class=\"icon icon-columns-3\"></i> Board</a></div><div class=\"kvt-view-toggle\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"klt-view-btn\"><i class=\"icon icon-columns-3\"></i> Board</a></div><div class=\"klt-view-toggle\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -223,7 +223,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"kvt-view-btn\" title=\"Export JSON\" onclick=\"return confirm('Export filtered tasks as JSON?')\"><i class=\"icon icon-download\"></i> JSON</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"klt-view-btn\" title=\"Export JSON\" onclick=\"return confirm('Export filtered tasks as JSON?')\"><i class=\"icon icon-download\"></i> JSON</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -236,7 +236,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"kvt-view-btn\" title=\"Export Markdown\" onclick=\"return confirm('Export filtered tasks as Markdown?')\"><i class=\"icon icon-download\"></i> MD</a></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"klt-view-btn\" title=\"Export Markdown\" onclick=\"return confirm('Export filtered tasks as Markdown?')\"><i class=\"icon icon-download\"></i> MD</a></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -244,7 +244,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <!-- Search bar --> <div class=\"kvt-search\"><i class=\"icon icon-search kvt-search-icon\"></i> <input type=\"search\" name=\"q\" placeholder=\"Search tasks...\" class=\"kvt-search-input\" hx-get=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " <!-- Search bar --> <div class=\"klt-search\"><i class=\"icon icon-search klt-search-icon\"></i> <input type=\"search\" name=\"q\" placeholder=\"Search tasks...\" class=\"klt-search-input\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -257,7 +257,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-target=\"#task-list\" hx-swap=\"innerHTML\" hx-trigger=\"input changed delay:300ms, search\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><!-- Filter bar with inline advanced toggle --> <div class=\"kvt-filters-row\"><div class=\"kvt-filters\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-target=\"#task-list\" hx-swap=\"innerHTML\" hx-trigger=\"input changed delay:300ms, search\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><!-- Filter bar with inline advanced toggle --> <div class=\"klt-filters-row\"><div class=\"klt-filters\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -397,7 +397,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\">Done</a> <span class=\"kvt-filter-sep\">|</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\">Done</a> <span class=\"klt-filter-sep\">|</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -572,7 +572,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\">Hotfixes</a></div><button type=\"button\" class=\"kvt-advanced-btn\" onclick=\"document.getElementById('advanced-filters').toggleAttribute('open')\"><i class=\"icon icon-sliders-horizontal\"></i></button></div><!-- Advanced filters (collapsible) --> <details id=\"advanced-filters\" class=\"kvt-advanced-toggle\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\">Hotfixes</a></div><button type=\"button\" class=\"klt-advanced-btn\" onclick=\"document.getElementById('advanced-filters').toggleAttribute('open')\"><i class=\"icon icon-sliders-horizontal\"></i></button></div><!-- Advanced filters (collapsible) --> <details id=\"advanced-filters\" class=\"klt-advanced-toggle\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -582,7 +582,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "><summary style=\"display:none;\"></summary><div class=\"kvt-advanced-filters\"><div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"filter-priority\">Priority</label> <select class=\"kvt-filter-select\" name=\"min_priority\" id=\"filter-priority\"><option value=\"\">Any</option> <option value=\"1\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "><summary style=\"display:none;\"></summary><div class=\"klt-advanced-filters\"><div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"filter-priority\">Priority</label> <select class=\"klt-filter-select\" name=\"min_priority\" id=\"filter-priority\"><option value=\"\">Any</option> <option value=\"1\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -627,7 +627,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 				return templ_7745c5c3_Err
 			}
 			if len(categories) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"filter-category\">Category</label> <select class=\"kvt-filter-select\" name=\"category\" id=\"filter-category\"><option value=\"\">All</option> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"filter-category\">Category</label> <select class=\"klt-filter-select\" name=\"category\" id=\"filter-category\"><option value=\"\">All</option> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -678,7 +678,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"filter-after\">From</label> <input type=\"date\" class=\"kvt-filter-date\" name=\"created_after\" id=\"filter-after\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"filter-after\">From</label> <input type=\"date\" class=\"klt-filter-date\" name=\"created_after\" id=\"filter-after\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -691,7 +691,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"kvt-filter-group\"><label class=\"kvt-filter-label\" for=\"filter-before\">To</label> <input type=\"date\" class=\"kvt-filter-date\" name=\"created_before\" id=\"filter-before\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"klt-filter-group\"><label class=\"klt-filter-label\" for=\"filter-before\">To</label> <input type=\"date\" class=\"klt-filter-date\" name=\"created_before\" id=\"filter-before\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -704,7 +704,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><button type=\"button\" class=\"kvt-filter-apply\" onclick=\"applyAdvancedFilters(this)\">Apply</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><button type=\"button\" class=\"klt-filter-apply\" onclick=\"applyAdvancedFilters(this)\">Apply</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -722,12 +722,12 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" class=\"kvt-filter-clear\">Clear</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" class=\"klt-filter-clear\">Clear</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div></details><div class=\"k-grid k-grid--12 kvt-project-grid\"><div class=\"k-col-span-9 kvt-project-main\"><div id=\"task-list\" class=\"kvt-task-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div></details><div class=\"k-grid k-grid--12 klt-project-grid\"><div class=\"k-col-span-9 klt-project-main\"><div id=\"task-list\" class=\"klt-task-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -749,7 +749,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div class=\"kvt-total-count\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div class=\"klt-total-count\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -762,7 +762,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</div></div><aside class=\"k-col-span-3\"><div class=\"kvt-add-card\"><h3 class=\"kvt-add-card-title\">New task</h3><form hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</div></div><aside class=\"k-col-span-3\"><div class=\"klt-add-card\"><h3 class=\"klt-add-card-title\">New task</h3><form hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -775,12 +775,12 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\" hx-target=\"#task-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset(); document.getElementById('add-details').removeAttribute('open');\" hx-ext=\"json-enc\" class=\"kvt-add-form\"><input type=\"text\" name=\"title\" placeholder=\"Title (BUG:, FEAT:, HOTFIX:)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> <details id=\"add-details\" class=\"kvt-add-details\"><summary class=\"kvt-add-details-toggle\">+ Details</summary> <textarea name=\"description\" class=\"kvt-add-textarea\" placeholder=\"Add description...\" rows=\"4\"></textarea> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\" hx-target=\"#task-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset(); document.getElementById('add-details').removeAttribute('open');\" hx-ext=\"json-enc\" class=\"klt-add-form\"><input type=\"text\" name=\"title\" placeholder=\"Title (BUG:, FEAT:, HOTFIX:)\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> <details id=\"add-details\" class=\"klt-add-details\"><summary class=\"klt-add-details-toggle\">+ Details</summary> <textarea name=\"description\" class=\"klt-add-textarea\" placeholder=\"Add description...\" rows=\"4\"></textarea> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(categories) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<div class=\"kvt-field\" style=\"margin-top:8px;\"><label class=\"kvt-field-label\" for=\"new-task-cat\">Category</label><div class=\"kvt-select-wrap\"><select name=\"category\" id=\"new-task-cat\" class=\"kvt-select\"><option value=\"\">None</option> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<div class=\"klt-field\" style=\"margin-top:8px;\"><label class=\"klt-field-label\" for=\"new-task-cat\">Category</label><div class=\"klt-select-wrap\"><select name=\"category\" id=\"new-task-cat\" class=\"klt-select\"><option value=\"\">None</option> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -816,12 +816,12 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</select> <i class=\"icon icon-chevron-down kvt-select-icon\"></i></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</details> <button type=\"submit\" class=\"kvt-add-btn\">Add task</button></form><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</details> <button type=\"submit\" class=\"klt-add-btn\">Add task</button></form><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -834,7 +834,7 @@ func ProjectPage(project core.Project, tasks []core.Task, stats core.ProjectStat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\" class=\"kvt-add-btn kvt-add-btn--outline\"><i class=\"icon icon-file-plus\"></i> Detailed task</a></div></aside></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\" class=\"klt-add-btn klt-add-btn--outline\"><i class=\"icon icon-file-plus\"></i> Detailed task</a></div></aside></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -869,7 +869,7 @@ func StatsBar(stats core.ProjectStats) templ.Component {
 			templ_7745c5c3_Var47 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div id=\"stats-bar\" class=\"k-grid k-grid--4 kvt-stats\"><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--todo\"><i class=\"icon icon-square-check\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div id=\"stats-bar\" class=\"k-grid k-grid--4 klt-stats\"><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--todo\"><i class=\"icon icon-square-check\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -882,7 +882,7 @@ func StatsBar(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</div><div class=\"kvt-stat-label\">Todo</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--doing\"><i class=\"icon icon-play\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</div><div class=\"klt-stat-label\">Todo</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--doing\"><i class=\"icon icon-play\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -895,7 +895,7 @@ func StatsBar(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</div><div class=\"kvt-stat-label\">In Progress</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--done\"><i class=\"icon icon-check-circle\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</div><div class=\"klt-stat-label\">In Progress</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--done\"><i class=\"icon icon-check-circle\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -908,7 +908,7 @@ func StatsBar(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</div><div class=\"kvt-stat-label\">Done</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--bugs\"><i class=\"icon icon-bug\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</div><div class=\"klt-stat-label\">Done</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--bugs\"><i class=\"icon icon-bug\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -921,7 +921,7 @@ func StatsBar(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</div><div class=\"kvt-stat-label\">Open Bugs</div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</div><div class=\"klt-stat-label\">Open Bugs</div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -950,7 +950,7 @@ func StatsBarOOB(stats core.ProjectStats) templ.Component {
 			templ_7745c5c3_Var52 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div id=\"stats-bar\" hx-swap-oob=\"true\" class=\"k-grid k-grid--4 kvt-stats\"><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--todo\"><i class=\"icon icon-square-check\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div id=\"stats-bar\" hx-swap-oob=\"true\" class=\"k-grid k-grid--4 klt-stats\"><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--todo\"><i class=\"icon icon-square-check\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -963,7 +963,7 @@ func StatsBarOOB(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</div><div class=\"kvt-stat-label\">Todo</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--doing\"><i class=\"icon icon-play\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</div><div class=\"klt-stat-label\">Todo</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--doing\"><i class=\"icon icon-play\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -976,7 +976,7 @@ func StatsBarOOB(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "</div><div class=\"kvt-stat-label\">In Progress</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--done\"><i class=\"icon icon-check-circle\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "</div><div class=\"klt-stat-label\">In Progress</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--done\"><i class=\"icon icon-check-circle\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -989,7 +989,7 @@ func StatsBarOOB(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</div><div class=\"kvt-stat-label\">Done</div></div></div><div class=\"kvt-stat-card\"><div class=\"kvt-stat-icon kvt-stat-icon--bugs\"><i class=\"icon icon-bug\"></i></div><div><div class=\"kvt-stat-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</div><div class=\"klt-stat-label\">Done</div></div></div><div class=\"klt-stat-card\"><div class=\"klt-stat-icon klt-stat-icon--bugs\"><i class=\"icon icon-bug\"></i></div><div><div class=\"klt-stat-value\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1002,7 +1002,7 @@ func StatsBarOOB(stats core.ProjectStats) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "</div><div class=\"kvt-stat-label\">Open Bugs</div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "</div><div class=\"klt-stat-label\">Open Bugs</div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1032,12 +1032,12 @@ func TaskList(tasks []core.Task, slug string, workflows []core.WorkflowDef) temp
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(tasks) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "<div class=\"kvt-empty\">No tasks yet.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "<div class=\"klt-empty\">No tasks yet.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "<div class=\"kvt-task-header\"><label class=\"kvt-bulk-checkbox\"><input type=\"checkbox\" id=\"bulk-select-all\" onchange=\"kvtBulk.toggleAll(this)\"></label> <span class=\"kvt-task-header-label\">ID</span> <span class=\"kvt-task-header-label\">Type</span> <span class=\"kvt-task-header-label\">Title</span> <span class=\"kvt-task-header-label\">Category</span> <span class=\"kvt-task-header-label\">Status</span> <span class=\"kvt-task-header-label\">Priority</span> <span></span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "<div class=\"klt-task-header\"><label class=\"klt-bulk-checkbox\"><input type=\"checkbox\" id=\"bulk-select-all\" onchange=\"kvtBulk.toggleAll(this)\"></label> <span class=\"klt-task-header-label\">ID</span> <span class=\"klt-task-header-label\">Type</span> <span class=\"klt-task-header-label\">Title</span> <span class=\"klt-task-header-label\">Category</span> <span class=\"klt-task-header-label\">Status</span> <span class=\"klt-task-header-label\">Priority</span> <span></span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1073,7 +1073,7 @@ func Pagination(slug string, filter ProjectFilter) templ.Component {
 			templ_7745c5c3_Var58 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "<nav class=\"kvt-pagination\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "<nav class=\"klt-pagination\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1091,19 +1091,19 @@ func Pagination(slug string, filter ProjectFilter) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" class=\"kvt-page-link\">&laquo; Prev</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" class=\"klt-page-link\">&laquo; Prev</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<span class=\"kvt-page-link kvt-page-link--disabled\">&laquo; Prev</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<span class=\"klt-page-link klt-page-link--disabled\">&laquo; Prev</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		for i := int64(1); i <= filter.TotalPages; i++ {
 			if i == filter.Page {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "<span class=\"kvt-page-link kvt-page-link--active\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "<span class=\"klt-page-link klt-page-link--active\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1134,7 +1134,7 @@ func Pagination(slug string, filter ProjectFilter) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "\" class=\"kvt-page-link\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "\" class=\"klt-page-link\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1167,12 +1167,12 @@ func Pagination(slug string, filter ProjectFilter) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "\" class=\"kvt-page-link\">Next &raquo;</a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "\" class=\"klt-page-link\">Next &raquo;</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"kvt-page-link kvt-page-link--disabled\">Next &raquo;</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"klt-page-link klt-page-link--disabled\">Next &raquo;</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1206,7 +1206,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 			templ_7745c5c3_Var64 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<div class=\"kvt-task-row kvt-task-row--bulk\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<div class=\"klt-task-row klt-task-row--bulk\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1219,7 +1219,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "\"><label class=\"kvt-bulk-checkbox\"><input type=\"checkbox\" class=\"kvt-bulk-cb\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "\"><label class=\"klt-bulk-checkbox\"><input type=\"checkbox\" class=\"klt-bulk-cb\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1232,7 +1232,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "\" onchange=\"kvtBulk.toggle(this)\"></label> <span class=\"kvt-task-id\">#")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "\" onchange=\"kvtBulk.toggle(this)\"></label> <span class=\"klt-task-id\">#")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1266,7 +1266,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "\" class=\"kvt-task-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "\" class=\"klt-task-title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1284,7 +1284,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 			return templ_7745c5c3_Err
 		}
 		if task.Category != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<span class=\"kvt-category-tag\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<span class=\"klt-category-tag\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1302,12 +1302,12 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, "<span class=\"kvt-category-tag kvt-category-tag--empty\"></span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, "<span class=\"klt-category-tag klt-category-tag--empty\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		var templ_7745c5c3_Var71 = []any{"kvt-task-status kvt-task-status--" + string(task.Status)}
+		var templ_7745c5c3_Var71 = []any{"klt-task-status klt-task-status--" + string(task.Status)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var71...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1338,7 +1338,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "</span> <span class=\"kvt-task-priority\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "</span> <span class=\"klt-task-priority\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1362,12 +1362,12 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 111, "</span><div class=\"kvt-task-actions\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 111, "</span><div class=\"klt-task-actions\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if task.Status != core.StatusDone {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<button class=\"kvt-btn-done\" hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<button class=\"klt-btn-done\" hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1412,7 +1412,7 @@ func TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 116, "\" class=\"kvt-btn-archive\" title=\"Archive\"><i class=\"icon icon-archive\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 116, "\" class=\"klt-btn-archive\" title=\"Archive\"><i class=\"icon icon-archive\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1472,7 +1472,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 			templ_7745c5c3_Var78 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 118, "<div id=\"bulk-bar\" class=\"kvt-bulk-bar\" style=\"display:none;\"><div class=\"kvt-bulk-bar-left\"><span id=\"bulk-count\">0</span> selected <button type=\"button\" class=\"kvt-bulk-btn kvt-bulk-btn--clear\" onclick=\"kvtBulk.clear()\">Clear</button></div><div class=\"kvt-bulk-bar-right\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 118, "<div id=\"bulk-bar\" class=\"klt-bulk-bar\" style=\"display:none;\"><div class=\"klt-bulk-bar-left\"><span id=\"bulk-count\">0</span> selected <button type=\"button\" class=\"klt-bulk-btn klt-bulk-btn--clear\" onclick=\"kvtBulk.clear()\">Clear</button></div><div class=\"klt-bulk-bar-right\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1480,7 +1480,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, "<button type=\"button\" class=\"kvt-bulk-btn kvt-bulk-btn--success\" onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, "<button type=\"button\" class=\"klt-bulk-btn klt-bulk-btn--success\" onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1497,7 +1497,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 121, "<button type=\"button\" class=\"kvt-bulk-btn kvt-bulk-btn--archive\" onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 121, "<button type=\"button\" class=\"klt-bulk-btn klt-bulk-btn--archive\" onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1506,7 +1506,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 122, "\"><i class=\"icon icon-archive\"></i> Archive</button><div class=\"kvt-bulk-dropdown\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 122, "\"><i class=\"icon icon-archive\"></i> Archive</button><div class=\"klt-bulk-dropdown\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1523,7 +1523,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 124, "\"><option value=\"\">Status...</option> <option value=\"todo\">Todo</option> <option value=\"doing\">Doing</option> <option value=\"done\">Done</option></select></div><div class=\"kvt-bulk-dropdown\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 124, "\"><option value=\"\">Status...</option> <option value=\"todo\">Todo</option> <option value=\"doing\">Doing</option> <option value=\"done\">Done</option></select></div><div class=\"klt-bulk-dropdown\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1556,7 +1556,7 @@ func BulkBar(slug string, workflows []core.WorkflowDef) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, "<button type=\"button\" class=\"kvt-bulk-btn kvt-bulk-btn--danger\" onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, "<button type=\"button\" class=\"klt-bulk-btn klt-bulk-btn--danger\" onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1594,7 +1594,7 @@ func KeyboardHelp() templ.Component {
 			templ_7745c5c3_Var84 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 130, "<div id=\"kbd-help\" class=\"kvt-kbd-help\" onclick=\"if(event.target===this)this.classList.remove('kvt-kbd-help--visible')\"><div class=\"kvt-kbd-help-card\"><h3 class=\"kvt-kbd-help-title\">Keyboard shortcuts <button class=\"kvt-kbd-help-close\" onclick=\"document.getElementById('kbd-help').classList.remove('kvt-kbd-help--visible')\"><i class=\"icon icon-x\"></i></button></h3><div class=\"kvt-kbd-help-group\"><div class=\"kvt-kbd-help-group-title\">Navigation</div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">j</span><span class=\"kvt-kbd-desc\">Move down</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">k</span><span class=\"kvt-kbd-desc\">Move up</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">e</span><span class=\"kvt-kbd-desc\">Open task detail</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">&#9003;</span><span class=\"kvt-kbd-desc\">Go back</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">n</span><span class=\"kvt-kbd-desc\">New task</span></div></div><div class=\"kvt-kbd-help-group\"><div class=\"kvt-kbd-help-group-title\">Actions</div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">x</span><span class=\"kvt-kbd-desc\">Mark as done</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">d</span><span class=\"kvt-kbd-desc\">Delete task</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">a</span><span class=\"kvt-kbd-desc\">Archive task</span></div></div><div class=\"kvt-kbd-help-group\"><div class=\"kvt-kbd-help-group-title\">Other</div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">?</span><span class=\"kvt-kbd-desc\">Show this help</span></div><div class=\"kvt-kbd-row\"><span class=\"kvt-kbd-key\">Esc</span><span class=\"kvt-kbd-desc\">Close overlay</span></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 130, "<div id=\"kbd-help\" class=\"klt-kbd-help\" onclick=\"if(event.target===this)this.classList.remove('klt-kbd-help--visible')\"><div class=\"klt-kbd-help-card\"><h3 class=\"klt-kbd-help-title\">Keyboard shortcuts <button class=\"klt-kbd-help-close\" onclick=\"document.getElementById('kbd-help').classList.remove('klt-kbd-help--visible')\"><i class=\"icon icon-x\"></i></button></h3><div class=\"klt-kbd-help-group\"><div class=\"klt-kbd-help-group-title\">Navigation</div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">j</span><span class=\"klt-kbd-desc\">Move down</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">k</span><span class=\"klt-kbd-desc\">Move up</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">e</span><span class=\"klt-kbd-desc\">Open task detail</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">&#9003;</span><span class=\"klt-kbd-desc\">Go back</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">n</span><span class=\"klt-kbd-desc\">New task</span></div></div><div class=\"klt-kbd-help-group\"><div class=\"klt-kbd-help-group-title\">Actions</div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">x</span><span class=\"klt-kbd-desc\">Mark as done</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">d</span><span class=\"klt-kbd-desc\">Delete task</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">a</span><span class=\"klt-kbd-desc\">Archive task</span></div></div><div class=\"klt-kbd-help-group\"><div class=\"klt-kbd-help-group-title\">Other</div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">?</span><span class=\"klt-kbd-desc\">Show this help</span></div><div class=\"klt-kbd-row\"><span class=\"klt-kbd-key\">Esc</span><span class=\"klt-kbd-desc\">Close overlay</span></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

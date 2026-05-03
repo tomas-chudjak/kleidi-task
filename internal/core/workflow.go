@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/ahoylog/kvik-tasks/internal/db/generated"
+	"github.com/tomas-chudjak/kleidi-task/internal/db/generated"
 )
 
 // PhaseAction defines an action to execute when entering a phase.

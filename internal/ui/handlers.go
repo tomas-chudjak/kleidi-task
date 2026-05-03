@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/ui/templates"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/ui/templates"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -937,7 +937,7 @@ func (h *UIHandler) SaveConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<span style="color:var(--kvt-success);font-size:0.8rem;">Saved</span>`)
+	fmt.Fprint(w, `<span style="color:var(--klt-success);font-size:0.8rem;">Saved</span>`)
 }
 
 // ListCategories returns the category management HTML fragment.

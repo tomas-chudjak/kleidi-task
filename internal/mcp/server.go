@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Server wraps the MCP server with kvik-tasks services.
+// Server wraps the MCP server with kleidi-task services.
 type Server struct {
 	mcpServer      *mcp.Server
 	manager        *db.Manager
@@ -26,8 +26,8 @@ func NewServer(version string) (*Server, error) {
 	projectService := core.NewProjectService(manager)
 
 	mcpServer := mcp.NewServer(&mcp.Implementation{
-		Name:    "kvik-tasks",
-		Title:   "kvik-tasks — local task tracker",
+		Name:    "kleidi-task",
+		Title:   "Kleidi Task — local task tracker",
 		Version: version,
 	}, nil)
 

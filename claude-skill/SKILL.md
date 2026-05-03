@@ -1,9 +1,9 @@
 ---
-name: kvik-tasks
-description: Use when user mentions tasks, bugs, todos, or wants to track work across projects. Connects to local kvik-tasks instance via MCP.
+name: kleidi-task
+description: Use when user mentions tasks, bugs, todos, or wants to track work across projects. Connects to local kleidi-task instance via MCP.
 ---
 
-# kvik-tasks Integration
+# kleidi-task Integration
 
 ## CRITICAL — Prefix triggers
 
@@ -28,9 +28,9 @@ When a user message starts with `task:`, `bug:`, `feat:`, `feature:`, `hotfix:`,
 - User mentions tracking work in current project
 
 ## Prerequisites
-The user must have kvik-tasks installed and either:
+The user must have kleidi-task installed and either:
 - MCP server configured in Claude Desktop config, OR
-- `kvt serve` running locally
+- `klt serve` running locally
 
 ## How to use
 Use the MCP tools `task_create`, `task_list`, `task_complete`, etc.

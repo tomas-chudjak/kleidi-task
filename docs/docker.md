@@ -3,13 +3,13 @@ title: Docker Deployment
 weight: 10
 ---
 
-kvik-tasks can run as a Docker container for team deployments.
+kleidi-task can run as a Docker container for team deployments.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/tomas-chudjak/kvik-tasks.git
-cd kvik-tasks
+git clone https://github.com/tomas-chudjak/kleidi-task.git
+cd kleidi-task
 docker compose up -d
 ```
 
@@ -19,21 +19,21 @@ Web UI available at http://localhost:7842.
 
 ```yaml
 services:
-  kvt:
+  klt:
     build: .
     ports:
       - "7842:7842"
     volumes:
-      - kvt-data:/data
+      - klt-data:/data
     restart: unless-stopped
 
 volumes:
-  kvt-data:
+  klt-data:
 ```
 
 ## Data persistence
 
-Task databases and configuration are stored in a named volume (`kvt-data`). This persists across container restarts and rebuilds.
+Task databases and configuration are stored in a named volume (`klt-data`). This persists across container restarts and rebuilds.
 
 The container uses `/data` as the home directory, so:
 - Registry: `/data/.tasks/registry.db`
@@ -43,7 +43,7 @@ The container uses `/data` as the home directory, so:
 
 ```yaml
 services:
-  kvt:
+  klt:
     build: .
     ports:
       - "8080:8080"
@@ -55,20 +55,20 @@ services:
 Create users for Basic Auth after the container is running:
 
 ```bash
-docker compose exec kvt kvt user add tomas
+docker compose exec klt klt user add tomas
 ```
 
 See [authentication.md](authentication.md) for details.
 
 ## Production deployment
 
-For production, put kvik-tasks behind a reverse proxy with TLS:
+For production, put kleidi-task behind a reverse proxy with TLS:
 
 ### Caddy
 
 ```
 tasks.example.com {
-    reverse_proxy kvt:7842
+    reverse_proxy klt:7842
 }
 ```
 
@@ -83,7 +83,7 @@ server {
     ssl_certificate_key /path/to/key.pem;
 
     location / {
-        proxy_pass http://kvt:7842;
+        proxy_pass http://klt:7842;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -98,29 +98,29 @@ The Dockerfile uses a multi-stage build:
 2. **Runtime stage** — alpine:3.21, copies only the binary (~30MB image)
 
 ```bash
-docker build -t kvt .
-docker run -p 7842:7842 -v kvt-data:/data kvt
+docker build -t klt .
+docker run -p 7842:7842 -v klt-data:/data klt
 ```
 
 ## Initializing projects
 
-Projects are created by running `kvt init` inside a directory. In Docker, projects can be created via the MCP server or REST API — the web UI dashboard shows all registered projects.
+Projects are created by running `klt init` inside a directory. In Docker, projects can be created via the MCP server or REST API — the web UI dashboard shows all registered projects.
 
 To mount a host directory as a project:
 
 ```yaml
 services:
-  kvt:
+  klt:
     build: .
     ports:
       - "7842:7842"
     volumes:
-      - kvt-data:/data
+      - klt-data:/data
       - ./my-project:/projects/my-project
 ```
 
 Then initialize it:
 
 ```bash
-docker compose exec -w /projects/my-project kvt kvt init
+docker compose exec -w /projects/my-project klt klt init
 ```

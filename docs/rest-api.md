@@ -3,7 +3,7 @@ title: REST API
 weight: 4
 ---
 
-The REST API is available when `kvt serve` is running. All endpoints are prefixed with `/api/v1`.
+The REST API is available when `klt serve` is running. All endpoints are prefixed with `/api/v1`.
 
 Base URL: `http://localhost:7842/api/v1`
 
@@ -31,9 +31,9 @@ Response:
 [
   {
     "id": 1,
-    "slug": "kvik-tasks",
-    "name": "kvik-tasks",
-    "path": "/root/projects/kvik-tasks",
+    "slug": "kleidi-task",
+    "name": "kleidi-task",
+    "path": "/root/projects/kleidi-task",
     "cached_todo_count": 3,
     "cached_doing_count": 1,
     "cached_total_count": 42
@@ -44,13 +44,13 @@ Response:
 ### Get project
 
 ```bash
-curl http://localhost:7842/api/v1/projects/kvik-tasks
+curl http://localhost:7842/api/v1/projects/kleidi-task
 ```
 
 ### Get project stats
 
 ```bash
-curl http://localhost:7842/api/v1/projects/kvik-tasks/stats
+curl http://localhost:7842/api/v1/projects/kleidi-task/stats
 ```
 
 Response:
@@ -69,7 +69,7 @@ Response:
 ### List tasks
 
 ```bash
-curl http://localhost:7842/api/v1/projects/kvik-tasks/tasks
+curl http://localhost:7842/api/v1/projects/kleidi-task/tasks
 ```
 
 Query parameters:
@@ -87,7 +87,7 @@ Query parameters:
 Example with filters:
 
 ```bash
-curl "http://localhost:7842/api/v1/projects/kvik-tasks/tasks?status=todo&type=bug&limit=10"
+curl "http://localhost:7842/api/v1/projects/kleidi-task/tasks?status=todo&type=bug&limit=10"
 ```
 
 Response:
@@ -122,7 +122,7 @@ Response:
 ### Create task
 
 ```bash
-curl -X POST http://localhost:7842/api/v1/projects/kvik-tasks/tasks \
+curl -X POST http://localhost:7842/api/v1/projects/kleidi-task/tasks \
   -H "Content-Type: application/json" \
   -d '{"title": "Fix login bug", "type": "bug", "priority": 5}'
 ```
@@ -130,13 +130,13 @@ curl -X POST http://localhost:7842/api/v1/projects/kvik-tasks/tasks \
 ### Get task
 
 ```bash
-curl http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42
+curl http://localhost:7842/api/v1/projects/kleidi-task/tasks/42
 ```
 
 ### Update task
 
 ```bash
-curl -X PATCH http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42 \
+curl -X PATCH http://localhost:7842/api/v1/projects/kleidi-task/tasks/42 \
   -H "Content-Type: application/json" \
   -d '{"status": "doing", "priority": 8}'
 ```
@@ -146,20 +146,20 @@ All fields are optional — only provided fields are updated.
 ### Delete task
 
 ```bash
-curl -X DELETE http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42
+curl -X DELETE http://localhost:7842/api/v1/projects/kleidi-task/tasks/42
 ```
 
 ### Complete task
 
 ```bash
-curl -X POST http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42/complete
+curl -X POST http://localhost:7842/api/v1/projects/kleidi-task/tasks/42/complete
 ```
 
 ### Archive / Unarchive task
 
 ```bash
-curl -X POST http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42/archive
-curl -X POST http://localhost:7842/api/v1/projects/kvik-tasks/tasks/42/unarchive
+curl -X POST http://localhost:7842/api/v1/projects/kleidi-task/tasks/42/archive
+curl -X POST http://localhost:7842/api/v1/projects/kleidi-task/tasks/42/unarchive
 ```
 
 ## System

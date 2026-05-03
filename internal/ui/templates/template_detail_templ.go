@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows []core.WorkflowDef) templ.Component {
@@ -57,7 +57,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><!-- Toolbar --> <div class=\"kvt-toolbar\"><div class=\"kvt-toolbar-left\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></div><!-- Toolbar --> <div class=\"klt-toolbar\"><div class=\"klt-toolbar-left\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -70,7 +70,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"kvt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"klt-back-link\"><i class=\"icon icon-arrow-left\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +78,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"kvt-toolbar-id\">Template: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<span class=\"klt-toolbar-id\">Template: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -91,7 +91,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div><div class=\"kvt-toolbar-right\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div><div class=\"klt-toolbar-right\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -104,7 +104,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"kvt-toolbar-btn kvt-toolbar-btn--danger\" onclick=\"return confirm('Delete this template?')\"><i class=\"icon icon-trash-2\"></i> Delete</a></div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"kvt-save-indicator\"></div><!-- Two-column layout --> <form id=\"tpl-form\" hx-patch=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"klt-toolbar-btn klt-toolbar-btn--danger\" onclick=\"return confirm('Delete this template?')\"><i class=\"icon icon-trash-2\"></i> Delete</a></div></div><!-- Save indicator --> <div id=\"save-indicator\" class=\"klt-save-indicator\"></div><!-- Two-column layout --> <form id=\"tpl-form\" hx-patch=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -117,7 +117,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-ext=\"json-enc\" hx-swap=\"none\"><div class=\"kvt-task-layout\"><!-- Main content --><div class=\"kvt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"kvt-detail-card\"><div class=\"kvt-field\" style=\"margin-bottom:16px;\"><label class=\"kvt-field-label\" for=\"tpl-name\">Name</label> <input type=\"text\" class=\"kvt-input kvt-input--title\" id=\"tpl-name\" name=\"name\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-ext=\"json-enc\" hx-swap=\"none\"><div class=\"klt-task-layout\"><!-- Main content --><div class=\"klt-task-main\" style=\"display:flex;flex-direction:column;gap:16px;\"><div class=\"klt-detail-card\"><div class=\"klt-field\" style=\"margin-bottom:16px;\"><label class=\"klt-field-label\" for=\"tpl-name\">Name</label> <input type=\"text\" class=\"klt-input klt-input--title\" id=\"tpl-name\" name=\"name\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -130,7 +130,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\" for=\"tpl-desc-editor\">Description template</label> <textarea class=\"kvt-textarea\" id=\"tpl-desc-editor\" name=\"description\" rows=\"10\" placeholder=\"Template description content...\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"></div><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"tpl-desc-editor\">Description template</label> <textarea class=\"klt-textarea\" id=\"tpl-desc-editor\" name=\"description\" rows=\"10\" placeholder=\"Template description content...\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -143,7 +143,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('tpl-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Template description content...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '200px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('tpl-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div></div><!-- Sidebar --><div class=\"kvt-task-sidebar\"><button type=\"submit\" class=\"kvt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save template</button><div class=\"kvt-detail-card\"><div class=\"kvt-detail-fields\"><div class=\"kvt-field\"><label class=\"kvt-field-label\">Type</label><div class=\"kvt-select-wrap\"><select class=\"kvt-select\" id=\"tpl-type\" name=\"type\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('tpl-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Template description content...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '200px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('tpl-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div></div><!-- Sidebar --><div class=\"klt-task-sidebar\"><button type=\"submit\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save template</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" id=\"tpl-type\" name=\"type\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,7 +151,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</select> <i class=\"icon icon-chevron-down kvt-select-icon\"></i></div></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Default priority</label> <input type=\"number\" class=\"kvt-input\" name=\"priority\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Default priority</label> <input type=\"number\" class=\"klt-input\" name=\"priority\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -164,7 +164,7 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" min=\"0\"></div><div class=\"kvt-field\"><label class=\"kvt-field-label\">Created</label><div class=\"kvt-field-value kvt-field-value--mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" min=\"0\"></div><div class=\"klt-field\"><label class=\"klt-field-label\">Created</label><div class=\"klt-field-value klt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

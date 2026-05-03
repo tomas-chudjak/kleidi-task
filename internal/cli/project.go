@@ -5,8 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
-	"github.com/ahoylog/kvik-tasks/internal/db"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/db"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ var projectListCmd = &cobra.Command{
 		}
 
 		if len(projects) == 0 {
-			fmt.Println("No projects registered. Run 'kvt init' in a project directory.")
+			fmt.Println("No projects registered. Run 'klt init' in a project directory.")
 			return nil
 		}
 

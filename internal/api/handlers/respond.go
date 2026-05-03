@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 )
 
 func respondJSON(w http.ResponseWriter, status int, data any) {

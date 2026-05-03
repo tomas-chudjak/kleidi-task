@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ahoylog/kvik-tasks/internal/config"
-	"github.com/ahoylog/kvik-tasks/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/config"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -558,7 +558,7 @@ func (s *Server) projectCurrent(ctx context.Context, req *mcp.CallToolRequest, i
 
 	projectPath, err := s.projectService.DetectProject(cwd)
 	if err != nil {
-		return textResult("No project found in current directory. Run 'kvt init' first."), ProjectCurrentOutput{}, nil
+		return textResult("No project found in current directory. Run 'klt init' first."), ProjectCurrentOutput{}, nil
 	}
 
 	// Try to find project in registry

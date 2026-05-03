@@ -1,7 +1,7 @@
 {
-  "name": "kvik-tasks",
+  "name": "kleidi-task",
   "displayName": "Kvik Tasks",
-  "description": "Task sidebar for kvik-tasks — view, filter, and insert tasks into your workflow",
+  "description": "Task sidebar for kleidi-task — view, filter, and insert tasks into your workflow",
   "version": "0.1.0",
   "publisher": "ahoylog",
   "engines": {
@@ -15,57 +15,57 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "kvik-tasks",
+          "id": "kleidi-task",
           "title": "Kvik Tasks",
           "icon": "$(checklist)"
         }
       ]
     },
     "views": {
-      "kvik-tasks": [
+      "kleidi-task": [
         {
-          "id": "kvikTasks",
+          "id": "kleidiTask",
           "name": "Tasks"
         }
       ]
     },
     "commands": [
       {
-        "command": "kvikTasks.refresh",
+        "command": "kleidiTask.refresh",
         "title": "Refresh Tasks",
         "icon": "$(refresh)",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.insertToTerminal",
+        "command": "kleidiTask.insertToTerminal",
         "title": "Insert to Terminal",
         "icon": "$(terminal)",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.openInBrowser",
+        "command": "kleidiTask.openInBrowser",
         "title": "Open in Browser",
         "icon": "$(link-external)",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.copyReference",
+        "command": "kleidiTask.copyReference",
         "title": "Copy Reference",
         "icon": "$(copy)",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.filterTodo",
+        "command": "kleidiTask.filterTodo",
         "title": "Show Todo",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.filterDoing",
+        "command": "kleidiTask.filterDoing",
         "title": "Show Doing",
         "category": "Kvik Tasks"
       },
       {
-        "command": "kvikTasks.filterAll",
+        "command": "kleidiTask.filterAll",
         "title": "Show All",
         "category": "Kvik Tasks"
       }
@@ -73,48 +73,48 @@
     "menus": {
       "view/title": [
         {
-          "command": "kvikTasks.refresh",
-          "when": "view == kvikTasks",
+          "command": "kleidiTask.refresh",
+          "when": "view == kleidiTask",
           "group": "navigation"
         },
         {
-          "command": "kvikTasks.filterTodo",
-          "when": "view == kvikTasks"
+          "command": "kleidiTask.filterTodo",
+          "when": "view == kleidiTask"
         },
         {
-          "command": "kvikTasks.filterDoing",
-          "when": "view == kvikTasks"
+          "command": "kleidiTask.filterDoing",
+          "when": "view == kleidiTask"
         },
         {
-          "command": "kvikTasks.filterAll",
-          "when": "view == kvikTasks"
+          "command": "kleidiTask.filterAll",
+          "when": "view == kleidiTask"
         }
       ],
       "view/item/context": [
         {
-          "command": "kvikTasks.insertToTerminal",
-          "when": "view == kvikTasks",
+          "command": "kleidiTask.insertToTerminal",
+          "when": "view == kleidiTask",
           "group": "inline"
         },
         {
-          "command": "kvikTasks.openInBrowser",
-          "when": "view == kvikTasks"
+          "command": "kleidiTask.openInBrowser",
+          "when": "view == kleidiTask"
         },
         {
-          "command": "kvikTasks.copyReference",
-          "when": "view == kvikTasks"
+          "command": "kleidiTask.copyReference",
+          "when": "view == kleidiTask"
         }
       ]
     },
     "configuration": {
       "title": "Kvik Tasks",
       "properties": {
-        "kvikTasks.serverUrl": {
+        "kleidiTask.serverUrl": {
           "type": "string",
           "default": "http://localhost:7842",
-          "description": "URL of the kvt serve instance"
+          "description": "URL of the klt serve instance"
         },
-        "kvikTasks.refreshInterval": {
+        "kleidiTask.refreshInterval": {
           "type": "number",
           "default": 10,
           "description": "Auto-refresh interval in seconds (0 to disable)"

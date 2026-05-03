@@ -5,9 +5,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "kvt",
-	Short: "kvik-tasks — local-first task tracker for developers",
-	Long:  `kvik-tasks (kvt) is a local-first, single-binary task tracker with MCP-first AI integration.`,
+	Use:   "klt",
+	Short: "Kleidi Task — local-first task tracker for developers",
+	Long:  `kleidi-task (klt) is a local-first, single-binary task tracker with MCP-first AI integration.`,
 }
 
 // Execute runs the root command.

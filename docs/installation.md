@@ -11,20 +11,20 @@ weight: 1
 ## Install via Go
 
 ```bash
-go install github.com/tomas-chudjak/kvik-tasks/cmd/kvt@latest
+go install github.com/tomas-chudjak/kleidi-task/cmd/klt@latest
 ```
 
 Verify:
 
 ```bash
-kvt version
+klt version
 ```
 
 ## Build from source
 
 ```bash
-git clone https://github.com/tomas-chudjak/kvik-tasks.git
-cd kvik-tasks
+git clone https://github.com/tomas-chudjak/kleidi-task.git
+cd kleidi-task
 ```
 
 ### Automated setup
@@ -33,7 +33,7 @@ cd kvik-tasks
 task setup
 ```
 
-This installs all dev tools (templ, sqlc, goose, air), builds the binary, and symlinks it to `/usr/local/bin/kvt`.
+This installs all dev tools (templ, sqlc, goose, air), builds the binary, and symlinks it to `/usr/local/bin/klt`.
 
 ### Manual setup
 
@@ -44,10 +44,10 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 # Build
 templ generate
-go build -o kvt ./cmd/kvt
+go build -o klt ./cmd/klt
 
 # Optional: symlink to PATH
-ln -sf $(pwd)/kvt /usr/local/bin/kvt
+ln -sf $(pwd)/klt /usr/local/bin/klt
 ```
 
 ## Docker
@@ -55,8 +55,8 @@ ln -sf $(pwd)/kvt /usr/local/bin/kvt
 No Go installation needed. See [docker.md](docker.md) for full details.
 
 ```bash
-git clone https://github.com/tomas-chudjak/kvik-tasks.git
-cd kvik-tasks
+git clone https://github.com/tomas-chudjak/kleidi-task.git
+cd kleidi-task
 docker compose up -d
 ```
 
@@ -64,14 +64,14 @@ docker compose up -d
 
 ```bash
 # Check binary
-kvt version
+klt version
 
 # Initialize a project
 cd ~/my-project
-kvt init
+klt init
 
 # Start web UI
-kvt serve
+klt serve
 # Open http://localhost:7842
 ```
 
@@ -79,7 +79,7 @@ kvt serve
 
 ```bash
 # Remove binary
-rm $(which kvt)
+rm $(which klt)
 
 # Remove global data (optional)
 rm -rf ~/.tasks

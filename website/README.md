@@ -1,4 +1,4 @@
-# kvik-tasks Website
+# kleidi-task Website
 
 Marketing and documentation site built with [Hugo](https://gohugo.io/) + [Hextra](https://imfing.github.io/hextra/) theme.
 
@@ -33,7 +33,7 @@ Edit docs in the root `docs/` directory — changes appear both on GitHub and on
 ```bash
 cd website
 hugo --minify
-npx wrangler pages deploy public --project-name=kvik-tasks
+npx wrangler pages deploy public --project-name=kleidi-task
 ```
 
 ## Adding documentation

@@ -41,17 +41,17 @@ sqlite3 --version
 task build
 
 # Direct Go build
-go build -o kvt ./cmd/kvt
+go build -o klt ./cmd/klt
 
 # Verify
-./kvt version
+./klt version
 ```
 
 ### Build pipeline (what happens)
 
 ```
 1. templ generate          → compiles .templ → .go files
-2. go build ./cmd/kvt      → compiles binary with embedded assets
+2. go build ./cmd/klt      → compiles binary with embedded assets
 ```
 
 > **Note:** `task build` runs both steps. If you're only changing Go code (not .templ), `go build` alone is sufficient.
@@ -66,8 +66,8 @@ go build -o kvt ./cmd/kvt
 # Navigate to your project directory
 cd ~/projects/my-app
 
-# Initialize kvik-tasks in this project
-kvt init --name "My App"
+# Initialize kleidi-task in this project
+klt init --name "My App"
 
 # Result:
 #   .tasks/
@@ -80,19 +80,19 @@ kvt init --name "My App"
 ### CLI usage
 
 ```bash
-kvt add "Implement login"                  # add a task
-kvt add "CSS bug on mobile" --bug          # add a bug
-kvt list                                    # list tasks for current project
-kvt list --status todo                      # filter by status
-kvt done 1                                  # mark task #1 as done
-kvt show 1                                  # task detail
+klt add "Implement login"                  # add a task
+klt add "CSS bug on mobile" --bug          # add a bug
+klt list                                    # list tasks for current project
+klt list --status todo                      # filter by status
+klt done 1                                  # mark task #1 as done
+klt show 1                                  # task detail
 ```
 
 ### HTTP server (UI + REST API)
 
 ```bash
-kvt serve                    # default port 7842
-kvt serve --port 8080        # custom port
+klt serve                    # default port 7842
+klt serve --port 8080        # custom port
 
 # Endpoints:
 #   http://localhost:7842/           → Web UI (HTMX)
@@ -102,15 +102,15 @@ kvt serve --port 8080        # custom port
 ### MCP server (for Claude Desktop / Cursor)
 
 ```bash
-kvt mcp                      # stdio transport (for AI clients)
+klt mcp                      # stdio transport (for AI clients)
 ```
 
 Claude Desktop configuration (`~/.claude/claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "kvik-tasks": {
-      "command": "kvt",
+    "kleidi-task": {
+      "command": "klt",
       "args": ["mcp"]
     }
   }
@@ -138,7 +138,7 @@ sqlite3 .tasks/tasks.db
 sqlite3 ~/.tasks/registry.db
 ```
 
-> **STRICTLY FORBIDDEN:** Any manual database modifications (INSERT, UPDATE, DELETE, ALTER, DROP) via sqlite3 CLI or any other tool. All schema changes go through goose migration files. All data changes go through `kvt` CLI / API / MCP. The sqlite3 CLI is for **reading and debugging only**.
+> **STRICTLY FORBIDDEN:** Any manual database modifications (INSERT, UPDATE, DELETE, ALTER, DROP) via sqlite3 CLI or any other tool. All schema changes go through goose migration files. All data changes go through `klt` CLI / API / MCP. The sqlite3 CLI is for **reading and debugging only**.
 
 ### Useful SQL queries
 
@@ -189,11 +189,11 @@ sqlite3 .tasks/tasks.db ".schema tasks"
 # Export to CSV
 sqlite3 -header -csv .tasks/tasks.db "SELECT * FROM tasks;" > export.csv
 
-# Check WAL mode — kvt can run concurrently with sqlite3 (safe reads)
+# Check WAL mode — klt can run concurrently with sqlite3 (safe reads)
 sqlite3 .tasks/tasks.db "PRAGMA journal_mode;"
 ```
 
-> **Note:** When `kvt serve` is running, sqlite3 CLI can safely read data (WAL mode).
+> **Note:** When `klt serve` is running, sqlite3 CLI can safely read data (WAL mode).
 
 ---
 
@@ -288,12 +288,12 @@ go test ./...
 task build
 
 # 3. Manual smoke test
-./kvt init --name "test-project"
-./kvt add "Test task"
-./kvt add "Test bug" --bug
-./kvt list
-./kvt done 1
-./kvt list --status done
+./klt init --name "test-project"
+./klt add "Test task"
+./klt add "Test bug" --bug
+./klt list
+./klt done 1
+./klt list --status done
 
 # 4. Database looks correct
 sqlite3 .tasks/tasks.db "SELECT * FROM tasks;"
@@ -318,24 +318,24 @@ task sqlc         # sqlc generate
 task clean        # clean build artifacts
 task lint         # go vet
 task check        # lint + test
-task dev          # build + run kvt serve with hot-reload (air)
+task dev          # build + run klt serve with hot-reload (air)
 ```
 
 ---
 
 ## 8. Troubleshooting
 
-### "kvt init" reports registry.db error
+### "klt init" reports registry.db error
 ```bash
 # Check if ~/.tasks/ exists
 ls -la ~/.tasks/
-# If not, kvt init creates it automatically. If permissions are the issue:
+# If not, klt init creates it automatically. If permissions are the issue:
 mkdir -p ~/.tasks && chmod 755 ~/.tasks
 ```
 
 ### sqlite3 reports "database is locked"
 ```bash
-# Stop kvt serve, then access the database
+# Stop klt serve, then access the database
 # Or use read-only mode:
 sqlite3 -readonly .tasks/tasks.db "SELECT * FROM tasks;"
 ```

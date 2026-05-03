@@ -1,22 +1,22 @@
 package templates
 
-import "github.com/ahoylog/kvik-tasks/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/core"
 import "fmt"
 
 templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows []core.WorkflowDef) {
 	@Layout(tpl.Name+" — Template", project.Slug) {
 		<div data-slug={ project.Slug }></div>
 		<!-- Toolbar -->
-		<div class="kvt-toolbar">
-			<div class="kvt-toolbar-left">
-				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#templates") } class="kvt-back-link"><i class="icon icon-arrow-left"></i></a>
+		<div class="klt-toolbar">
+			<div class="klt-toolbar-left">
+				<a href={ templ.SafeURL("/p/" + project.Slug + "/settings#templates") } class="klt-back-link"><i class="icon icon-arrow-left"></i></a>
 				@TypeBadge(tpl.Type, workflows)
-				<span class="kvt-toolbar-id">Template: { tpl.Name }</span>
+				<span class="klt-toolbar-id">Template: { tpl.Name }</span>
 			</div>
-			<div class="kvt-toolbar-right">
+			<div class="klt-toolbar-right">
 				<a
 					href={ templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d/delete", project.Slug, tpl.ID)) }
-					class="kvt-toolbar-btn kvt-toolbar-btn--danger"
+					class="klt-toolbar-btn klt-toolbar-btn--danger"
 					onclick="return confirm('Delete this template?')"
 				>
 					<i class="icon icon-trash-2"></i> Delete
@@ -25,7 +25,7 @@ templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows 
 		</div>
 
 		<!-- Save indicator -->
-		<div id="save-indicator" class="kvt-save-indicator"></div>
+		<div id="save-indicator" class="klt-save-indicator"></div>
 
 		<!-- Two-column layout -->
 		<form
@@ -34,18 +34,18 @@ templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows 
 			hx-ext="json-enc"
 			hx-swap="none"
 		>
-		<div class="kvt-task-layout">
+		<div class="klt-task-layout">
 			<!-- Main content -->
-			<div class="kvt-task-main" style="display:flex;flex-direction:column;gap:16px;">
-					<div class="kvt-detail-card">
-						<div class="kvt-field" style="margin-bottom:16px;">
-							<label class="kvt-field-label" for="tpl-name">Name</label>
-							<input type="text" class="kvt-input kvt-input--title" id="tpl-name" name="name" value={ tpl.Name } required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
+			<div class="klt-task-main" style="display:flex;flex-direction:column;gap:16px;">
+					<div class="klt-detail-card">
+						<div class="klt-field" style="margin-bottom:16px;">
+							<label class="klt-field-label" for="tpl-name">Name</label>
+							<input type="text" class="klt-input klt-input--title" id="tpl-name" name="name" value={ tpl.Name } required autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"/>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label" for="tpl-desc-editor">Description template</label>
+						<div class="klt-field">
+							<label class="klt-field-label" for="tpl-desc-editor">Description template</label>
 							<textarea
-								class="kvt-textarea"
+								class="klt-textarea"
 								id="tpl-desc-editor"
 								name="description"
 								rows="10"
@@ -75,28 +75,28 @@ templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows 
 			</div>
 
 			<!-- Sidebar -->
-			<div class="kvt-task-sidebar">
-				<button type="submit" class="kvt-add-btn" style="width:100%;">
+			<div class="klt-task-sidebar">
+				<button type="submit" class="klt-add-btn" style="width:100%;">
 					<i class="icon icon-check"></i> Save template
 				</button>
-				<div class="kvt-detail-card">
-					<div class="kvt-detail-fields">
-						<div class="kvt-field">
-							<label class="kvt-field-label">Type</label>
-							<div class="kvt-select-wrap">
-								<select class="kvt-select" id="tpl-type" name="type">
+				<div class="klt-detail-card">
+					<div class="klt-detail-fields">
+						<div class="klt-field">
+							<label class="klt-field-label">Type</label>
+							<div class="klt-select-wrap">
+								<select class="klt-select" id="tpl-type" name="type">
 									@TypeOptions(tpl.Type, workflows)
 								</select>
-								<i class="icon icon-chevron-down kvt-select-icon"></i>
+								<i class="icon icon-chevron-down klt-select-icon"></i>
 							</div>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Default priority</label>
-							<input type="number" class="kvt-input" name="priority" value={ fmt.Sprintf("%d", tpl.Priority) } min="0"/>
+						<div class="klt-field">
+							<label class="klt-field-label">Default priority</label>
+							<input type="number" class="klt-input" name="priority" value={ fmt.Sprintf("%d", tpl.Priority) } min="0"/>
 						</div>
-						<div class="kvt-field">
-							<label class="kvt-field-label">Created</label>
-							<div class="kvt-field-value kvt-field-value--mono">{ tpl.CreatedAt.Format("2006-01-02 15:04") }</div>
+						<div class="klt-field">
+							<label class="klt-field-label">Created</label>
+							<div class="klt-field-value klt-field-value--mono">{ tpl.CreatedAt.Format("2006-01-02 15:04") }</div>
 						</div>
 					</div>
 				</div>

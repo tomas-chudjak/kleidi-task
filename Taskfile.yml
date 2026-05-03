@@ -1,8 +1,8 @@
 version: "3"
 
 vars:
-  BINARY: kvt
-  MODULE: github.com/ahoylog/kvik-tasks
+  BINARY: klt
+  MODULE: github.com/tomas-chudjak/kleidi-task
 
 tasks:
   default:
@@ -11,10 +11,10 @@ tasks:
       - task --list
 
   build:
-    desc: Build the kvt binary
+    desc: Build the klt binary
     deps: [templ]
     cmds:
-      - go build -o {{.BINARY}} ./cmd/kvt
+      - go build -o {{.BINARY}} ./cmd/klt
     sources:
       - "**/*.go"
       - "**/*.templ"
@@ -23,7 +23,7 @@ tasks:
       - "{{.BINARY}}"
 
   run:
-    desc: Build and run kvt serve
+    desc: Build and run klt serve
     deps: [build]
     cmds:
       - ./{{.BINARY}} serve
@@ -66,11 +66,11 @@ tasks:
       - go mod tidy
 
   install:
-    desc: Build and symlink kvt to /usr/local/bin
+    desc: Build and symlink klt to /usr/local/bin
     deps: [build]
     cmds:
       - ln -sf $(pwd)/{{.BINARY}} /usr/local/bin/{{.BINARY}}
-      - echo "Installed kvt $(kvt version) → $(pwd)/{{.BINARY}}"
+      - echo "Installed klt $(klt version) → $(pwd)/{{.BINARY}}"
 
   clean:
     desc: Clean build artifacts
@@ -99,16 +99,35 @@ tasks:
       - go install github.com/air-verse/air@latest
       - echo "=== Tidying modules ==="
       - go mod tidy
-      - echo "=== Building kvt ==="
+      - echo "=== Building klt ==="
       - task: install
       - echo "=== Setup complete ==="
-      - kvt version
+      - klt version
 
   dev:
     desc: Development mode with file watching (requires air)
     deps: [setup:check]
     cmds:
       - air
+
+  website:build:
+    desc: Build the Hugo documentation website
+    dir: website
+    cmds:
+      - hugo --minify
+
+  website:dev:
+    desc: Run Hugo dev server with live reload
+    dir: website
+    cmds:
+      - hugo server --buildDrafts
+
+  website:deploy:
+    desc: Build and deploy website to Cloudflare Pages
+    dir: website
+    cmds:
+      - hugo --minify
+      - wrangler pages deploy
 
   setup:check:
     desc: Verify all dev tools are installed

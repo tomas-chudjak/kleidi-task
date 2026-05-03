@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**kvik-tasks** is a local-first, single-binary task tracker for developers who use AI assistants. Binary name is `kvt`. Written in Go with SQLite storage.
+**kleidi-task** is a local-first, single-binary task tracker for developers who use AI assistants. Binary name is `klt`. Written in Go with SQLite storage.
 
 Key differentiator: MCP-first design — the MCP server is a primary interface, not a wrapper around the REST API. All interfaces (MCP/CLI/REST/UI) share a single service layer.
 
@@ -34,8 +34,8 @@ Registry SQLite (~/.tasks/registry.db) + Per-project SQLite (.tasks/tasks.db)
 
 ```bash
 # Build
-task build              # Build the kvt binary (templ + go build)
-go build ./cmd/kvt      # Direct Go build (skip templ)
+task build              # Build the klt binary (templ + go build)
+go build ./cmd/klt      # Direct Go build (skip templ)
 
 # Test
 go test ./...           # Run all tests
@@ -47,9 +47,9 @@ sqlc generate
 # Database migrations are embedded via go:embed — never execute SQL ad-hoc
 
 # Run
-kvt init                # Initialize .tasks/ in current directory
-kvt serve               # Start HTTP server (UI + REST + MCP HTTP)
-kvt mcp                 # Start stdio MCP server
+klt init                # Initialize .tasks/ in current directory
+klt serve               # Start HTTP server (UI + REST + MCP HTTP)
+klt mcp                 # Start stdio MCP server
 ```
 
 ## Tech Stack
@@ -68,7 +68,7 @@ kvt mcp                 # Start stdio MCP server
 
 ## Task Workflow (MANDATORY)
 
-When working on a kvik-tasks task, you MUST follow the task workflow:
+When working on a kleidi-task task, you MUST follow the task workflow:
 
 1. **Before starting work** — call `task_get` to read the task, its workflow context (current phase, phase instruction, next phase), and template-enriched description
 2. **Follow the phase instruction** — each workflow phase has a prompt/instruction. Execute what the phase requires before advancing
@@ -90,7 +90,7 @@ Never skip phases. Never ignore phase instructions. The workflow is the source o
 ## Key Conventions
 
 - **sqlc workflow:** modify SQL in `internal/db/queries/` → run `sqlc generate` → use generated code in `internal/db/generated/`
-- **NO manual DB changes — EVER.** All schema changes go through goose migration files. All data changes go through kvt CLI/API/MCP. sqlite3 CLI is read-only for debugging. No ad-hoc SQL execution against production or dev databases.
+- **NO manual DB changes — EVER.** All schema changes go through goose migration files. All data changes go through klt CLI/API/MCP. sqlite3 CLI is read-only for debugging. No ad-hoc SQL execution against production or dev databases.
 - **Service layer is the single source of truth** — all 4 entry points call the same services, no duplicated business logic
 - **Project detection** follows Git pattern: walk up from cwd looking for `.tasks/` directory
 - **All static assets embedded** via `go:embed` — templates, CSS, JS are in the binary
@@ -98,7 +98,7 @@ Never skip phases. Never ignore phase instructions. The workflow is the source o
 
 ## Project Structure (key paths)
 
-- `cmd/kvt/main.go` — entry point
+- `cmd/klt/main.go` — entry point
 - `internal/core/` — service layer (business logic, domain types, errors)
 - `internal/db/` — DB manager, migrations (`project/` and `registry/`), queries, generated code
 - `internal/mcp/` — MCP server, tools, resources, transports
@@ -116,8 +116,8 @@ Within v0.1: service layer first → CLI → MCP → binary build.
 
 ## Naming
 
-- **kvik-tasks** = project name, repo, package, docs
-- **kvt** = binary name, CLI command, daily usage
+- **kleidi-task** = project name, repo, package, docs
+- **klt** = binary name, CLI command, daily usage
 - **tasks** = internal directory name (`.tasks/`), URI scheme (`tasks://`)
 
 ## Open Decisions
