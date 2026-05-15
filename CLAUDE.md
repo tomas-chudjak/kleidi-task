@@ -74,7 +74,7 @@ When working on a kleidi-task task, you MUST follow the task workflow:
 2. **Follow the phase instruction** — each workflow phase has a prompt/instruction. Execute what the phase requires before advancing
 3. **Advance when done** — after completing the current phase, call `task_advance` to move to the next phase. Read the suggested skills and next phase instruction
 4. **Repeat until complete** — continue through all phases until the workflow is finished
-5. **Template-driven descriptions** — when creating a task (`task_create`), if a template exists for the task type, fill in each template section with relevant content and call `task_update` to save it
+5. **Template-driven descriptions** — when creating a task, ALWAYS call `template_get(type)` first to fetch the template for the task type. Fill in each template section with relevant content based on the task context, then pass the completed template as the `description` to `task_create`
 
 Example flow for a feature task:
 ```

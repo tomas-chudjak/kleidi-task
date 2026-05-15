@@ -185,11 +185,25 @@ type TaskSuggestOutput struct {
 	Duplicates  int               `json:"duplicates"`
 }
 
+type TemplateGetInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	Type    string `json:"type" jsonschema:"task type to get template for (task, bug, feature, hotfix, or custom)"`
+}
+
+type TemplateGetOutput struct {
+	Template *core.TaskTemplate `json:"template,omitempty"`
+}
+
 func (s *Server) registerTools() {
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_create",
-		Description: "Create a new task or bug in a project",
+		Description: "Create a new task or bug in a project. IMPORTANT: Before creating a task, call template_get to fetch the template for the task type, fill in each template section using the task context, and pass the completed template as the description.",
 	}, s.taskCreate)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "template_get",
+		Description: "Get the description template for a task type. Use this BEFORE task_create to fetch the template, fill in each section with relevant content, then pass the filled template as the description to task_create.",
+	}, s.templateGet)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_list",
@@ -307,9 +321,6 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 		taskType, title = core.DetectTypeFromTitle(title, core.TypeTask)
 	}
 
-	// Check for template before creation
-	templateDesc := taskService.GetTemplateForType(ctx, string(taskType))
-
 	task, err := taskService.Create(ctx, core.CreateTaskInput{
 		Title:          title,
 		Description:    input.Description,
@@ -325,11 +336,22 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 	}
 
 	text := fmt.Sprintf("Created %s #%d: %s", task.Type, task.ID, task.Title)
-	if templateDesc != "" {
-		text += fmt.Sprintf("\n\n[TEMPLATE INSTRUCTION] A template exists for type '%s'. You MUST now generate a description by filling in each section of the template below with content relevant to this task. Then call task_update to save it.\n\nTemplate:\n%s", taskType, templateDesc)
+	return textResult(text), TaskOutput{Task: task}, nil
+}
+
+func (s *Server) templateGet(ctx context.Context, req *mcp.CallToolRequest, input TemplateGetInput) (*mcp.CallToolResult, TemplateGetOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TemplateGetOutput{}, err
 	}
 
-	return textResult(text), TaskOutput{Task: task}, nil
+	templateDesc := taskService.GetTemplateForType(ctx, input.Type)
+	if templateDesc == "" {
+		return textResult(fmt.Sprintf("No template found for type '%s'. Create the task without a template.", input.Type)), TemplateGetOutput{}, nil
+	}
+
+	text := fmt.Sprintf("Template for type '%s':\n\n%s\n\nFill in each section with content relevant to the task, then pass the completed text as the description to task_create.", input.Type, templateDesc)
+	return textResult(text), TemplateGetOutput{Template: &core.TaskTemplate{Type: input.Type, Description: templateDesc}}, nil
 }
 
 func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input TaskListInput) (*mcp.CallToolResult, TaskListOutput, error) {
