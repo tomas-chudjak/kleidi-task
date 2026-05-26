@@ -1,9 +1,12 @@
 # Binary
 klt
 klt.exe
+kvt
+
 
 # Database files (per-project and registry)
 .tasks/
+.task/
 *.db
 *.db-wal
 *.db-shm
