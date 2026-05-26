@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tomas-chudjak/kleidi-task/internal/claude"
 	"github.com/tomas-chudjak/kleidi-task/internal/db"
 )
 
@@ -52,6 +53,11 @@ func (s *ProjectService) Init(dir, name string) (Project, error) {
 	)
 	if err != nil {
 		return Project{}, fmt.Errorf("registering project: %w", err)
+	}
+
+	// Install Claude Code skills for this project
+	if err := claude.InstallSkills(absPath); err != nil {
+		return Project{}, fmt.Errorf("installing claude skills: %w", err)
 	}
 
 	return Project{
@@ -208,6 +214,16 @@ func (s *ProjectService) Backup(projectPath, destPath string) (string, error) {
 	}
 
 	return destPath, nil
+}
+
+// InstallSkills installs or updates Claude Code skills in the project directory.
+// Safe to call on already-initialized projects.
+func (s *ProjectService) InstallSkills(dir string) error {
+	absPath, err := filepath.Abs(dir)
+	if err != nil {
+		return fmt.Errorf("resolving path: %w", err)
+	}
+	return claude.InstallSkills(absPath)
 }
 
 // slugFromPath generates a slug from a directory path.
