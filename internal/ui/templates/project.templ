@@ -1,6 +1,7 @@
 package templates
 
 import "github.com/tomas-chudjak/kleidi-task/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/render"
 import "fmt"
 import "strings"
 
@@ -357,12 +358,13 @@ templ TaskList(tasks []core.Task, slug string, workflows []core.WorkflowDef) {
 			<label class="klt-bulk-checkbox">
 				<input type="checkbox" id="bulk-select-all" onchange="kvtBulk.toggleAll(this)"/>
 			</label>
+			<!-- Canonical column order — mirrors render.TaskColumns (CLI + MCP) -->
 			<span class="klt-task-header-label">ID</span>
 			<span class="klt-task-header-label">Type</span>
-			<span class="klt-task-header-label">Title</span>
-			<span class="klt-task-header-label">Category</span>
 			<span class="klt-task-header-label">Status</span>
 			<span class="klt-task-header-label">Priority</span>
+			<span class="klt-task-header-label">Category</span>
+			<span class="klt-task-header-label">Title</span>
 			<span></span>
 		</div>
 		for _, t := range tasks {
@@ -402,20 +404,20 @@ templ TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 		</label>
 		<span class="klt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		@TypeBadge(string(task.Type), workflows)
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
-		if task.Category != "" {
-			<span class="klt-category-tag">{ task.Category }</span>
-		} else {
-			<span class="klt-category-tag klt-category-tag--empty"></span>
-		}
 		<span class={ "klt-task-status klt-task-status--" + string(task.Status) }>{ string(task.Status) }</span>
 		<span class="klt-task-priority">
 			if task.Priority > 0 {
 				P{ fmt.Sprintf("%d", task.Priority) }
 			} else {
-				—
+				{ render.EmptyCell }
 			}
 		</span>
+		if task.Category != "" {
+			<span class="klt-category-tag">{ task.Category }</span>
+		} else {
+			<span class="klt-category-tag klt-category-tag--empty"></span>
+		}
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
 		<div class="klt-task-actions">
 			if task.Status != core.StatusDone {
 				<button

@@ -136,15 +136,16 @@ templ ArchivePage(project core.Project, tasks []core.Task, filter ArchiveFilter,
 }
 
 templ ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) {
-	<div class="klt-task-row" id={ fmt.Sprintf("archive-%d", task.ID) }>
+	<!-- Canonical column order (render.TaskColumns), minus status; completed date replaces priority -->
+	<div class="klt-task-row klt-task-row--archive" id={ fmt.Sprintf("archive-%d", task.ID) }>
 		<span class="klt-task-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		@TypeBadge(string(task.Type), workflows)
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
 		if task.Category != "" {
 			<span class="klt-category-tag">{ task.Category }</span>
 		} else {
 			<span class="klt-category-tag klt-category-tag--empty"></span>
 		}
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
 		<span class="klt-task-date">
 			if task.CompletedAt != nil {
 				{ task.CompletedAt.Format("2006-01-02") }

@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tomas-chudjak/kleidi-task/internal/config"
 	"github.com/tomas-chudjak/kleidi-task/internal/core"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/tomas-chudjak/kleidi-task/internal/render"
 )
 
 // Tool input types
@@ -92,12 +94,12 @@ type CategoryOutput struct {
 }
 
 type TaskBulkUpdateInput struct {
-	Project  string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	Project  string  `json:"project,omitempty" jsonschema:"project slug or 'current'"`
 	IDs      []int64 `json:"ids" jsonschema:"list of task IDs to update"`
-	Status   string `json:"status,omitempty" jsonschema:"new status for all,enum=todo,enum=doing,enum=done"`
-	Type     string `json:"type,omitempty" jsonschema:"new type for all (task, bug, feature, hotfix, or custom)"`
-	Priority *int64 `json:"priority,omitempty" jsonschema:"new priority for all"`
-	Category string `json:"category,omitempty" jsonschema:"new category for all"`
+	Status   string  `json:"status,omitempty" jsonschema:"new status for all,enum=todo,enum=doing,enum=done"`
+	Type     string  `json:"type,omitempty" jsonschema:"new type for all (task, bug, feature, hotfix, or custom)"`
+	Priority *int64  `json:"priority,omitempty" jsonschema:"new priority for all"`
+	Category string  `json:"category,omitempty" jsonschema:"new category for all"`
 }
 
 type TaskBulkCompleteInput struct {
@@ -207,12 +209,12 @@ func (s *Server) registerTools() {
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_list",
-		Description: "List tasks with optional filters by project, status, and type",
+		Description: "List tasks with optional filters by project, status, and type. Returns a pre-rendered canonical markdown table in the text content — print it verbatim, do not reformat, re-sort or summarize it.",
 	}, s.taskList)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_search",
-		Description: "Search tasks by title or description (full-text search)",
+		Description: "Search tasks by title or description (full-text search). Returns the same pre-rendered canonical markdown table as task_list — print it verbatim.",
 	}, s.taskSearch)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
@@ -355,7 +357,12 @@ func (s *Server) templateGet(ctx context.Context, req *mcp.CallToolRequest, inpu
 }
 
 func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input TaskListInput) (*mcp.CallToolResult, TaskListOutput, error) {
-	taskService, err := s.resolveTaskService(input.Project)
+	projectPath, err := s.resolveProjectPath(input.Project)
+	if err != nil {
+		return nil, TaskListOutput{}, err
+	}
+
+	taskService, err := s.projectService.TaskServiceFor(projectPath)
 	if err != nil {
 		return nil, TaskListOutput{}, err
 	}
@@ -385,15 +392,39 @@ func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input T
 		return nil, TaskListOutput{}, err
 	}
 
-	text := formatTaskList(result.Tasks)
-	if result.TotalPages > 1 {
-		text += fmt.Sprintf("\nPage %d/%d (total: %d)", result.Page, result.TotalPages, result.Total)
-	}
+	text := render.Markdown(result.Tasks, s.listMeta(ctx, projectPath, taskService, result))
 	return textResult(text), TaskListOutput{Tasks: result.Tasks, Count: len(result.Tasks)}, nil
 }
 
+// listMeta builds the canonical header context for a rendered task list. It
+// degrades gracefully: a missing registry entry or a failing stats query costs
+// the header line, never the list itself.
+func (s *Server) listMeta(ctx context.Context, projectPath string, taskService *core.TaskService, result core.ListResult) render.ListMeta {
+	name := filepath.Base(projectPath)
+	if p, err := s.projectService.GetByPath(projectPath); err == nil {
+		name = p.Name
+	}
+
+	stats, err := taskService.Stats(ctx)
+	if err != nil {
+		return render.ListMeta{
+			Project:    name,
+			Page:       result.Page,
+			TotalPages: result.TotalPages,
+			Total:      result.Total,
+		}
+	}
+
+	return render.MetaFor(name, stats, result)
+}
+
 func (s *Server) taskSearch(ctx context.Context, req *mcp.CallToolRequest, input TaskSearchInput) (*mcp.CallToolResult, TaskListOutput, error) {
-	taskService, err := s.resolveTaskService(input.Project)
+	projectPath, err := s.resolveProjectPath(input.Project)
+	if err != nil {
+		return nil, TaskListOutput{}, err
+	}
+
+	taskService, err := s.projectService.TaskServiceFor(projectPath)
 	if err != nil {
 		return nil, TaskListOutput{}, err
 	}
@@ -403,7 +434,8 @@ func (s *Server) taskSearch(ctx context.Context, req *mcp.CallToolRequest, input
 		return nil, TaskListOutput{}, err
 	}
 
-	text := formatTaskList(tasks)
+	meta := s.listMeta(ctx, projectPath, taskService, core.ListResult{})
+	text := render.Markdown(tasks, meta)
 	return textResult(text), TaskListOutput{Tasks: tasks, Count: len(tasks)}, nil
 }
 
@@ -853,22 +885,6 @@ func textResult(text string) *mcp.CallToolResult {
 			&mcp.TextContent{Text: text},
 		},
 	}
-}
-
-func formatTaskList(tasks []core.Task) string {
-	if len(tasks) == 0 {
-		return "No tasks found."
-	}
-
-	text := fmt.Sprintf("Found %d task(s):\n", len(tasks))
-	for _, t := range tasks {
-		pri := ""
-		if t.Priority > 0 {
-			pri = fmt.Sprintf(" [P%d]", t.Priority)
-		}
-		text += fmt.Sprintf("  #%d [%s] %s — %s%s\n", t.ID, t.Status, t.Type, t.Title, pri)
-	}
-	return text
 }
 
 func formatTask(t core.Task) string {

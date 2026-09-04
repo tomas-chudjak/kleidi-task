@@ -133,6 +133,25 @@ func (s *ProjectService) GetBySlug(slug string) (Project, error) {
 	return p, nil
 }
 
+// GetByPath returns a project by its absolute path on disk. Used by surfaces
+// that resolved a project from the working directory and need its registry
+// name (e.g. the header line of a rendered task list).
+func (s *ProjectService) GetByPath(path string) (Project, error) {
+	registryDB := s.manager.RegistryDB()
+	var p Project
+	err := registryDB.QueryRow(
+		`SELECT id, slug, name, path, last_seen_at, created_at, cached_todo_count, cached_doing_count, cached_total_count FROM projects WHERE path = ?`,
+		path,
+	).Scan(&p.ID, &p.Slug, &p.Name, &p.Path, &p.LastSeenAt, &p.CreatedAt, &p.CachedTodoCount, &p.CachedDoingCount, &p.CachedTotalCount)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Project{}, fmt.Errorf("project at '%s': %w", path, ErrProjectNotFound)
+		}
+		return Project{}, fmt.Errorf("getting project: %w", err)
+	}
+	return p, nil
+}
+
 // TaskServiceFor returns a TaskService for the given project path.
 func (s *ProjectService) TaskServiceFor(projectPath string) (*TaskService, error) {
 	db, err := s.manager.ProjectDB(projectPath)

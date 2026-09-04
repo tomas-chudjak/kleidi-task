@@ -3,28 +3,15 @@ package cli
 import (
 	"fmt"
 	"os"
-	"text/tabwriter"
 
 	"github.com/tomas-chudjak/kleidi-task/internal/core"
+	"github.com/tomas-chudjak/kleidi-task/internal/render"
 )
 
-// printTaskTable prints a list of tasks in a standardized table format.
-// Columns: ID | TYPE | STATUS | PRI | CATEGORY | TITLE
+// printTaskTable prints a list of tasks in the canonical column order
+// (# | type | status | pri | category | title) shared with MCP and the UI.
 func printTaskTable(tasks []core.Task) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tTYPE\tSTATUS\tPRI\tCATEGORY\tTITLE")
-	for _, t := range tasks {
-		pri := "-"
-		if t.Priority > 0 {
-			pri = fmt.Sprintf("%d", t.Priority)
-		}
-		cat := "-"
-		if t.Category != "" {
-			cat = t.Category
-		}
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\n", t.ID, t.Type, t.Status, pri, cat, t.Title)
-	}
-	w.Flush()
+	render.Table(os.Stdout, tasks)
 }
 
 // printTaskRow prints a single task as a one-line confirmation.

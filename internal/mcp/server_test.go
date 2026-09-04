@@ -129,8 +129,12 @@ func TestMCPTaskListAndComplete(t *testing.T) {
 	}
 
 	listText := listRes.Content[0].(*mcp.TextContent).Text
-	if listText == "No tasks found." {
+	if strings.Contains(listText, "_No tasks found._") {
 		t.Error("expected tasks in list")
+	}
+	// The canonical renderer owns this format — see internal/render.
+	if !strings.Contains(listText, "| # | type | status | pri | category | title |") {
+		t.Errorf("expected canonical markdown table, got: %s", listText)
 	}
 
 	// Complete the task (with project)
@@ -309,7 +313,7 @@ func TestMCPFullLifecycle(t *testing.T) {
 		t.Fatalf("list: %v", err)
 	}
 	listText := listRes.Content[0].(*mcp.TextContent).Text
-	if listText != "No tasks found." {
+	if !strings.HasSuffix(listText, "_No tasks found._") {
 		t.Errorf("expected empty list after delete, got: %s", listText)
 	}
 }

@@ -30,6 +30,39 @@ Registry SQLite (~/.tasks/registry.db) + Per-project SQLite (.tasks/tasks.db)
 
 **Work item types:** Single `tasks` table with `type` column: `task`, `bug`, `feature`, `hotfix`. Title prefix auto-detection (e.g., "BUG: title" → bug, "FEAT: title" → feature).
 
+## MCP Wiring (how clients connect)
+
+The MCP server is **stdio-only** (`internal/mcp/server.go` — `mcp.StdioTransport`). There is no daemon and no HTTP/SSE MCP endpoint; `klt serve` mounts only the REST API and UI.
+
+Consequences:
+
+- Every MCP client (each Claude Code session, Claude Desktop, Cursor) **spawns its own `klt mcp` child process** and talks to it over stdin/stdout. N sessions = N short-lived processes, each dying with its client. Running `klt` "in the background" shares nothing.
+- What is actually shared between sessions is the **SQLite state on disk**: `~/.tasks/registry.db` + each project's `.tasks/tasks.db`.
+- **Project resolution:** tools take an optional `project` (slug or `current`). Without it, the server walks up from the MCP process's cwd looking for `.tasks/` (`ProjectService.DetectProject`, same pattern as Git). With a slug, any session can reach any registered project via the registry — cross-project access works from anywhere.
+- Requirement for a client: `klt` on `$PATH` (installed at `/usr/local/bin/klt`) and one MCP server entry. Canonical config is the user-scope `~/.claude.json` top-level `mcpServers` under the name `kleidi` → `klt mcp`. Keep exactly one entry; duplicates under other names just spawn redundant processes with duplicate tool sets.
+
+## Task List Output Contract (MANDATORY)
+
+Every surface renders task lists through `internal/render` — one column definition, one placeholder, one order. Canonical columns:
+
+```
+# | type | status | pri | category | title
+```
+
+Rows keep the service-layer order (`priority DESC, created_at DESC`). Unset priority/category render as `–` (`render.EmptyCell`). The header line is `**<project>** — N open, M done`, and pagination appends `Page X/Y (total: Z)` only when there is more than one page.
+
+**When answering "what tasks do we have":** call `task_list`, then **print the tool's text block verbatim**. Do not rebuild it as bullets, do not add or drop columns, do not re-sort rows, do not replace it with a prose summary. Commentary goes *after* the table, never instead of it. Use the structured `tasks` array for follow-up tool calls; use the text block for anything the user sees.
+
+The same rendering is reachable from the terminal:
+
+```bash
+klt list                # aligned table for humans
+klt list --format md    # byte-identical to what MCP returns
+klt list --format json  # raw tasks for scripts
+```
+
+Changing a column means changing `render.TaskColumns` — then mirroring the order in `internal/ui/templates/project.templ` (`TaskList`/`TaskRow`) and the `grid-template-columns` rules in `internal/ui/static/css/style.css`. Never format a task list ad-hoc in a handler.
+
 ## Build & Development Commands
 
 ```bash
@@ -48,8 +81,8 @@ sqlc generate
 
 # Run
 klt init                # Initialize .tasks/ in current directory
-klt serve               # Start HTTP server (UI + REST + MCP HTTP)
-klt mcp                 # Start stdio MCP server
+klt serve               # Start HTTP server (UI + REST) — no MCP endpoint
+klt mcp                 # Start stdio MCP server (one process per MCP client)
 ```
 
 ## Tech Stack
@@ -101,7 +134,7 @@ Never skip phases. Never ignore phase instructions. The workflow is the source o
 - `cmd/klt/main.go` — entry point
 - `internal/core/` — service layer (business logic, domain types, errors)
 - `internal/db/` — DB manager, migrations (`project/` and `registry/`), queries, generated code
-- `internal/mcp/` — MCP server, tools, resources, transports
+- `internal/mcp/` — MCP server, tools, resources (stdio transport only)
 - `internal/cli/` — cobra commands
 - `internal/api/` — chi REST API with middleware and handlers
 - `internal/ui/` — HTMX UI handlers, `.templ` templates, vendored static assets

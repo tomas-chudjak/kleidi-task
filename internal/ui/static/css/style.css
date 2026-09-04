@@ -378,17 +378,22 @@ input, select, textarea {
   overflow: hidden;
 }
 
+/* Column order mirrors render.TaskColumns: # | type | status | pri | category | title */
 .klt-task-row {
   display: grid;
-  grid-template-columns: 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
+  grid-template-columns: 3rem 5.5rem 5.5rem 2.5rem 5.5rem 1fr 4.5rem;
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
   border-bottom: 1px solid var(--klt-border);
   transition: background 0.1s;
 }
+/* Archive: no status column, completed date instead of priority */
+.klt-task-row--archive {
+  grid-template-columns: 3rem 5.5rem 5.5rem 1fr 6rem 4.5rem;
+}
 .klt-task-row--bulk {
-  grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
+  grid-template-columns: 2rem 3rem 5.5rem 5.5rem 2.5rem 5.5rem 1fr 4.5rem;
 }
 .klt-task-row--selected { background: #f8f9fd; }
 .klt-task-row--focused {
@@ -406,7 +411,7 @@ input, select, textarea {
 /* ── Task header row ── */
 .klt-task-header {
   display: grid;
-  grid-template-columns: 2rem 3rem 5.5rem 1fr 5.5rem 5.5rem 2.5rem 4.5rem;
+  grid-template-columns: 2rem 3rem 5.5rem 5.5rem 2.5rem 5.5rem 1fr 4.5rem;
   background: var(--klt-card-bg);
   align-items: center;
   gap: 12px;

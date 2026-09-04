@@ -434,9 +434,9 @@ klt project show [<slug>]
 klt project stats [<slug>]
 
 # Servers
-klt serve           # HTTP server (UI + REST API + MCP HTTP)
+klt serve           # HTTP server (UI + REST API) — MCP HTTP transport is planned, not implemented
 klt serve --port 7842
-klt mcp             # stdio MCP server (for Claude Desktop)
+klt mcp             # stdio MCP server — the only MCP transport today (Claude Code, Claude Desktop, Cursor)
 
 # Utility
 klt export [--format json|markdown] [--project <slug>]
