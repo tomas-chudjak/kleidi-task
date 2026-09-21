@@ -11,12 +11,17 @@ import (
 
 // TaskTemplate represents a reusable task template.
 type TaskTemplate struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	Priority    int64     `json:"priority"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Priority    int64  `json:"priority"`
+	Description string `json:"description"`
+	// AgentRules holds maintenance instructions for the agent filling this
+	// template. It never becomes part of a stored task description.
+	AgentRules string `json:"agent_rules,omitempty"`
+	// ReviewInstruction is the prompt task_review hands to the agent.
+	ReviewInstruction string    `json:"review_instruction,omitempty"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 // TemplateService manages task templates.
@@ -68,11 +73,18 @@ func (s *TemplateService) GetByType(ctx context.Context, taskType string) (TaskT
 
 // Create creates a new template.
 func (s *TemplateService) Create(ctx context.Context, name, taskType string, priority int64, description string) (TaskTemplate, error) {
+	return s.CreateWithRules(ctx, name, taskType, priority, description, "", "")
+}
+
+// CreateWithRules creates a new template including its agent rules and review instruction.
+func (s *TemplateService) CreateWithRules(ctx context.Context, name, taskType string, priority int64, description, agentRules, reviewInstruction string) (TaskTemplate, error) {
 	row, err := s.queries.CreateTemplate(ctx, generated.CreateTemplateParams{
-		Name:        name,
-		Type:        taskType,
-		Priority:    priority,
-		Description: description,
+		Name:              name,
+		Type:              taskType,
+		Priority:          priority,
+		Description:       description,
+		AgentRules:        agentRules,
+		ReviewInstruction: reviewInstruction,
 	})
 	if err != nil {
 		return TaskTemplate{}, fmt.Errorf("creating template: %w", err)
@@ -82,12 +94,23 @@ func (s *TemplateService) Create(ctx context.Context, name, taskType string, pri
 
 // Update updates an existing template.
 func (s *TemplateService) Update(ctx context.Context, id int64, name, taskType string, priority int64, description string) (TaskTemplate, error) {
+	current, err := s.Get(ctx, id)
+	if err != nil {
+		return TaskTemplate{}, err
+	}
+	return s.UpdateWithRules(ctx, id, name, taskType, priority, description, current.AgentRules, current.ReviewInstruction)
+}
+
+// UpdateWithRules updates a template including its agent rules and review instruction.
+func (s *TemplateService) UpdateWithRules(ctx context.Context, id int64, name, taskType string, priority int64, description, agentRules, reviewInstruction string) (TaskTemplate, error) {
 	row, err := s.queries.UpdateTemplate(ctx, generated.UpdateTemplateParams{
-		ID:          id,
-		Name:        name,
-		Type:        taskType,
-		Priority:    priority,
-		Description: description,
+		ID:                id,
+		Name:              name,
+		Type:              taskType,
+		Priority:          priority,
+		Description:       description,
+		AgentRules:        agentRules,
+		ReviewInstruction: reviewInstruction,
 	})
 	if err != nil {
 		return TaskTemplate{}, fmt.Errorf("updating template %d: %w", id, err)
@@ -102,11 +125,24 @@ func (s *TemplateService) Delete(ctx context.Context, id int64) error {
 
 func templateFromRow(r generated.TaskTemplate) TaskTemplate {
 	return TaskTemplate{
-		ID:          r.ID,
-		Name:        r.Name,
-		Type:        r.Type,
-		Priority:    r.Priority,
-		Description: r.Description,
-		CreatedAt:   r.CreatedAt,
+		ID:                r.ID,
+		Name:              r.Name,
+		Type:              r.Type,
+		Priority:          r.Priority,
+		Description:       r.Description,
+		AgentRules:        r.AgentRules,
+		ReviewInstruction: r.ReviewInstruction,
+		CreatedAt:         r.CreatedAt,
 	}
+}
+
+// RequiredSections returns the section headings a task of the given type must
+// contain. Returns nil when no template exists for the type — a type without a
+// template is never constrained.
+func (s *TemplateService) RequiredSections(ctx context.Context, taskType string) []string {
+	tmpl, err := s.GetByType(ctx, taskType)
+	if err != nil {
+		return nil
+	}
+	return ParseSections(tmpl.Description)
 }

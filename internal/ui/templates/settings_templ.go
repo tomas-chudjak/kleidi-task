@@ -229,12 +229,20 @@ func SettingsPage(project core.Project, categories []core.Category, stats core.P
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" min=\"0\" placeholder=\"0 = disabled\"></div><button type=\"submit\" class=\"klt-add-btn\" style=\"max-width:200px;\">Save configuration</button> <span id=\"config-saved\"></span></form></section><!-- Workflows --><section class=\"klt-settings-section\" id=\"workflows\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-git-branch\"></i> Workflows</h3><p class=\"klt-settings-desc\">Phase-based workflows for each task type. Click to edit phases and AI prompts.</p><div class=\"klt-cat-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" min=\"0\" placeholder=\"0 = disabled\"></div><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"cfg-enforcement\">Template enforcement</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" id=\"cfg-enforcement\" name=\"template_enforcement\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = EnforcementOptions(config.TemplateEnforcement).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div><span class=\"klt-field-hint\">How strictly a task description must follow its type template. Strict rejects MCP and API creates that skip it; the CLI and this UI are never blocked.</span></div><button type=\"submit\" class=\"klt-add-btn\" style=\"max-width:200px;\">Save configuration</button> <span id=\"config-saved\"></span></form></section><!-- Workflows --><section class=\"klt-settings-section\" id=\"workflows\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-git-branch\"></i> Workflows</h3><p class=\"klt-settings-desc\">Phase-based workflows for each task type. Click to edit phases and AI prompts.</p><div class=\"klt-cat-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, wf := range workflows {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"klt-cat-row\"><div class=\"klt-cat-display\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"klt-cat-row\"><div class=\"klt-cat-display\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -242,38 +250,38 @@ func SettingsPage(project core.Project, categories []core.Category, stats core.P
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var16 templ.SafeURL
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/p/%s/workflows/%s", project.Slug, wf.TaskType)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 135, Col: 95}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 145, Col: 95}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"klt-cat-name\" style=\"text-decoration:none;color:var(--klt-fg);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"klt-cat-name\" style=\"text-decoration:none;color:var(--klt-fg);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d phases", len(wf.Phases)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 136, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 146, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</a></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</a></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></section><!-- Templates --><section class=\"klt-settings-section\" id=\"templates\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-file-text\"></i> Templates</h3><p class=\"klt-settings-desc\">Predefined templates for quick task creation.</p><div id=\"template-list\" class=\"klt-cat-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></section><!-- Templates --><section class=\"klt-settings-section\" id=\"templates\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-file-text\"></i> Templates</h3><p class=\"klt-settings-desc\">Predefined templates for quick task creation.</p><div id=\"template-list\" class=\"klt-cat-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -281,20 +289,20 @@ func SettingsPage(project core.Project, categories []core.Category, stats core.P
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><form hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><form hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs("/p/" + project.Slug + "/templates")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 154, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 164, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-target=\"#template-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset();\" hx-ext=\"json-enc\" class=\"klt-cat-form\"><div class=\"klt-cat-form-row\"><input type=\"text\" name=\"name\" placeholder=\"Template name\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\"> <select name=\"type\" class=\"klt-cat-input\" style=\"max-width:100px;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" hx-target=\"#template-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset();\" hx-ext=\"json-enc\" class=\"klt-cat-form\"><div class=\"klt-cat-form-row\"><input type=\"text\" name=\"name\" placeholder=\"Template name\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\"> <select name=\"type\" class=\"klt-cat-input\" style=\"max-width:100px;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -302,7 +310,7 @@ func SettingsPage(project core.Project, categories []core.Category, stats core.P
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</select> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Add template\"><i class=\"icon icon-plus\"></i></button></div></form></section><!-- Hooks --><section class=\"klt-settings-section\" id=\"hooks\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-zap\"></i> Hooks</h3><p class=\"klt-settings-desc\">Run shell scripts on task lifecycle events. Hooks run asynchronously and don't block operations.</p><div id=\"hook-list\" class=\"klt-cat-list\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</select> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Add template\"><i class=\"icon icon-plus\"></i></button></div></form></section><!-- Hooks --><section class=\"klt-settings-section\" id=\"hooks\"><h3 class=\"klt-settings-heading\"><i class=\"icon icon-zap\"></i> Hooks</h3><p class=\"klt-settings-desc\">Run shell scripts on task lifecycle events. Hooks run asynchronously and don't block operations.</p><div id=\"hook-list\" class=\"klt-cat-list\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -310,20 +318,20 @@ func SettingsPage(project core.Project, categories []core.Category, stats core.P
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div><form hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div><form hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs("/p/" + project.Slug + "/hooks")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 181, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 191, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" hx-target=\"#hook-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset();\" hx-ext=\"json-enc\" class=\"klt-cat-form\"><div class=\"klt-cat-form-row\"><select name=\"event\" class=\"klt-cat-input\" style=\"max-width:130px;\" required><option value=\"task.create\">task.create</option> <option value=\"task.complete\">task.complete</option> <option value=\"task.update\">task.update</option> <option value=\"task.delete\">task.delete</option> <option value=\"task.archive\">task.archive</option></select> <input type=\"text\" name=\"command\" placeholder=\"Shell command\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\"> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Add hook\"><i class=\"icon icon-plus\"></i></button></div></form><p class=\"klt-settings-desc\" style=\"margin-top:6px;font-size:0.7rem;\">Environment: <code>KVT_EVENT</code>, <code>KVT_TASK_ID</code>, <code>KVT_TASK_TITLE</code>, <code>KVT_TASK_TYPE</code>, <code>KVT_TASK_STATUS</code>, <code>KVT_TASK_PRIORITY</code>. Task JSON on stdin.</p></section><!-- Danger zone --><section class=\"klt-settings-section klt-settings-section--danger\" id=\"danger\"><h3 class=\"klt-settings-heading klt-settings-heading--danger\"><i class=\"icon icon-alert-triangle\"></i> Danger zone</h3><div class=\"klt-danger-item\"><div><div class=\"klt-danger-title\">Delete this project</div><div class=\"klt-danger-desc\">Remove project from registry. Task database in <code>.tasks/</code> will not be deleted.</div></div><button class=\"klt-danger-btn\" disabled title=\"Coming soon\">Delete project</button></div></section></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" hx-target=\"#hook-list\" hx-swap=\"innerHTML\" hx-on::after-request=\"this.reset();\" hx-ext=\"json-enc\" class=\"klt-cat-form\"><div class=\"klt-cat-form-row\"><select name=\"event\" class=\"klt-cat-input\" style=\"max-width:130px;\" required><option value=\"task.create\">task.create</option> <option value=\"task.complete\">task.complete</option> <option value=\"task.update\">task.update</option> <option value=\"task.delete\">task.delete</option> <option value=\"task.archive\">task.archive</option></select> <input type=\"text\" name=\"command\" placeholder=\"Shell command\" required autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" class=\"klt-cat-input\"> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Add hook\"><i class=\"icon icon-plus\"></i></button></div></form><p class=\"klt-settings-desc\" style=\"margin-top:6px;font-size:0.7rem;\">Environment: <code>KVT_EVENT</code>, <code>KVT_TASK_ID</code>, <code>KVT_TASK_TITLE</code>, <code>KVT_TASK_TYPE</code>, <code>KVT_TASK_STATUS</code>, <code>KVT_TASK_PRIORITY</code>. Task JSON on stdin.</p></section><!-- Danger zone --><section class=\"klt-settings-section klt-settings-section--danger\" id=\"danger\"><h3 class=\"klt-settings-heading klt-settings-heading--danger\"><i class=\"icon icon-alert-triangle\"></i> Danger zone</h3><div class=\"klt-danger-item\"><div><div class=\"klt-danger-title\">Delete this project</div><div class=\"klt-danger-desc\">Remove project from registry. Task database in <code>.tasks/</code> will not be deleted.</div></div><button class=\"klt-danger-btn\" disabled title=\"Coming soon\">Delete project</button></div></section></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -359,7 +367,7 @@ func CategoryList(categories []core.Category, slug string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(categories) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No categories yet. Add one below.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No categories yet. Add one below.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -396,111 +404,111 @@ func CategoryRow(cat core.Category, slug string) templ.Component {
 			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"klt-cat-row\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"klt-cat-row\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("cat-%d", cat.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 232, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 242, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\"><div class=\"klt-cat-display\"><span class=\"klt-cat-dot\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"><div class=\"klt-cat-display\"><span class=\"klt-cat-dot\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background:%s", cat.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 234, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 244, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"></span> <span class=\"klt-cat-name\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"></span> <span class=\"klt-cat-name\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 235, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 245, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span> <button class=\"klt-cat-edit-btn\" onclick=\"this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='none';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='flex';\" title=\"Edit\"><i class=\"icon icon-pencil\"></i></button> <button class=\"klt-cat-del-btn\" hx-delete=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</span> <button class=\"klt-cat-edit-btn\" onclick=\"this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='none';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='flex';\" title=\"Edit\"><i class=\"icon icon-pencil\"></i></button> <button class=\"klt-cat-del-btn\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 245, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 255, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" hx-target=\"#category-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" hx-target=\"#category-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Delete category '%s'?", cat.Name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 248, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 258, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" title=\"Delete\"><i class=\"icon icon-trash-2\"></i></button></div><form class=\"klt-cat-edit\" style=\"display:none;\" hx-patch=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" title=\"Delete\"><i class=\"icon icon-trash-2\"></i></button></div><form class=\"klt-cat-edit\" style=\"display:none;\" hx-patch=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/categories/%d", slug, cat.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 257, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 267, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-target=\"#category-list\" hx-swap=\"innerHTML\" hx-ext=\"json-enc\"><input type=\"text\" name=\"name\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" hx-target=\"#category-list\" hx-swap=\"innerHTML\" hx-ext=\"json-enc\"><input type=\"text\" name=\"name\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 262, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 272, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" required class=\"klt-cat-input\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> <input type=\"color\" name=\"color\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" required class=\"klt-cat-input\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\"> <input type=\"color\" name=\"color\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Color)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 263, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 273, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" class=\"klt-cat-color\"> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Save\"><i class=\"icon icon-check\"></i></button> <button type=\"button\" class=\"klt-cat-del-btn\" title=\"Cancel\" onclick=\"this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='none';\"><i class=\"icon icon-x\"></i></button></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" class=\"klt-cat-color\"> <button type=\"submit\" class=\"klt-cat-add-btn\" title=\"Save\"><i class=\"icon icon-check\"></i></button> <button type=\"button\" class=\"klt-cat-del-btn\" title=\"Cancel\" onclick=\"this.closest('.klt-cat-row').querySelector('.klt-cat-display').style.display='';this.closest('.klt-cat-row').querySelector('.klt-cat-edit').style.display='none';\"><i class=\"icon icon-x\"></i></button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -530,26 +538,26 @@ func TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.Workfl
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(tpls) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No templates yet.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No templates yet.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
 			for _, t := range tpls {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"klt-cat-row\" id=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"klt-cat-row\" id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var31 string
 				templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("tpl-%d", t.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 277, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 287, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\"><div class=\"klt-cat-display\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"><div class=\"klt-cat-display\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -557,72 +565,72 @@ func TemplateList(tpls []core.TaskTemplate, slug string, workflows []core.Workfl
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var32 templ.SafeURL
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 280, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 290, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"klt-cat-name\" style=\"text-decoration:none;color:var(--klt-fg);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"klt-cat-name\" style=\"text-decoration:none;color:var(--klt-fg);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(t.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 280, Col: 157}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 290, Col: 157}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</a> <span style=\"font-size:0.65rem;color:var(--klt-fg-muted);\">P")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</a> <span style=\"font-size:0.65rem;color:var(--klt-fg-muted);\">P")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", t.Priority))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 281, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 291, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</span> <button class=\"klt-cat-del-btn\" hx-delete=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span> <button class=\"klt-cat-del-btn\" hx-delete=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var35 string
 				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/templates/%d", slug, t.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 284, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 294, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-target=\"#template-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-target=\"#template-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var36 string
 				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Delete template '%s'?", t.Name))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 287, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 297, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" title=\"Delete\"><i class=\"icon icon-trash-2\"></i></button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" title=\"Delete\"><i class=\"icon icon-trash-2\"></i></button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -654,101 +662,101 @@ func HookList(hooks []core.Hook, slug string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(hooks) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No hooks configured.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"klt-empty\" style=\"font-size:0.85rem;\">No hooks configured.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
 			for _, h := range hooks {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"klt-cat-row\" id=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div class=\"klt-cat-row\" id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var38 string
 				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("hook-%d", h.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 303, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 313, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\"><div class=\"klt-cat-display\"><span class=\"klt-badge klt-badge-todo\" style=\"font-size:0.6rem;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"><div class=\"klt-cat-display\"><span class=\"klt-badge klt-badge-todo\" style=\"font-size:0.6rem;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(string(h.Event))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 305, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 315, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</span> <span class=\"klt-cat-name\" style=\"font-family:var(--klt-font-mono);font-size:0.75rem;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</span> <span class=\"klt-cat-name\" style=\"font-family:var(--klt-font-mono);font-size:0.75rem;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(h.Command)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 306, Col: 103}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 316, Col: 103}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if h.Description != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span style=\"font-size:0.65rem;color:var(--klt-fg-muted);\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span style=\"font-size:0.65rem;color:var(--klt-fg-muted);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var41 string
 					templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(h.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 308, Col: 80}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 318, Col: 80}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<button class=\"klt-cat-del-btn\" hx-delete=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<button class=\"klt-cat-del-btn\" hx-delete=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var42 string
 				templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/p/%s/hooks/%d", slug, h.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 312, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 322, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\" hx-target=\"#hook-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" hx-target=\"#hook-list\" hx-swap=\"innerHTML\" hx-confirm=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var43 string
 				templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Remove hook '%s'?", h.Command))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 315, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 325, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" title=\"Remove\"><i class=\"icon icon-trash-2\"></i></button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" title=\"Remove\"><i class=\"icon icon-trash-2\"></i></button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -756,6 +764,109 @@ func HookList(hooks []core.Hook, slug string) templ.Component {
 		}
 		return nil
 	})
+}
+
+// EnforcementOptions renders the template enforcement mode options.
+func EnforcementOptions(selected core.EnforcementMode) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var44 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var44 == nil {
+			templ_7745c5c3_Var44 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		for _, mode := range core.ValidEnforcementModes {
+			if mode == selected {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<option value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var45 string
+				templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(string(mode))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 340, Col: 31}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" selected>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var46 string
+				templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(enforcementLabel(mode))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 340, Col: 67}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<option value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var47 string
+				templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(string(mode))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 342, Col: 31}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var48 string
+				templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(enforcementLabel(mode))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/settings.templ`, Line: 342, Col: 58}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		return nil
+	})
+}
+
+// enforcementLabel renders a human-readable label for an enforcement mode.
+func enforcementLabel(mode core.EnforcementMode) string {
+	switch mode {
+	case core.EnforcementOff:
+		return "Off — no validation"
+	case core.EnforcementStrict:
+		return "Strict — reject incomplete descriptions (MCP, API)"
+	default:
+		return "Warn — log missing sections, create anyway"
+	}
 }
 
 var _ = templruntime.GeneratedTemplate

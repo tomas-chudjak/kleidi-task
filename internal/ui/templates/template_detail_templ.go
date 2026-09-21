@@ -143,7 +143,33 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('tpl-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Template description content...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '200px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('tpl-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div></div><!-- Sidebar --><div class=\"klt-task-sidebar\"><button type=\"submit\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save template</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" id=\"tpl-type\" name=\"type\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</textarea><script>\n\t\t\t\t\t\t\t\t(function() {\n\t\t\t\t\t\t\t\t\tvar ta = document.getElementById('tpl-desc-editor');\n\t\t\t\t\t\t\t\t\tif (ta && typeof EasyMDE !== 'undefined') {\n\t\t\t\t\t\t\t\t\t\tvar mde = new EasyMDE({\n\t\t\t\t\t\t\t\t\t\t\telement: ta,\n\t\t\t\t\t\t\t\t\t\t\tspellChecker: false,\n\t\t\t\t\t\t\t\t\t\t\tstatus: false,\n\t\t\t\t\t\t\t\t\t\t\tplaceholder: 'Template description content...',\n\t\t\t\t\t\t\t\t\t\t\ttoolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', 'checklist', '|', 'code', 'quote', 'link', '|', 'preview', 'side-by-side'],\n\t\t\t\t\t\t\t\t\t\t\tsideBySideFullscreen: false,\n\t\t\t\t\t\t\t\t\t\t\tminHeight: '200px',\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t\tdocument.getElementById('tpl-form').addEventListener('htmx:configRequest', function(e) {\n\t\t\t\t\t\t\t\t\t\t\te.detail.parameters.description = mde.value();\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t})();\n\t\t\t\t\t\t\t</script></div></div><div class=\"klt-detail-card\"><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"tpl-rules\">Agent rules</label> <span class=\"klt-field-hint\">Instructions for the AI filling this template. Returned by <code>template_get</code> alongside the skeleton and never written into a task description.</span> <textarea class=\"klt-textarea\" id=\"tpl-rules\" name=\"agent_rules\" rows=\"8\" placeholder=\"One rule per line...\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(tpl.AgentRules)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 85, Col: 24}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</textarea></div></div><div class=\"klt-detail-card\"><div class=\"klt-field\"><label class=\"klt-field-label\" for=\"tpl-review\">Review instruction</label> <span class=\"klt-field-hint\">The prompt <code>task_review</code> hands to the agent when reviewing a task of this type for gaps and conflicts.</span> <textarea class=\"klt-textarea\" id=\"tpl-review\" name=\"review_instruction\" rows=\"8\" placeholder=\"What the agent should check for...\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(tpl.ReviewInstruction)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 98, Col: 31}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</textarea></div></div></div><!-- Sidebar --><div class=\"klt-task-sidebar\"><button type=\"submit\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save template</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Type</label><div class=\"klt-select-wrap\"><select class=\"klt-select\" id=\"tpl-type\" name=\"type\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,33 +177,33 @@ func TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows [
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Default priority</label> <input type=\"number\" class=\"klt-input\" name=\"priority\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</select> <i class=\"icon icon-chevron-down klt-select-icon\"></i></div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Default priority</label> <input type=\"number\" class=\"klt-input\" name=\"priority\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", tpl.Priority))
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", tpl.Priority))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 95, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 121, Col: 101}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" min=\"0\"></div><div class=\"klt-field\"><label class=\"klt-field-label\">Created</label><div class=\"klt-field-value klt-field-value--mono\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(tpl.CreatedAt.Format("2006-01-02 15:04"))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 99, Col: 100}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" min=\"0\"></div><div class=\"klt-field\"><label class=\"klt-field-label\">Created</label><div class=\"klt-field-value klt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div></div></div></div></form>")
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(tpl.CreatedAt.Format("2006-01-02 15:04"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/template_detail.templ`, Line: 125, Col: 100}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></div></div></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

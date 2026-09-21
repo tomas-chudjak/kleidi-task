@@ -417,7 +417,7 @@ templ TaskRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 		} else {
 			<span class="klt-category-tag klt-category-tag--empty"></span>
 		}
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ render.Title(task) }</a>
 		<div class="klt-task-actions">
 			if task.Status != core.StatusDone {
 				<button

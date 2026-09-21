@@ -42,22 +42,45 @@ type TaskMetadata struct {
 
 // Task is the domain representation of a task or bug.
 type Task struct {
-	ID          int64      `json:"id"`
-	Type        TaskType   `json:"type"`
-	Title       string     `json:"title"`
-	Description string     `json:"description,omitempty"`
-	Status      TaskStatus `json:"status"`
-	Priority    int64      `json:"priority"`
-	Category    string     `json:"category,omitempty"`
+	ID          int64         `json:"id"`
+	Type        TaskType      `json:"type"`
+	Title       string        `json:"title"`
+	Description string        `json:"description,omitempty"`
+	Status      TaskStatus    `json:"status"`
+	Priority    int64         `json:"priority"`
+	Category    string        `json:"category,omitempty"`
 	Phase       string        `json:"phase,omitempty"`
 	IsArchived  bool          `json:"is_archived"`
 	Metadata    *TaskMetadata `json:"metadata,omitempty"`
 	Source      Source        `json:"source"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"`
-	CreatedBy   int64      `json:"created_by"`
-	AssignedTo  *int64     `json:"assigned_to,omitempty"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
+	CompletedAt *time.Time    `json:"completed_at,omitempty"`
+	CreatedBy   int64         `json:"created_by"`
+	AssignedTo  *int64        `json:"assigned_to,omitempty"`
+
+	// ParentID links a child task to the parent it was split out of.
+	ParentID *int64 `json:"parent_id,omitempty"`
+	// ChildOrder is the position among siblings — the order the work lands in.
+	ChildOrder int64 `json:"child_order,omitempty"`
+	// ChildTotal and ChildDone report a parent's progress. Both are zero for a
+	// task that has no children; populated by the list and get paths.
+	ChildTotal int64 `json:"child_total,omitempty"`
+	ChildDone  int64 `json:"child_done,omitempty"`
+}
+
+// IsParent reports whether the task has been split into children.
+func (t Task) IsParent() bool { return t.ChildTotal > 0 }
+
+// IsChild reports whether the task belongs to a parent.
+func (t Task) IsChild() bool { return t.ParentID != nil }
+
+// ChildSpec describes one child task to create when splitting a parent.
+type ChildSpec struct {
+	Title string `json:"title"`
+	// Description is optional. When empty the child inherits the type's
+	// template skeleton — the parent carries the spec, a child is a slice of it.
+	Description string `json:"description,omitempty"`
 }
 
 // CreateTaskInput holds the parameters for creating a new task.
@@ -86,9 +109,9 @@ type UpdateTaskInput struct {
 // ListTasksFilter holds filter parameters for listing tasks.
 // Status and Type support comma-separated multi-select (e.g. "todo,doing").
 type ListTasksFilter struct {
-	Status        string  `json:"status,omitempty"`         // comma-separated: "todo", "todo,doing"
-	Type          string  `json:"type,omitempty"`           // comma-separated: "bug", "bug,feature"
-	Category      string  `json:"category,omitempty"`       // comma-separated: "backend", "backend,frontend"
+	Status        string  `json:"status,omitempty"`   // comma-separated: "todo", "todo,doing"
+	Type          string  `json:"type,omitempty"`     // comma-separated: "bug", "bug,feature"
+	Category      string  `json:"category,omitempty"` // comma-separated: "backend", "backend,frontend"
 	MinPriority   *int64  `json:"min_priority,omitempty"`
 	CreatedAfter  *string `json:"created_after,omitempty"`  // ISO 8601 datetime
 	CreatedBefore *string `json:"created_before,omitempty"` // ISO 8601 datetime
@@ -131,10 +154,10 @@ type TypeCount struct {
 // ExtendedStats holds detailed statistics for a project.
 type ExtendedStats struct {
 	ProjectStats
-	CompletedThisWeek int64      `json:"completed_this_week"`
+	CompletedThisWeek int64       `json:"completed_this_week"`
 	TypeBreakdown     []TypeCount `json:"type_breakdown"`
-	RecentCompleted   []Task     `json:"recent_completed"`
-	Total             int64      `json:"total"`
+	RecentCompleted   []Task      `json:"recent_completed"`
+	Total             int64       `json:"total"`
 }
 
 // Project represents a registered project in the global registry.

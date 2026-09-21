@@ -118,6 +118,16 @@ templ SettingsPage(project core.Project, categories []core.Category, stats core.
 								<label class="klt-field-label" for="cfg-archive">Auto-archive after (days)</label>
 								<input type="number" class="klt-input" id="cfg-archive" name="auto_archive_days" value={ fmt.Sprintf("%d", config.AutoArchiveDays) } min="0" placeholder="0 = disabled"/>
 							</div>
+							<div class="klt-field">
+								<label class="klt-field-label" for="cfg-enforcement">Template enforcement</label>
+								<div class="klt-select-wrap">
+									<select class="klt-select" id="cfg-enforcement" name="template_enforcement">
+										@EnforcementOptions(config.TemplateEnforcement)
+									</select>
+									<i class="icon icon-chevron-down klt-select-icon"></i>
+								</div>
+								<span class="klt-field-hint">How strictly a task description must follow its type template. Strict rejects MCP and API creates that skip it; the CLI and this UI are never blocked.</span>
+							</div>
 							<button type="submit" class="klt-add-btn" style="max-width:200px;">Save configuration</button>
 							<span id="config-saved"></span>
 						</form>
@@ -320,5 +330,28 @@ templ HookList(hooks []core.Hook, slug string) {
 				</div>
 			</div>
 		}
+	}
+}
+
+// EnforcementOptions renders the template enforcement mode options.
+templ EnforcementOptions(selected core.EnforcementMode) {
+	for _, mode := range core.ValidEnforcementModes {
+		if mode == selected {
+			<option value={ string(mode) } selected>{ enforcementLabel(mode) }</option>
+		} else {
+			<option value={ string(mode) }>{ enforcementLabel(mode) }</option>
+		}
+	}
+}
+
+// enforcementLabel renders a human-readable label for an enforcement mode.
+func enforcementLabel(mode core.EnforcementMode) string {
+	switch mode {
+	case core.EnforcementOff:
+		return "Off — no validation"
+	case core.EnforcementStrict:
+		return "Strict — reject incomplete descriptions (MCP, API)"
+	default:
+		return "Warn — log missing sections, create anyway"
 	}
 }

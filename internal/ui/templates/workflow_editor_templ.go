@@ -188,14 +188,14 @@ func WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []c
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea><div class=\"klt-wf-triggers\" style=\"margin-top:8px;display:flex;gap:8px;\"><div style=\"flex:1;\"><label class=\"klt-field-label\" style=\"font-size:0.65rem;margin-bottom:2px;\">Before triggers</label> <input type=\"text\" class=\"klt-input klt-wf-trigger-before\" name=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea><div style=\"margin-top:8px;\"><label class=\"klt-field-label\" style=\"font-size:0.65rem;margin-bottom:2px;\">Output section</label> <input type=\"text\" class=\"klt-input klt-wf-phase-output\" name=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var11 string
-					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_trigger_before", i))
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_output", i))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 79, Col: 60}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 78, Col: 51}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -206,22 +206,22 @@ func WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []c
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var12 string
-					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(triggersFor(wf, phase, "before"))
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(wf.PhaseOutputs[phase])
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 80, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 79, Col: 41}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" placeholder=\"e.g. run-tests, lint\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" style=\"font-size:0.75rem;\"></div><div style=\"flex:1;\"><label class=\"klt-field-label\" style=\"font-size:0.65rem;margin-bottom:2px;\">After triggers</label> <input type=\"text\" class=\"klt-input klt-wf-trigger-after\" name=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" placeholder=\"e.g. Design — leave empty for no required output\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" style=\"font-size:0.75rem;\"></div><div class=\"klt-wf-triggers\" style=\"margin-top:8px;display:flex;gap:8px;\"><div style=\"flex:1;\"><label class=\"klt-field-label\" style=\"font-size:0.65rem;margin-bottom:2px;\">Before triggers</label> <input type=\"text\" class=\"klt-input klt-wf-trigger-before\" name=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var13 string
-					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_trigger_after", i))
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_trigger_before", i))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 94, Col: 59}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 94, Col: 60}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -232,51 +232,77 @@ func WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []c
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var14 string
-					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(triggersFor(wf, phase, "after"))
+					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(triggersFor(wf, phase, "before"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 95, Col: 51}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 95, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" placeholder=\"e.g. type-check\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" style=\"font-size:0.75rem;\"></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" placeholder=\"e.g. run-tests, lint\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" style=\"font-size:0.75rem;\"></div><div style=\"flex:1;\"><label class=\"klt-field-label\" style=\"font-size:0.65rem;margin-bottom:2px;\">After triggers</label> <input type=\"text\" class=\"klt-input klt-wf-trigger-after\" name=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var15 string
+					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("phase_%d_trigger_after", i))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 109, Col: 59}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" value=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var16 string
+					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(triggersFor(wf, phase, "after"))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 110, Col: 51}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" placeholder=\"e.g. type-check\" autocomplete=\"off\" data-1p-ignore data-lpignore=\"true\" data-form-type=\"other\" style=\"font-size:0.75rem;\"></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div><button type=\"button\" class=\"klt-add-btn klt-add-btn--outline\" style=\"margin-top:12px;max-width:200px;\" onclick=\"addWfPhase()\"><i class=\"icon icon-plus\"></i> Add phase</button><p class=\"klt-settings-desc\" style=\"margin-top:8px;font-size:0.7rem;color:var(--klt-fg-muted);\">Triggers: comma-separated skill names or shell commands. Built-in: <code>run-tests</code>, <code>lint</code>, <code>type-check</code>, <code>smoke-test</code>, <code>regression-test</code>. Any other value is treated as an AI prompt.</p><script>\n\t\t\t\t\t\tfunction addWfPhase() {\n\t\t\t\t\t\t\tvar container = document.getElementById('wf-phases');\n\t\t\t\t\t\t\tvar cards = container.querySelectorAll('.klt-wf-phase-card');\n\t\t\t\t\t\t\tvar lastCard = cards[cards.length - 1];\n\t\t\t\t\t\t\tvar idx = cards.length;\n\t\t\t\t\t\t\tvar div = document.createElement('div');\n\t\t\t\t\t\t\tdiv.className = 'klt-wf-phase-card';\n\t\t\t\t\t\t\tvar header = document.createElement('div');\n\t\t\t\t\t\t\theader.className = 'klt-wf-phase-header';\n\t\t\t\t\t\t\tvar num = document.createElement('span');\n\t\t\t\t\t\t\tnum.className = 'klt-wf-phase-num';\n\t\t\t\t\t\t\tnum.textContent = String(idx);\n\t\t\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\t\t\tinput.type = 'text';\n\t\t\t\t\t\t\tinput.className = 'klt-input klt-wf-phase-name';\n\t\t\t\t\t\t\tinput.name = 'phase_' + (idx - 1) + '_name';\n\t\t\t\t\t\t\tinput.placeholder = 'New phase name';\n\t\t\t\t\t\t\tinput.autocomplete = 'off';\n\t\t\t\t\t\t\tvar delBtn = document.createElement('button');\n\t\t\t\t\t\t\tdelBtn.type = 'button';\n\t\t\t\t\t\t\tdelBtn.className = 'klt-cat-del-btn';\n\t\t\t\t\t\t\tdelBtn.title = 'Remove phase';\n\t\t\t\t\t\t\tdelBtn.onclick = function() { div.remove(); renumberWfPhases(); };\n\t\t\t\t\t\t\tvar delIcon = document.createElement('i');\n\t\t\t\t\t\t\tdelIcon.className = 'icon icon-x';\n\t\t\t\t\t\t\tdelBtn.appendChild(delIcon);\n\t\t\t\t\t\t\theader.appendChild(num);\n\t\t\t\t\t\t\theader.appendChild(input);\n\t\t\t\t\t\t\theader.appendChild(delBtn);\n\t\t\t\t\t\t\tvar ta = document.createElement('textarea');\n\t\t\t\t\t\t\tta.className = 'klt-textarea';\n\t\t\t\t\t\t\tta.name = 'phase_' + (idx - 1) + '_prompt';\n\t\t\t\t\t\t\tta.rows = 3;\n\t\t\t\t\t\t\tta.placeholder = 'AI prompt for this phase...';\n\t\t\t\t\t\t\tta.style.marginTop = '8px';\n\t\t\t\t\t\t\tta.style.minHeight = '60px';\n\t\t\t\t\t\t\t// Trigger inputs\n\t\t\t\t\t\t\tvar trigDiv = document.createElement('div');\n\t\t\t\t\t\t\ttrigDiv.className = 'klt-wf-triggers';\n\t\t\t\t\t\t\ttrigDiv.style.cssText = 'margin-top:8px;display:flex;gap:8px;';\n\t\t\t\t\t\t\t['before', 'after'].forEach(function(when) {\n\t\t\t\t\t\t\t\tvar wrap = document.createElement('div');\n\t\t\t\t\t\t\t\twrap.style.flex = '1';\n\t\t\t\t\t\t\t\tvar lbl = document.createElement('label');\n\t\t\t\t\t\t\t\tlbl.className = 'klt-field-label';\n\t\t\t\t\t\t\t\tlbl.style.cssText = 'font-size:0.65rem;margin-bottom:2px;';\n\t\t\t\t\t\t\t\tlbl.textContent = when.charAt(0).toUpperCase() + when.slice(1) + ' triggers';\n\t\t\t\t\t\t\t\tvar inp = document.createElement('input');\n\t\t\t\t\t\t\t\tinp.type = 'text';\n\t\t\t\t\t\t\t\tinp.className = 'klt-input klt-wf-trigger-' + when;\n\t\t\t\t\t\t\t\tinp.name = 'phase_' + (idx - 1) + '_trigger_' + when;\n\t\t\t\t\t\t\t\tinp.placeholder = 'e.g. run-tests, lint';\n\t\t\t\t\t\t\t\tinp.autocomplete = 'off';\n\t\t\t\t\t\t\t\tinp.style.fontSize = '0.75rem';\n\t\t\t\t\t\t\t\twrap.appendChild(lbl);\n\t\t\t\t\t\t\t\twrap.appendChild(inp);\n\t\t\t\t\t\t\t\ttrigDiv.appendChild(wrap);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tdiv.appendChild(header);\n\t\t\t\t\t\t\tdiv.appendChild(ta);\n\t\t\t\t\t\t\tdiv.appendChild(trigDiv);\n\t\t\t\t\t\t\tcontainer.insertBefore(div, lastCard);\n\t\t\t\t\t\t\trenumberWfPhases();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tfunction renumberWfPhases() {\n\t\t\t\t\t\t\tvar cards = document.querySelectorAll('#wf-phases .klt-wf-phase-card');\n\t\t\t\t\t\t\tcards.forEach(function(card, i) {\n\t\t\t\t\t\t\t\tvar num = card.querySelector('.klt-wf-phase-num');\n\t\t\t\t\t\t\t\tif (num) num.textContent = String(i + 1);\n\t\t\t\t\t\t\t\tvar nameInput = card.querySelector('.klt-wf-phase-name');\n\t\t\t\t\t\t\t\tif (nameInput) nameInput.name = 'phase_' + i + '_name';\n\t\t\t\t\t\t\t\tvar promptInput = card.querySelector('textarea');\n\t\t\t\t\t\t\t\tif (promptInput) promptInput.name = 'phase_' + i + '_prompt';\n\t\t\t\t\t\t\t\tvar beforeInput = card.querySelector('.klt-wf-trigger-before');\n\t\t\t\t\t\t\t\tif (beforeInput) beforeInput.name = 'phase_' + i + '_trigger_before';\n\t\t\t\t\t\t\t\tvar afterInput = card.querySelector('.klt-wf-trigger-after');\n\t\t\t\t\t\t\t\tif (afterInput) afterInput.name = 'phase_' + i + '_trigger_after';\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t</script></div></div><div class=\"klt-task-sidebar\"><button type=\"submit\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save workflow</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Task type</label><div class=\"klt-field-value\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><button type=\"button\" class=\"klt-add-btn klt-add-btn--outline\" style=\"margin-top:12px;max-width:200px;\" onclick=\"addWfPhase()\"><i class=\"icon icon-plus\"></i> Add phase</button><p class=\"klt-settings-desc\" style=\"margin-top:8px;font-size:0.7rem;color:var(--klt-fg-muted);\">Triggers: comma-separated skill names or shell commands. Built-in: <code>run-tests</code>, <code>lint</code>, <code>type-check</code>, <code>smoke-test</code>, <code>regression-test</code>. Any other value is treated as an AI prompt.</p><p class=\"klt-settings-desc\" style=\"margin-top:4px;font-size:0.7rem;color:var(--klt-fg-muted);\">Output section: the task description heading this phase must write its outcome into. A phase with an output section cannot be advanced past while that section is empty.</p><script>\n\t\t\t\t\t\tfunction addWfPhase() {\n\t\t\t\t\t\t\tvar container = document.getElementById('wf-phases');\n\t\t\t\t\t\t\tvar cards = container.querySelectorAll('.klt-wf-phase-card');\n\t\t\t\t\t\t\tvar lastCard = cards[cards.length - 1];\n\t\t\t\t\t\t\tvar idx = cards.length;\n\t\t\t\t\t\t\tvar div = document.createElement('div');\n\t\t\t\t\t\t\tdiv.className = 'klt-wf-phase-card';\n\t\t\t\t\t\t\tvar header = document.createElement('div');\n\t\t\t\t\t\t\theader.className = 'klt-wf-phase-header';\n\t\t\t\t\t\t\tvar num = document.createElement('span');\n\t\t\t\t\t\t\tnum.className = 'klt-wf-phase-num';\n\t\t\t\t\t\t\tnum.textContent = String(idx);\n\t\t\t\t\t\t\tvar input = document.createElement('input');\n\t\t\t\t\t\t\tinput.type = 'text';\n\t\t\t\t\t\t\tinput.className = 'klt-input klt-wf-phase-name';\n\t\t\t\t\t\t\tinput.name = 'phase_' + (idx - 1) + '_name';\n\t\t\t\t\t\t\tinput.placeholder = 'New phase name';\n\t\t\t\t\t\t\tinput.autocomplete = 'off';\n\t\t\t\t\t\t\tvar delBtn = document.createElement('button');\n\t\t\t\t\t\t\tdelBtn.type = 'button';\n\t\t\t\t\t\t\tdelBtn.className = 'klt-cat-del-btn';\n\t\t\t\t\t\t\tdelBtn.title = 'Remove phase';\n\t\t\t\t\t\t\tdelBtn.onclick = function() { div.remove(); renumberWfPhases(); };\n\t\t\t\t\t\t\tvar delIcon = document.createElement('i');\n\t\t\t\t\t\t\tdelIcon.className = 'icon icon-x';\n\t\t\t\t\t\t\tdelBtn.appendChild(delIcon);\n\t\t\t\t\t\t\theader.appendChild(num);\n\t\t\t\t\t\t\theader.appendChild(input);\n\t\t\t\t\t\t\theader.appendChild(delBtn);\n\t\t\t\t\t\t\tvar ta = document.createElement('textarea');\n\t\t\t\t\t\t\tta.className = 'klt-textarea';\n\t\t\t\t\t\t\tta.name = 'phase_' + (idx - 1) + '_prompt';\n\t\t\t\t\t\t\tta.rows = 3;\n\t\t\t\t\t\t\tta.placeholder = 'AI prompt for this phase...';\n\t\t\t\t\t\t\tta.style.marginTop = '8px';\n\t\t\t\t\t\t\tta.style.minHeight = '60px';\n\t\t\t\t\t\t\t// Output section input\n\t\t\t\t\t\t\tvar outWrap = document.createElement('div');\n\t\t\t\t\t\t\toutWrap.style.marginTop = '8px';\n\t\t\t\t\t\t\tvar outLbl = document.createElement('label');\n\t\t\t\t\t\t\toutLbl.className = 'klt-field-label';\n\t\t\t\t\t\t\toutLbl.style.cssText = 'font-size:0.65rem;margin-bottom:2px;';\n\t\t\t\t\t\t\toutLbl.textContent = 'Output section';\n\t\t\t\t\t\t\tvar outInp = document.createElement('input');\n\t\t\t\t\t\t\toutInp.type = 'text';\n\t\t\t\t\t\t\toutInp.className = 'klt-input klt-wf-phase-output';\n\t\t\t\t\t\t\toutInp.name = 'phase_' + (idx - 1) + '_output';\n\t\t\t\t\t\t\toutInp.placeholder = 'e.g. Design — leave empty for no required output';\n\t\t\t\t\t\t\toutInp.autocomplete = 'off';\n\t\t\t\t\t\t\toutInp.style.fontSize = '0.75rem';\n\t\t\t\t\t\t\toutWrap.appendChild(outLbl);\n\t\t\t\t\t\t\toutWrap.appendChild(outInp);\n\t\t\t\t\t\t\t// Trigger inputs\n\t\t\t\t\t\t\tvar trigDiv = document.createElement('div');\n\t\t\t\t\t\t\ttrigDiv.className = 'klt-wf-triggers';\n\t\t\t\t\t\t\ttrigDiv.style.cssText = 'margin-top:8px;display:flex;gap:8px;';\n\t\t\t\t\t\t\t['before', 'after'].forEach(function(when) {\n\t\t\t\t\t\t\t\tvar wrap = document.createElement('div');\n\t\t\t\t\t\t\t\twrap.style.flex = '1';\n\t\t\t\t\t\t\t\tvar lbl = document.createElement('label');\n\t\t\t\t\t\t\t\tlbl.className = 'klt-field-label';\n\t\t\t\t\t\t\t\tlbl.style.cssText = 'font-size:0.65rem;margin-bottom:2px;';\n\t\t\t\t\t\t\t\tlbl.textContent = when.charAt(0).toUpperCase() + when.slice(1) + ' triggers';\n\t\t\t\t\t\t\t\tvar inp = document.createElement('input');\n\t\t\t\t\t\t\t\tinp.type = 'text';\n\t\t\t\t\t\t\t\tinp.className = 'klt-input klt-wf-trigger-' + when;\n\t\t\t\t\t\t\t\tinp.name = 'phase_' + (idx - 1) + '_trigger_' + when;\n\t\t\t\t\t\t\t\tinp.placeholder = 'e.g. run-tests, lint';\n\t\t\t\t\t\t\t\tinp.autocomplete = 'off';\n\t\t\t\t\t\t\t\tinp.style.fontSize = '0.75rem';\n\t\t\t\t\t\t\t\twrap.appendChild(lbl);\n\t\t\t\t\t\t\t\twrap.appendChild(inp);\n\t\t\t\t\t\t\t\ttrigDiv.appendChild(wrap);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tdiv.appendChild(header);\n\t\t\t\t\t\t\tdiv.appendChild(ta);\n\t\t\t\t\t\t\tdiv.appendChild(outWrap);\n\t\t\t\t\t\t\tdiv.appendChild(trigDiv);\n\t\t\t\t\t\t\tcontainer.insertBefore(div, lastCard);\n\t\t\t\t\t\t\trenumberWfPhases();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tfunction renumberWfPhases() {\n\t\t\t\t\t\t\tvar cards = document.querySelectorAll('#wf-phases .klt-wf-phase-card');\n\t\t\t\t\t\t\tcards.forEach(function(card, i) {\n\t\t\t\t\t\t\t\tvar num = card.querySelector('.klt-wf-phase-num');\n\t\t\t\t\t\t\t\tif (num) num.textContent = String(i + 1);\n\t\t\t\t\t\t\t\tvar nameInput = card.querySelector('.klt-wf-phase-name');\n\t\t\t\t\t\t\t\tif (nameInput) nameInput.name = 'phase_' + i + '_name';\n\t\t\t\t\t\t\t\tvar promptInput = card.querySelector('textarea');\n\t\t\t\t\t\t\t\tif (promptInput) promptInput.name = 'phase_' + i + '_prompt';\n\t\t\t\t\t\t\t\tvar outputInput = card.querySelector('.klt-wf-phase-output');\n\t\t\t\t\t\t\t\tif (outputInput) outputInput.name = 'phase_' + i + '_output';\n\t\t\t\t\t\t\t\tvar beforeInput = card.querySelector('.klt-wf-trigger-before');\n\t\t\t\t\t\t\t\tif (beforeInput) beforeInput.name = 'phase_' + i + '_trigger_before';\n\t\t\t\t\t\t\t\tvar afterInput = card.querySelector('.klt-wf-trigger-after');\n\t\t\t\t\t\t\t\tif (afterInput) afterInput.name = 'phase_' + i + '_trigger_after';\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t</script></div></div><div class=\"klt-task-sidebar\"><button type=\"submit\" class=\"klt-add-btn\" style=\"width:100%;\"><i class=\"icon icon-check\"></i> Save workflow</button><div class=\"klt-detail-card\"><div class=\"klt-detail-fields\"><div class=\"klt-field\"><label class=\"klt-field-label\">Task type</label><div class=\"klt-field-value\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var15 string
-			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(wf.TaskType)
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(wf.TaskType)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 207, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 244, Col: 49}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Phases</label><div class=\"klt-field-value klt-field-value--mono\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var16 string
-			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(wf.Phases)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 211, Col: 93}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div></div><div class=\"klt-field\"><label class=\"klt-field-label\">Phases</label><div class=\"klt-field-value klt-field-value--mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div></div></div></div></div></form>")
+			var templ_7745c5c3_Var18 string
+			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(wf.Phases)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/templates/workflow_editor.templ`, Line: 248, Col: 93}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div></div></div></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/tomas-chudjak/kleidi-task/internal/ui/templates"
-	"github.com/go-chi/chi/v5"
 )
 
 type UIHandler struct {
@@ -194,7 +194,8 @@ func (h *UIHandler) TaskDetail(w http.ResponseWriter, r *http.Request) {
 	if wfService != nil {
 		history, _ = wfService.GetHistory(r.Context(), task.ID)
 	}
-	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path)).Render(r.Context(), w)
+	parent, children := h.childContext(r, taskService, task)
+	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path), parent, children).Render(r.Context(), w)
 }
 
 // TaskNewPage renders the detailed task creation page.
@@ -475,7 +476,8 @@ func (h *UIHandler) UpdateTaskField(w http.ResponseWriter, r *http.Request) {
 	if wfService != nil {
 		history, _ = wfService.GetHistory(r.Context(), task.ID)
 	}
-	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path)).Render(r.Context(), w)
+	parent, children := h.childContext(r, taskService, task)
+	templates.TaskPage(project, task, categories, commits, workflow, history, h.workflows(r, project.Path), parent, children).Render(r.Context(), w)
 }
 
 // AdvanceTask advances a task to the next workflow phase and redirects back to detail.
@@ -917,9 +919,10 @@ func (h *UIHandler) SaveConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var input struct {
-		DefaultPriority int64  `json:"default_priority"`
-		DefaultType     string `json:"default_type"`
-		AutoArchiveDays int64  `json:"auto_archive_days"`
+		DefaultPriority     int64  `json:"default_priority"`
+		DefaultType         string `json:"default_type"`
+		AutoArchiveDays     int64  `json:"auto_archive_days"`
+		TemplateEnforcement string `json:"template_enforcement"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
@@ -927,9 +930,10 @@ func (h *UIHandler) SaveConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := core.ProjectConfig{
-		DefaultPriority: input.DefaultPriority,
-		DefaultType:     input.DefaultType,
-		AutoArchiveDays: input.AutoArchiveDays,
+		DefaultPriority:     input.DefaultPriority,
+		DefaultType:         input.DefaultType,
+		AutoArchiveDays:     input.AutoArchiveDays,
+		TemplateEnforcement: core.ParseEnforcementMode(input.TemplateEnforcement),
 	}
 	if err := configService.SetAll(r.Context(), cfg); err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
@@ -1336,6 +1340,8 @@ func (h *UIHandler) UpdateTemplate(w http.ResponseWriter, r *http.Request) {
 	name, _ := input["name"].(string)
 	typ, _ := input["type"].(string)
 	desc, _ := input["description"].(string)
+	rules, _ := input["agent_rules"].(string)
+	reviewInstruction, _ := input["review_instruction"].(string)
 	var priority int64
 	switch v := input["priority"].(type) {
 	case float64:
@@ -1344,7 +1350,7 @@ func (h *UIHandler) UpdateTemplate(w http.ResponseWriter, r *http.Request) {
 		priority, _ = strconv.ParseInt(v, 10, 64)
 	}
 
-	_, err = tplService.Update(r.Context(), id, name, typ, priority, desc)
+	_, err = tplService.UpdateWithRules(r.Context(), id, name, typ, priority, desc, rules, reviewInstruction)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		return
@@ -1459,6 +1465,7 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 	// Parse phases, prompts, and triggers from numbered fields
 	var phases []string
 	prompts := map[string]string{}
+	outputs := map[string]string{}
 	triggers := map[string]core.Triggers{}
 	for i := 0; ; i++ {
 		nameKey := fmt.Sprintf("phase_%d_name", i)
@@ -1470,6 +1477,10 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		promptKey := fmt.Sprintf("phase_%d_prompt", i)
 		if prompt, ok := input[promptKey].(string); ok && prompt != "" {
 			prompts[name] = prompt
+		}
+		outputKey := fmt.Sprintf("phase_%d_output", i)
+		if output, ok := input[outputKey].(string); ok && strings.TrimSpace(output) != "" {
+			outputs[name] = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(output), "##"))
 		}
 		// Parse triggers
 		var t core.Triggers
@@ -1494,6 +1505,7 @@ func (h *UIHandler) UpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		Phases:       phases,
 		Triggers:     triggers,
 		PhasePrompts: prompts,
+		PhaseOutputs: outputs,
 	}
 
 	if err := wfService.UpdateWorkflow(r.Context(), wf); err != nil {
@@ -1596,4 +1608,20 @@ func splitTriggers(s string) []string {
 		}
 	}
 	return result
+}
+
+// childContext loads the parent and children of a task for the detail page.
+// Both are optional: a task that was never split has neither.
+func (h *UIHandler) childContext(r *http.Request, svc *core.TaskService, task core.Task) (*core.Task, []core.Task) {
+	var parent *core.Task
+	if task.ParentID != nil {
+		if p, err := svc.Get(r.Context(), *task.ParentID); err == nil {
+			parent = &p
+		}
+	}
+	children, err := svc.Children(r.Context(), task.ID)
+	if err != nil {
+		return parent, nil
+	}
+	return parent, children
 }

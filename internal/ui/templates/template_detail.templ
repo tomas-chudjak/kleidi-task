@@ -72,6 +72,32 @@ templ TemplateDetailPage(project core.Project, tpl core.TaskTemplate, workflows 
 							</script>
 						</div>
 					</div>
+					<div class="klt-detail-card">
+						<div class="klt-field">
+							<label class="klt-field-label" for="tpl-rules">Agent rules</label>
+							<span class="klt-field-hint">Instructions for the AI filling this template. Returned by <code>template_get</code> alongside the skeleton and never written into a task description.</span>
+							<textarea
+								class="klt-textarea"
+								id="tpl-rules"
+								name="agent_rules"
+								rows="8"
+								placeholder="One rule per line..."
+							>{ tpl.AgentRules }</textarea>
+						</div>
+					</div>
+					<div class="klt-detail-card">
+						<div class="klt-field">
+							<label class="klt-field-label" for="tpl-review">Review instruction</label>
+							<span class="klt-field-hint">The prompt <code>task_review</code> hands to the agent when reviewing a task of this type for gaps and conflicts.</span>
+							<textarea
+								class="klt-textarea"
+								id="tpl-review"
+								name="review_instruction"
+								rows="8"
+								placeholder="What the agent should check for..."
+							>{ tpl.ReviewInstruction }</textarea>
+						</div>
+					</div>
 			</div>
 
 			<!-- Sidebar -->

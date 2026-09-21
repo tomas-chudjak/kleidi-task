@@ -1,6 +1,7 @@
 package templates
 
 import "github.com/tomas-chudjak/kleidi-task/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/render"
 import "fmt"
 
 func boardTypeURL(slug, typ, current string) string {
@@ -112,7 +113,7 @@ templ BoardCard(task core.Task, slug string, workflows []core.WorkflowDef) {
 			@TypeBadge(string(task.Type), workflows)
 			<span class="klt-board-card-id">#{ fmt.Sprintf("%d", task.ID) }</span>
 		</div>
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-board-card-title">{ task.Title }</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-board-card-title">{ render.Title(task) }</a>
 		if task.Priority > 0 || task.Category != "" {
 			<div class="klt-board-card-meta">
 				if task.Category != "" {

@@ -1,6 +1,7 @@
 package templates
 
 import "github.com/tomas-chudjak/kleidi-task/internal/core"
+import "github.com/tomas-chudjak/kleidi-task/internal/render"
 import "fmt"
 
 type ArchiveFilter struct {
@@ -145,7 +146,7 @@ templ ArchiveRow(task core.Task, slug string, workflows []core.WorkflowDef) {
 		} else {
 			<span class="klt-category-tag klt-category-tag--empty"></span>
 		}
-		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ task.Title }</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/p/%s/t/%d", slug, task.ID)) } class="klt-task-title">{ render.Title(task) }</a>
 		<span class="klt-task-date">
 			if task.CompletedAt != nil {
 				{ task.CompletedAt.Format("2006-01-02") }

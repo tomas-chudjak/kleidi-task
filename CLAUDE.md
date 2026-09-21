@@ -51,6 +51,8 @@ Every surface renders task lists through `internal/render` — one column defini
 
 Rows keep the service-layer order (`priority DESC, created_at DESC`). Unset priority/category render as `–` (`render.EmptyCell`). The header line is `**<project>** — N open, M done`, and pagination appends `Page X/Y (total: Z)` only when there is more than one page.
 
+Parent/child structure rides **inside the title cell** (`render.Title`), never as a column of its own — a parent shows `Title (done/total)`, a child is prefixed with `render.ChildPrefix`. Splitting a task therefore never widens the table.
+
 **When answering "what tasks do we have":** call `task_list`, then **print the tool's text block verbatim**. Do not rebuild it as bullets, do not add or drop columns, do not re-sort rows, do not replace it with a prose summary. Commentary goes *after* the table, never instead of it. Use the structured `tasks` array for follow-up tool calls; use the text block for anything the user sees.
 
 The same rendering is reachable from the terminal:
@@ -60,6 +62,25 @@ klt list                # aligned table for humans
 klt list --format md    # byte-identical to what MCP returns
 klt list --format json  # raw tasks for scripts
 ```
+
+## Spec-First Task Flow
+
+A task description is a spec that accumulates, not a text written once at creation. Four mechanisms enforce that:
+
+1. **Template enforcement on create** — see the Task Workflow section below.
+2. **`## Open questions`** — `task` and `feature` templates carry this section. Anything an agent cannot answer from context goes there as a question, never as a "TBD" placeholder buried in another section. Templates also carry `agent_rules`, returned by `template_get` alongside the skeleton and never written into a task description.
+3. **`task_review` / `klt review <id>`** — the checkpoint before implementation. Reports missing and empty sections plus the type's review instruction, and performs **no writes**: the author accepts findings, which are then applied with `task_update`.
+4. **Phase outputs** — a workflow phase may declare a description section its work must land in (`workflows.phase_outputs`; feature `research → ## Design`, bug `reproducing → ## Root cause`). `task_advance` refuses to move past such a phase while that section is empty, so a design phase cannot leave its conclusion in the chat.
+
+Large work is split rather than described once:
+
+```bash
+klt split 42 "Schema and migration" "Service layer" "MCP and CLI wiring"
+```
+
+Children inherit the parent's type, priority and category, are ordered by `child_order`, and are limited to **one level** — a child cannot be split further. A parent cannot be completed while any child is open. The MCP equivalent is `task_split`; both call `TaskService.Split`.
+
+Section editing goes through `internal/core/sections.go` (`SectionContent`, `HasSectionContent`, `UpsertSection`, `AppendToSection`) — never rewrite a whole description to change one section.
 
 Changing a column means changing `render.TaskColumns` — then mirroring the order in `internal/ui/templates/project.templ` (`TaskList`/`TaskRow`) and the `grid-template-columns` rules in `internal/ui/static/css/style.css`. Never format a task list ad-hoc in a handler.
 
@@ -108,6 +129,21 @@ When working on a kleidi-task task, you MUST follow the task workflow:
 3. **Advance when done** — after completing the current phase, call `task_advance` to move to the next phase. Read the suggested skills and next phase instruction
 4. **Repeat until complete** — continue through all phases until the workflow is finished
 5. **Template-driven descriptions** — when creating a task, ALWAYS call `template_get(type)` first to fetch the template for the task type. Fill in each template section with relevant content based on the task context, then pass the completed template as the `description` to `task_create`
+
+This is enforced at the service layer, not by prompt alone. `TaskService.Create` validates the description against the template's `##` section headings for the task's type. The policy is the per-project `template_enforcement` setting:
+
+| Mode | Behaviour |
+|---|---|
+| `off` | no validation |
+| `warn` | logs missing sections via slog, creates the task (default — an upgrade never starts rejecting) |
+| `strict` | rejects `mcp` and `api` creates with `ErrInvalidInput` naming the missing sections |
+
+`cli` and `ui` are interactive sources: a human typing is not skipping the flow, so they are never rejected, and an empty description is filled with the template skeleton instead. An MCP create with an empty description is rejected rather than scaffolded — otherwise the agent could skip `template_get` and still pass. A task type with no template is never constrained.
+
+```bash
+klt config get                                 # show current settings
+klt config set template_enforcement strict     # this repo runs strict
+```
 
 Example flow for a feature task:
 ```

@@ -5,12 +5,12 @@ SELECT * FROM workflows WHERE task_type = ?;
 SELECT * FROM workflows ORDER BY task_type;
 
 -- name: CreateWorkflow :one
-INSERT INTO workflows (task_type, phases, triggers, phase_prompts, color, prefix, is_builtin)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO workflows (task_type, phases, triggers, phase_prompts, phase_outputs, color, prefix, is_builtin)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: UpdateWorkflow :exec
-UPDATE workflows SET phases = ?, triggers = ?, phase_prompts = ? WHERE task_type = ?;
+UPDATE workflows SET phases = ?, triggers = ?, phase_prompts = ?, phase_outputs = ? WHERE task_type = ?;
 
 -- name: UpdateWorkflowMeta :exec
 UPDATE workflows SET color = ?, prefix = ? WHERE task_type = ?;

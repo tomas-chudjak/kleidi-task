@@ -42,15 +42,19 @@ type Task struct {
 	Category    sql.NullString `json:"category"`
 	IsArchived  int64          `json:"is_archived"`
 	Phase       sql.NullString `json:"phase"`
+	ParentID    sql.NullInt64  `json:"parent_id"`
+	ChildOrder  int64          `json:"child_order"`
 }
 
 type TaskTemplate struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	Priority    int64     `json:"priority"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID                int64     `json:"id"`
+	Name              string    `json:"name"`
+	Type              string    `json:"type"`
+	Priority          int64     `json:"priority"`
+	Description       string    `json:"description"`
+	CreatedAt         time.Time `json:"created_at"`
+	AgentRules        string    `json:"agent_rules"`
+	ReviewInstruction string    `json:"review_instruction"`
 }
 
 type TasksFt struct {
@@ -67,6 +71,7 @@ type Workflow struct {
 	Color        string `json:"color"`
 	Prefix       string `json:"prefix"`
 	IsBuiltin    int64  `json:"is_builtin"`
+	PhaseOutputs string `json:"phase_outputs"`
 }
 
 type WorkflowHistory struct {

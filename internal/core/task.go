@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/tomas-chudjak/kleidi-task/internal/db/generated"
@@ -16,6 +18,7 @@ type TaskService struct {
 	queries   *generated.Queries
 	hooks     *HookService
 	templates *TemplateService
+	config    *ConfigService
 }
 
 // NewTaskService creates a new TaskService with the given database connection.
@@ -23,6 +26,7 @@ func NewTaskService(db *sql.DB) *TaskService {
 	return &TaskService{
 		db:      db,
 		queries: generated.New(db),
+		config:  NewConfigService(db),
 	}
 }
 
@@ -56,6 +60,59 @@ func (s *TaskService) fireHook(event HookEvent, task Task) {
 	}
 }
 
+// isInteractiveSource reports whether the entry point is a human typing rather
+// than a program. Interactive sources get the template skeleton filled in for
+// them; the template-driven flow (fetch template, fill every section, create)
+// is something only an AI client can actually follow.
+func isInteractiveSource(src Source) bool {
+	return src == SourceCLI || src == SourceUI
+}
+
+// applyTemplate fills an empty description with the template skeleton for
+// interactive sources, then validates the description against the template's
+// required sections according to the project's enforcement mode.
+//
+// A task type with no template is never constrained.
+func (s *TaskService) applyTemplate(ctx context.Context, input *CreateTaskInput) error {
+	if s.templates == nil {
+		return nil
+	}
+	tmpl, err := s.templates.GetByType(ctx, string(input.Type))
+	if err != nil || tmpl.Description == "" {
+		return nil
+	}
+
+	if strings.TrimSpace(input.Description) == "" && isInteractiveSource(input.Source) {
+		input.Description = tmpl.Description
+	}
+
+	mode := EnforcementWarn
+	if s.config != nil {
+		mode = s.config.EnforcementMode(ctx)
+	}
+	if mode == EnforcementOff {
+		return nil
+	}
+
+	missing := MissingSections(input.Description, ParseSections(tmpl.Description))
+	if len(missing) == 0 {
+		return nil
+	}
+
+	if mode == EnforcementStrict && !isInteractiveSource(input.Source) {
+		return fmt.Errorf(
+			"%w: description is missing template sections: %s — call template_get(type=%q), fill every section with content from the task context, then pass the completed text as the description",
+			ErrInvalidInput, strings.Join(missing, ", "), input.Type,
+		)
+	}
+
+	slog.Warn("task description does not follow the template",
+		"type", input.Type,
+		"source", input.Source,
+		"missing_sections", strings.Join(missing, ", "))
+	return nil
+}
+
 // Create creates a new task.
 func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, error) {
 	if input.Title == "" {
@@ -67,6 +124,10 @@ func (s *TaskService) Create(ctx context.Context, input CreateTaskInput) (Task, 
 
 	if input.Type == "" {
 		input.Type = TypeTask
+	}
+
+	if err := s.applyTemplate(ctx, &input); err != nil {
+		return Task{}, err
 	}
 
 	row, err := s.queries.CreateTask(ctx, generated.CreateTaskParams{
@@ -98,7 +159,9 @@ func (s *TaskService) Get(ctx context.Context, id int64) (Task, error) {
 		}
 		return Task{}, fmt.Errorf("getting task %d: %w", id, err)
 	}
-	return taskFromRow(row), nil
+	tasks := []Task{taskFromRow(row)}
+	s.attachChildProgress(ctx, tasks)
+	return tasks[0], nil
 }
 
 // List returns tasks matching the given filter (backward-compatible, no pagination info).
@@ -143,6 +206,7 @@ func (s *TaskService) ListWithCount(ctx context.Context, filter ListTasksFilter)
 	for i, row := range rows {
 		tasks[i] = taskFromRow(row)
 	}
+	s.attachChildProgress(ctx, tasks)
 
 	totalPages := (total + filter.Limit - 1) / filter.Limit
 	page := filter.Offset/filter.Limit + 1
@@ -235,6 +299,13 @@ func (s *TaskService) Update(ctx context.Context, id int64, input UpdateTaskInpu
 
 // Complete marks a task as done.
 func (s *TaskService) Complete(ctx context.Context, id int64) (Task, error) {
+	// A parent is done when its children are. Completing it early would hide
+	// open work behind a finished-looking row.
+	open, err := s.OpenChildCount(ctx, id)
+	if err == nil && open > 0 {
+		return Task{}, fmt.Errorf("%w (#%d has %d open) — complete them first", ErrHasOpenChildren, id, open)
+	}
+
 	row, err := s.queries.CompleteTask(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -496,6 +567,10 @@ func taskFromRow(row generated.Task) Task {
 	if row.Phase.Valid {
 		t.Phase = row.Phase.String
 	}
+	if row.ParentID.Valid {
+		t.ParentID = &row.ParentID.Int64
+	}
+	t.ChildOrder = row.ChildOrder
 	if row.Metadata.Valid {
 		var meta TaskMetadata
 		if json.Unmarshal([]byte(row.Metadata.String), &meta) == nil {
