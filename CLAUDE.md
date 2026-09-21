@@ -39,7 +39,7 @@ Consequences:
 - Every MCP client (each Claude Code session, Claude Desktop, Cursor) **spawns its own `klt mcp` child process** and talks to it over stdin/stdout. N sessions = N short-lived processes, each dying with its client. Running `klt` "in the background" shares nothing.
 - What is actually shared between sessions is the **SQLite state on disk**: `~/.tasks/registry.db` + each project's `.tasks/tasks.db`.
 - **Project resolution:** tools take an optional `project` (slug or `current`). Without it, the server walks up from the MCP process's cwd looking for `.tasks/` (`ProjectService.DetectProject`, same pattern as Git). With a slug, any session can reach any registered project via the registry — cross-project access works from anywhere.
-- Requirement for a client: `klt` on `$PATH` (installed at `/usr/local/bin/klt`) and one MCP server entry. Canonical config is the user-scope `~/.claude.json` top-level `mcpServers` under the name `kleidi` → `klt mcp`. Keep exactly one entry; duplicates under other names just spawn redundant processes with duplicate tool sets.
+- Requirement for a client: `klt` on `$PATH` (installed at `/usr/local/bin/klt`) and one MCP server entry. Canonical config is the user-scope `~/.claude.json` top-level `mcpServers` under the name `kleidi-task` → `klt mcp` — the same name the server advertises in `internal/mcp/server.go` and the one used in the README, `DEV.md` and `docs/mcp-usage.md`. Keep exactly one entry; duplicates under other names just spawn redundant processes with duplicate tool sets.
 
 ## Task List Output Contract (MANDATORY)
 
