@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/go-chi/chi/v5"
+	"github.com/tomas-chudjak/kleidi-task/internal/core"
 )
 
 type TaskHandler struct {
@@ -296,4 +296,60 @@ func (h *TaskHandler) Complete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, http.StatusOK, task)
+}
+
+// Split breaks a task into ordered child tasks.
+func (h *TaskHandler) Split(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	svc, err := h.taskServiceForSlug(slug)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	id, err := h.parseID(r)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	var input struct {
+		Children []core.ChildSpec `json:"children"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		respondError(w, fmt.Errorf("%w: %v", core.ErrInvalidInput, err))
+		return
+	}
+
+	children, err := svc.Split(r.Context(), id, input.Children)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	respondJSON(w, http.StatusCreated, children)
+}
+
+// Children lists a task's child tasks in order.
+func (h *TaskHandler) Children(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	svc, err := h.taskServiceForSlug(slug)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	id, err := h.parseID(r)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	children, err := svc.Children(r.Context(), id)
+	if err != nil {
+		respondError(w, err)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, children)
 }

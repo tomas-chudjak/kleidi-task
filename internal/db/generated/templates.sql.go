@@ -10,16 +10,18 @@ import (
 )
 
 const createTemplate = `-- name: CreateTemplate :one
-INSERT INTO task_templates (name, type, priority, description)
-VALUES (?, ?, ?, ?)
-RETURNING id, name, type, priority, description, created_at
+INSERT INTO task_templates (name, type, priority, description, agent_rules, review_instruction)
+VALUES (?, ?, ?, ?, ?, ?)
+RETURNING id, name, type, priority, description, created_at, agent_rules, review_instruction
 `
 
 type CreateTemplateParams struct {
-	Name        string `json:"name"`
-	Type        string `json:"type"`
-	Priority    int64  `json:"priority"`
-	Description string `json:"description"`
+	Name              string `json:"name"`
+	Type              string `json:"type"`
+	Priority          int64  `json:"priority"`
+	Description       string `json:"description"`
+	AgentRules        string `json:"agent_rules"`
+	ReviewInstruction string `json:"review_instruction"`
 }
 
 func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) (TaskTemplate, error) {
@@ -28,6 +30,8 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		arg.Type,
 		arg.Priority,
 		arg.Description,
+		arg.AgentRules,
+		arg.ReviewInstruction,
 	)
 	var i TaskTemplate
 	err := row.Scan(
@@ -37,6 +41,8 @@ func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) 
 		&i.Priority,
 		&i.Description,
 		&i.CreatedAt,
+		&i.AgentRules,
+		&i.ReviewInstruction,
 	)
 	return i, err
 }
@@ -51,7 +57,7 @@ func (q *Queries) DeleteTemplate(ctx context.Context, id int64) error {
 }
 
 const getTemplate = `-- name: GetTemplate :one
-SELECT id, name, type, priority, description, created_at FROM task_templates WHERE id = ?
+SELECT id, name, type, priority, description, created_at, agent_rules, review_instruction FROM task_templates WHERE id = ?
 `
 
 func (q *Queries) GetTemplate(ctx context.Context, id int64) (TaskTemplate, error) {
@@ -64,12 +70,14 @@ func (q *Queries) GetTemplate(ctx context.Context, id int64) (TaskTemplate, erro
 		&i.Priority,
 		&i.Description,
 		&i.CreatedAt,
+		&i.AgentRules,
+		&i.ReviewInstruction,
 	)
 	return i, err
 }
 
 const getTemplateByType = `-- name: GetTemplateByType :one
-SELECT id, name, type, priority, description, created_at FROM task_templates WHERE type = ? LIMIT 1
+SELECT id, name, type, priority, description, created_at, agent_rules, review_instruction FROM task_templates WHERE type = ? LIMIT 1
 `
 
 func (q *Queries) GetTemplateByType(ctx context.Context, type_ string) (TaskTemplate, error) {
@@ -82,12 +90,14 @@ func (q *Queries) GetTemplateByType(ctx context.Context, type_ string) (TaskTemp
 		&i.Priority,
 		&i.Description,
 		&i.CreatedAt,
+		&i.AgentRules,
+		&i.ReviewInstruction,
 	)
 	return i, err
 }
 
 const listTemplates = `-- name: ListTemplates :many
-SELECT id, name, type, priority, description, created_at FROM task_templates ORDER BY name
+SELECT id, name, type, priority, description, created_at, agent_rules, review_instruction FROM task_templates ORDER BY name
 `
 
 func (q *Queries) ListTemplates(ctx context.Context) ([]TaskTemplate, error) {
@@ -106,6 +116,8 @@ func (q *Queries) ListTemplates(ctx context.Context) ([]TaskTemplate, error) {
 			&i.Priority,
 			&i.Description,
 			&i.CreatedAt,
+			&i.AgentRules,
+			&i.ReviewInstruction,
 		); err != nil {
 			return nil, err
 		}
@@ -122,17 +134,19 @@ func (q *Queries) ListTemplates(ctx context.Context) ([]TaskTemplate, error) {
 
 const updateTemplate = `-- name: UpdateTemplate :one
 UPDATE task_templates
-SET name = ?, type = ?, priority = ?, description = ?
+SET name = ?, type = ?, priority = ?, description = ?, agent_rules = ?, review_instruction = ?
 WHERE id = ?
-RETURNING id, name, type, priority, description, created_at
+RETURNING id, name, type, priority, description, created_at, agent_rules, review_instruction
 `
 
 type UpdateTemplateParams struct {
-	Name        string `json:"name"`
-	Type        string `json:"type"`
-	Priority    int64  `json:"priority"`
-	Description string `json:"description"`
-	ID          int64  `json:"id"`
+	Name              string `json:"name"`
+	Type              string `json:"type"`
+	Priority          int64  `json:"priority"`
+	Description       string `json:"description"`
+	AgentRules        string `json:"agent_rules"`
+	ReviewInstruction string `json:"review_instruction"`
+	ID                int64  `json:"id"`
 }
 
 func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) (TaskTemplate, error) {
@@ -141,6 +155,8 @@ func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) 
 		arg.Type,
 		arg.Priority,
 		arg.Description,
+		arg.AgentRules,
+		arg.ReviewInstruction,
 		arg.ID,
 	)
 	var i TaskTemplate
@@ -151,6 +167,8 @@ func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) 
 		&i.Priority,
 		&i.Description,
 		&i.CreatedAt,
+		&i.AgentRules,
+		&i.ReviewInstruction,
 	)
 	return i, err
 }

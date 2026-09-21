@@ -38,9 +38,13 @@ type WorkflowDef struct {
 	Phases       []string            `json:"phases"`
 	Triggers     map[string]Triggers `json:"triggers"`
 	PhasePrompts map[string]string   `json:"phase_prompts"`
-	Color        string              `json:"color"`
-	Prefix       string              `json:"prefix"`
-	IsBuiltin    bool                `json:"is_builtin"`
+	// PhaseOutputs maps a phase to the description section its work must land
+	// in. A phase listed here cannot be advanced past while that section is
+	// still empty.
+	PhaseOutputs map[string]string `json:"phase_outputs"`
+	Color        string            `json:"color"`
+	Prefix       string            `json:"prefix"`
+	IsBuiltin    bool              `json:"is_builtin"`
 }
 
 // Triggers defines before/after skill triggers for a workflow phase.
@@ -62,8 +66,11 @@ type AdvanceResult struct {
 
 // WorkflowContext provides workflow info for a task.
 type WorkflowContext struct {
-	CurrentPhase    string   `json:"current_phase"`
-	CurrentPrompt   string   `json:"current_prompt,omitempty"`
+	CurrentPhase  string `json:"current_phase"`
+	CurrentPrompt string `json:"current_prompt,omitempty"`
+	// CurrentOutput names the description section this phase must write into,
+	// when it declares one.
+	CurrentOutput   string   `json:"current_output,omitempty"`
 	NextPhase       string   `json:"next_phase,omitempty"`
 	Phases          []string `json:"phases"`
 	PhaseIndex      int      `json:"phase_index"`
@@ -88,9 +95,10 @@ func (s *WorkflowService) GetWorkflow(ctx context.Context, taskType string) (Wor
 		if err == sql.ErrNoRows {
 			// Default fallback: simple 3-phase workflow
 			return WorkflowDef{
-				TaskType: taskType,
-				Phases:   []string{"todo", "doing", "done"},
-				Triggers: map[string]Triggers{},
+				TaskType:     taskType,
+				Phases:       []string{"todo", "doing", "done"},
+				Triggers:     map[string]Triggers{},
+				PhaseOutputs: map[string]string{},
 			}, nil
 		}
 		return WorkflowDef{}, fmt.Errorf("getting workflow: %w", err)
@@ -111,6 +119,7 @@ func (s *WorkflowService) GetContext(ctx context.Context, task Task) (WorkflowCo
 	wc := WorkflowContext{
 		CurrentPhase:  phase,
 		CurrentPrompt: wf.PhasePrompts[phase],
+		CurrentOutput: wf.PhaseOutputs[phase],
 		Phases:        wf.Phases,
 		PhaseIndex:    idx,
 	}
@@ -145,6 +154,17 @@ func (s *WorkflowService) Advance(ctx context.Context, taskID int64) (AdvanceRes
 
 	if idx >= len(wf.Phases)-1 {
 		return AdvanceResult{}, fmt.Errorf("task #%d is already in final phase %q", taskID, prevPhase)
+	}
+
+	// A phase that declares an output section must have produced it. Otherwise
+	// the workflow walks past a design step that left nothing behind.
+	if section, ok := wf.PhaseOutputs[prevPhase]; ok && section != "" {
+		if !HasSectionContent(task.Description, section) {
+			return AdvanceResult{}, fmt.Errorf(
+				"%w: phase %q must record its outcome under %q in the task description before advancing — write it there with task_update",
+				ErrInvalidInput, prevPhase, "## "+section,
+			)
+		}
 	}
 
 	nextPhase := wf.Phases[idx+1]
@@ -234,11 +254,11 @@ func (s *WorkflowService) executeShell(ctx context.Context, taskID int64, phase 
 func (s *WorkflowService) resolveAction(skillName string) PhaseAction {
 	// Built-in skill mappings
 	builtins := map[string]PhaseAction{
-		"run-tests":          {Type: "shell", Command: "go test ./...", Description: "Run test suite"},
-		"lint":               {Type: "shell", Command: "go vet ./...", Description: "Run linter"},
-		"type-check":         {Type: "shell", Command: "go build ./...", Description: "Type check"},
-		"smoke-test":         {Type: "shell", Command: "go test -short ./...", Description: "Quick smoke test"},
-		"regression-test":    {Type: "shell", Command: "go test -run TestRegression ./...", Description: "Regression tests"},
+		"run-tests":       {Type: "shell", Command: "go test ./...", Description: "Run test suite"},
+		"lint":            {Type: "shell", Command: "go vet ./...", Description: "Run linter"},
+		"type-check":      {Type: "shell", Command: "go build ./...", Description: "Type check"},
+		"smoke-test":      {Type: "shell", Command: "go test -short ./...", Description: "Quick smoke test"},
+		"regression-test": {Type: "shell", Command: "go test -run TestRegression ./...", Description: "Regression tests"},
 	}
 
 	if action, ok := builtins[skillName]; ok {
@@ -349,10 +369,12 @@ func (s *WorkflowService) UpdateWorkflow(ctx context.Context, wf WorkflowDef) er
 	phasesJSON, _ := json.Marshal(wf.Phases)
 	triggersJSON, _ := json.Marshal(wf.Triggers)
 	promptsJSON, _ := json.Marshal(wf.PhasePrompts)
+	outputsJSON, _ := json.Marshal(wf.PhaseOutputs)
 	return s.queries.UpdateWorkflow(ctx, generated.UpdateWorkflowParams{
 		Phases:       string(phasesJSON),
 		Triggers:     string(triggersJSON),
 		PhasePrompts: string(promptsJSON),
+		PhaseOutputs: string(outputsJSON),
 		TaskType:     wf.TaskType,
 	})
 }
@@ -371,6 +393,9 @@ func (s *WorkflowService) CreateWorkflow(ctx context.Context, wf WorkflowDef) (W
 	if wf.PhasePrompts == nil {
 		wf.PhasePrompts = map[string]string{}
 	}
+	if wf.PhaseOutputs == nil {
+		wf.PhaseOutputs = map[string]string{}
+	}
 	if wf.Color == "" {
 		wf.Color = "#e0e7ef"
 	}
@@ -378,12 +403,14 @@ func (s *WorkflowService) CreateWorkflow(ctx context.Context, wf WorkflowDef) (W
 	phasesJSON, _ := json.Marshal(wf.Phases)
 	triggersJSON, _ := json.Marshal(wf.Triggers)
 	promptsJSON, _ := json.Marshal(wf.PhasePrompts)
+	outputsJSON, _ := json.Marshal(wf.PhaseOutputs)
 
 	row, err := s.queries.CreateWorkflow(ctx, generated.CreateWorkflowParams{
 		TaskType:     wf.TaskType,
 		Phases:       string(phasesJSON),
 		Triggers:     string(triggersJSON),
 		PhasePrompts: string(promptsJSON),
+		PhaseOutputs: string(outputsJSON),
 		Color:        wf.Color,
 		Prefix:       wf.Prefix,
 		IsBuiltin:    0,
@@ -410,6 +437,7 @@ func workflowFromRow(row generated.Workflow) WorkflowDef {
 		TaskType:     row.TaskType,
 		Triggers:     map[string]Triggers{},
 		PhasePrompts: map[string]string{},
+		PhaseOutputs: map[string]string{},
 		Color:        row.Color,
 		Prefix:       row.Prefix,
 		IsBuiltin:    row.IsBuiltin != 0,
@@ -417,5 +445,6 @@ func workflowFromRow(row generated.Workflow) WorkflowDef {
 	json.Unmarshal([]byte(row.Phases), &wf.Phases)
 	json.Unmarshal([]byte(row.Triggers), &wf.Triggers)
 	json.Unmarshal([]byte(row.PhasePrompts), &wf.PhasePrompts)
+	json.Unmarshal([]byte(row.PhaseOutputs), &wf.PhaseOutputs)
 	return wf
 }

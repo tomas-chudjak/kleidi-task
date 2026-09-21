@@ -50,9 +50,11 @@ The template contains section headings (e.g. `## Steps to reproduce`, `## Expect
 
 **Rules for filling the template:**
 - Fill every section you have information for — even partial info is better than empty
-- If you don't have enough info for a section, leave a brief placeholder like "To be determined"
+- Anything you cannot answer from the user's input goes under `## Open questions` as a question. Never leave a placeholder like "To be determined" inside another section — a buried unknown is one the next session walks past with an invented assumption
 - Be specific and actionable — use the user's exact details, don't generalize
 - Never return the template with empty sections if the user gave you enough context to fill them
+- `template_get` also returns **agent rules** for the type. Follow them, and never copy them into the description
+- Every section heading from the template must appear in the description. When the project runs strict template enforcement, `task_create` rejects a description that is missing one
 
 **Example — `/new-task bug hello world nefunguje, vypise error "undefined variable" na riadku 42`:**
 
@@ -85,6 +87,10 @@ Program fails with error "undefined variable" on line 42
 - OS: To be determined
 - Version: To be determined
 ```
+
+(The `bug` template has no Open questions section — unknown environment values stay as
+placeholders there. For `task` and `feature`, which do have the section, an unknown becomes
+a question under `## Open questions` instead.)
 
 ### 5. Check for duplicates
 

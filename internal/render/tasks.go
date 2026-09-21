@@ -6,6 +6,10 @@
 //
 //	# | type | status | pri | category | title
 //
+// Parent/child structure rides inside the title cell — a parent shows its
+// progress as "(done/total)", a child is prefixed with ChildPrefix — so
+// splitting a task never widens the table.
+//
 // Renderers never re-sort: they preserve the order the service layer returned
 // (priority DESC, created_at DESC), so pagination and filters stay meaningful.
 package render
@@ -48,7 +52,24 @@ var TaskColumns = []Column{
 		return EmptyCell
 	}},
 	{"category", func(t core.Task) string { return orEmpty(t.Category) }},
-	{"title", func(t core.Task) string { return t.Title }},
+	{"title", Title},
+}
+
+// ChildPrefix marks a task that was split out of a parent. Parent/child
+// structure rides in the title cell rather than a column of its own, so the
+// canonical column set stays as documented.
+const ChildPrefix = "└ "
+
+// Title renders the title cell: a parent carries its child progress, a child
+// is indented under it.
+func Title(t core.Task) string {
+	if t.IsParent() {
+		return fmt.Sprintf("%s (%d/%d)", t.Title, t.ChildDone, t.ChildTotal)
+	}
+	if t.IsChild() {
+		return ChildPrefix + t.Title
+	}
+	return t.Title
 }
 
 // ListMeta is the optional context line rendered above a task list.

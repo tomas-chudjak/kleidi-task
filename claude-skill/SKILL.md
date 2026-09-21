@@ -89,7 +89,8 @@ When you create a task via `task_create` without a description, the response may
 
 **Rules for filling templates:**
 - Fill every section you have information for — even partial info is better than empty
-- If you don't have enough info for a section, leave the heading with a brief placeholder (e.g. "To be determined" or a question)
+- Anything you cannot answer from the user's message goes under `## Open questions` as a question. Never bury it as a "To be determined" placeholder inside another section
+- Follow the agent rules returned alongside the template, and never copy them into the description
 - Always write in English regardless of the user's language — all task content must be in English
 - Keep it concise but specific — the description should be actionable
 - Do NOT leave the template empty or just echo it back unchanged

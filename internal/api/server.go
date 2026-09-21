@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/tomas-chudjak/kleidi-task/internal/api/handlers"
 	"github.com/tomas-chudjak/kleidi-task/internal/api/middleware"
 	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/tomas-chudjak/kleidi-task/internal/ui"
-	"github.com/go-chi/chi/v5"
 )
 
 // NewRouter creates a chi router with all REST API routes.
@@ -44,6 +44,8 @@ func NewRouter(projectService *core.ProjectService) http.Handler {
 		r.Patch("/projects/{slug}/tasks/{id}", taskHandler.Update)
 		r.Delete("/projects/{slug}/tasks/{id}", taskHandler.Delete)
 		r.Post("/projects/{slug}/tasks/{id}/complete", taskHandler.Complete)
+		r.Post("/projects/{slug}/tasks/{id}/split", taskHandler.Split)
+		r.Get("/projects/{slug}/tasks/{id}/children", taskHandler.Children)
 		r.Post("/projects/{slug}/tasks/{id}/archive", taskHandler.Archive)
 		r.Post("/projects/{slug}/tasks/{id}/unarchive", taskHandler.Unarchive)
 	})

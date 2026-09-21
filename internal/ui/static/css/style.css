@@ -1021,6 +1021,51 @@ input, select, textarea {
 }
 /* Git activity */
 .klt-commit-list { display: flex; flex-direction: column; gap: 8px; }
+/* Parent/child tasks */
+.klt-toolbar-parent {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--k-font-mono);
+  font-size: 0.8rem;
+  color: var(--klt-fg-muted);
+  text-decoration: none;
+}
+.klt-toolbar-parent:hover { color: var(--klt-fg); }
+.klt-child-progress {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--klt-fg-muted);
+}
+.klt-child-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.klt-child-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--klt-fg);
+  text-decoration: none;
+}
+.klt-child-row:hover { background: var(--klt-card-bg); }
+.klt-child-order {
+  font-family: var(--k-font-mono);
+  font-size: 0.75rem;
+  color: var(--klt-fg-muted);
+  min-width: 1.2em;
+}
+.klt-child-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .klt-commit-row {
   display: flex;
   align-items: baseline;
@@ -1077,6 +1122,11 @@ input, select, textarea {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+.klt-field-hint {
+  font-size: 0.75rem;
+  color: var(--klt-fg-muted);
+  line-height: 1.4;
 }
 .klt-field-value {
   font-size: 0.95rem;

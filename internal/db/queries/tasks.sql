@@ -89,3 +89,23 @@ SELECT COUNT(*) as count FROM tasks WHERE is_archived = 1;
 UPDATE tasks SET is_archived = 1
 WHERE status = 'done' AND is_archived = 0
 AND completed_at IS NOT NULL AND completed_at < ?;
+
+-- name: ListChildren :many
+SELECT * FROM tasks WHERE parent_id = ? ORDER BY child_order ASC, id ASC;
+
+-- name: CountOpenChildren :one
+SELECT COUNT(*) FROM tasks WHERE parent_id = ? AND status != 'done';
+
+-- name: ListChildProgress :many
+SELECT parent_id,
+       COUNT(*) AS total,
+       CAST(SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) AS INTEGER) AS done
+FROM tasks
+WHERE parent_id IS NOT NULL
+GROUP BY parent_id;
+
+-- name: MaxChildOrder :one
+SELECT CAST(COALESCE(MAX(child_order), 0) AS INTEGER) FROM tasks WHERE parent_id = ?;
+
+-- name: SetTaskParent :exec
+UPDATE tasks SET parent_id = ?, child_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;

@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/tomas-chudjak/kleidi-task/internal/config"
 	"github.com/tomas-chudjak/kleidi-task/internal/core"
 	"github.com/tomas-chudjak/kleidi-task/internal/db"
-	"github.com/spf13/cobra"
 )
 
 var addCmd = &cobra.Command{
@@ -79,14 +79,6 @@ var addCmd = &cobra.Command{
 		taskService, err := projectService.TaskServiceFor(projectPath)
 		if err != nil {
 			return err
-		}
-
-		// CLI has no AI — append empty template as scaffold
-		if description == "" {
-			templateDesc := taskService.GetTemplateForType(cmd.Context(), string(taskType))
-			if templateDesc != "" {
-				description = templateDesc
-			}
 		}
 
 		task, err := taskService.Create(cmd.Context(), core.CreateTaskInput{

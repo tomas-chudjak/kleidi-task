@@ -11,9 +11,9 @@ import (
 )
 
 const createWorkflow = `-- name: CreateWorkflow :one
-INSERT INTO workflows (task_type, phases, triggers, phase_prompts, color, prefix, is_builtin)
-VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin
+INSERT INTO workflows (task_type, phases, triggers, phase_prompts, phase_outputs, color, prefix, is_builtin)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin, phase_outputs
 `
 
 type CreateWorkflowParams struct {
@@ -21,6 +21,7 @@ type CreateWorkflowParams struct {
 	Phases       string `json:"phases"`
 	Triggers     string `json:"triggers"`
 	PhasePrompts string `json:"phase_prompts"`
+	PhaseOutputs string `json:"phase_outputs"`
 	Color        string `json:"color"`
 	Prefix       string `json:"prefix"`
 	IsBuiltin    int64  `json:"is_builtin"`
@@ -32,6 +33,7 @@ func (q *Queries) CreateWorkflow(ctx context.Context, arg CreateWorkflowParams) 
 		arg.Phases,
 		arg.Triggers,
 		arg.PhasePrompts,
+		arg.PhaseOutputs,
 		arg.Color,
 		arg.Prefix,
 		arg.IsBuiltin,
@@ -46,6 +48,7 @@ func (q *Queries) CreateWorkflow(ctx context.Context, arg CreateWorkflowParams) 
 		&i.Color,
 		&i.Prefix,
 		&i.IsBuiltin,
+		&i.PhaseOutputs,
 	)
 	return i, err
 }
@@ -60,7 +63,7 @@ func (q *Queries) DeleteWorkflow(ctx context.Context, taskType string) error {
 }
 
 const getWorkflow = `-- name: GetWorkflow :one
-SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin FROM workflows WHERE task_type = ?
+SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin, phase_outputs FROM workflows WHERE task_type = ?
 `
 
 func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, error) {
@@ -75,6 +78,7 @@ func (q *Queries) GetWorkflow(ctx context.Context, taskType string) (Workflow, e
 		&i.Color,
 		&i.Prefix,
 		&i.IsBuiltin,
+		&i.PhaseOutputs,
 	)
 	return i, err
 }
@@ -158,7 +162,7 @@ func (q *Queries) ListWorkflowHistory(ctx context.Context, taskID int64) ([]Work
 }
 
 const listWorkflows = `-- name: ListWorkflows :many
-SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin FROM workflows ORDER BY task_type
+SELECT id, task_type, phases, triggers, phase_prompts, color, prefix, is_builtin, phase_outputs FROM workflows ORDER BY task_type
 `
 
 func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
@@ -179,6 +183,7 @@ func (q *Queries) ListWorkflows(ctx context.Context) ([]Workflow, error) {
 			&i.Color,
 			&i.Prefix,
 			&i.IsBuiltin,
+			&i.PhaseOutputs,
 		); err != nil {
 			return nil, err
 		}
@@ -209,13 +214,14 @@ func (q *Queries) SetTaskPhase(ctx context.Context, arg SetTaskPhaseParams) erro
 }
 
 const updateWorkflow = `-- name: UpdateWorkflow :exec
-UPDATE workflows SET phases = ?, triggers = ?, phase_prompts = ? WHERE task_type = ?
+UPDATE workflows SET phases = ?, triggers = ?, phase_prompts = ?, phase_outputs = ? WHERE task_type = ?
 `
 
 type UpdateWorkflowParams struct {
 	Phases       string `json:"phases"`
 	Triggers     string `json:"triggers"`
 	PhasePrompts string `json:"phase_prompts"`
+	PhaseOutputs string `json:"phase_outputs"`
 	TaskType     string `json:"task_type"`
 }
 
@@ -224,6 +230,7 @@ func (q *Queries) UpdateWorkflow(ctx context.Context, arg UpdateWorkflowParams) 
 		arg.Phases,
 		arg.Triggers,
 		arg.PhasePrompts,
+		arg.PhaseOutputs,
 		arg.TaskType,
 	)
 	return err

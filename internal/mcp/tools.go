@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tomas-chudjak/kleidi-task/internal/config"
@@ -196,16 +197,46 @@ type TemplateGetOutput struct {
 	Template *core.TaskTemplate `json:"template,omitempty"`
 }
 
+type TaskReviewInput struct {
+	Project string `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID      int64  `json:"id" jsonschema:"task ID to review"`
+}
+
+type TaskReviewOutput struct {
+	Review *core.TaskReview `json:"review,omitempty"`
+}
+
+type TaskSplitInput struct {
+	Project  string           `json:"project,omitempty" jsonschema:"project slug or 'current'"`
+	ID       int64            `json:"id" jsonschema:"ID of the task to split"`
+	Children []core.ChildSpec `json:"children" jsonschema:"ordered child tasks to create; each needs a title and may carry its own description"`
+}
+
+type TaskSplitOutput struct {
+	Parent   core.Task   `json:"parent"`
+	Children []core.Task `json:"children"`
+}
+
 func (s *Server) registerTools() {
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_create",
-		Description: "Create a new task or bug in a project. IMPORTANT: Before creating a task, call template_get to fetch the template for the task type, fill in each template section using the task context, and pass the completed template as the description.",
+		Description: "Create a new task or bug in a project. REQUIRED: call template_get first to fetch the template for the task type, fill in every template section using the task context, and pass the completed template as the description. This is validated server-side — when the project runs strict template enforcement, a description missing template sections is rejected with the list of missing headings.",
 	}, s.taskCreate)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "template_get",
 		Description: "Get the description template for a task type. Use this BEFORE task_create to fetch the template, fill in each section with relevant content, then pass the filled template as the description to task_create.",
 	}, s.templateGet)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_review",
+		Description: "Review a task description for gaps, conflicts and unmade decisions before implementation starts. Returns the description, the sections its type requires, and the review instruction — it performs no writes. Apply what you find with task_update: anything with a single obvious answer goes into its section, everything else becomes a question under '## Open questions'.",
+	}, s.taskReview)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name:        "task_split",
+		Description: "Split a task into ordered child tasks — the PR-sized chunks the work will land in. Children inherit the parent's type, priority and category; one without its own description gets the type's template skeleton, since the parent carries the spec. Nesting is one level: a child cannot be split further, and a parent cannot be completed while any child is open.",
+	}, s.taskSplit)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_list",
@@ -342,18 +373,105 @@ func (s *Server) taskCreate(ctx context.Context, req *mcp.CallToolRequest, input
 }
 
 func (s *Server) templateGet(ctx context.Context, req *mcp.CallToolRequest, input TemplateGetInput) (*mcp.CallToolResult, TemplateGetOutput, error) {
-	taskService, err := s.resolveTaskService(input.Project)
+	projectPath, err := s.resolveProjectPath(input.Project)
 	if err != nil {
 		return nil, TemplateGetOutput{}, err
 	}
 
-	templateDesc := taskService.GetTemplateForType(ctx, input.Type)
-	if templateDesc == "" {
+	templateService, err := s.projectService.TemplateServiceFor(projectPath)
+	if err != nil {
+		return nil, TemplateGetOutput{}, err
+	}
+
+	tmpl, err := templateService.GetByType(ctx, input.Type)
+	if err != nil || tmpl.Description == "" {
 		return textResult(fmt.Sprintf("No template found for type '%s'. Create the task without a template.", input.Type)), TemplateGetOutput{}, nil
 	}
 
-	text := fmt.Sprintf("Template for type '%s':\n\n%s\n\nFill in each section with content relevant to the task, then pass the completed text as the description to task_create.", input.Type, templateDesc)
-	return textResult(text), TemplateGetOutput{Template: &core.TaskTemplate{Type: input.Type, Description: templateDesc}}, nil
+	// Agent rules are returned alongside the skeleton, never concatenated into
+	// it: they instruct the agent filling the template and must not end up in
+	// the stored task description.
+	var b strings.Builder
+	fmt.Fprintf(&b, "Template for type '%s':\n\n%s\n", input.Type, tmpl.Description)
+	if tmpl.AgentRules != "" {
+		fmt.Fprintf(&b, "\nRules for filling this template (instructions for you — do NOT copy them into the description):\n\n%s\n", tmpl.AgentRules)
+	}
+	b.WriteString("\nFill in every section, then pass the completed text as the description to task_create. Anything you cannot answer from the available context belongs under '## Open questions' as a question — never as a placeholder inside another section.")
+
+	return textResult(b.String()), TemplateGetOutput{Template: &tmpl}, nil
+}
+
+func (s *Server) taskReview(ctx context.Context, req *mcp.CallToolRequest, input TaskReviewInput) (*mcp.CallToolResult, TaskReviewOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TaskReviewOutput{}, err
+	}
+
+	review, err := taskService.Review(ctx, input.ID)
+	if err != nil {
+		return nil, TaskReviewOutput{}, err
+	}
+
+	return textResult(formatReview(review)), TaskReviewOutput{Review: &review}, nil
+}
+
+func (s *Server) taskSplit(ctx context.Context, req *mcp.CallToolRequest, input TaskSplitInput) (*mcp.CallToolResult, TaskSplitOutput, error) {
+	taskService, err := s.resolveTaskService(input.Project)
+	if err != nil {
+		return nil, TaskSplitOutput{}, err
+	}
+
+	children, err := taskService.Split(ctx, input.ID, input.Children)
+	if err != nil {
+		return nil, TaskSplitOutput{}, err
+	}
+
+	parent, err := taskService.Get(ctx, input.ID)
+	if err != nil {
+		return nil, TaskSplitOutput{}, err
+	}
+
+	var b strings.Builder
+	fmt.Fprintf(&b, "Split %s #%d into %d child task(s):\n", parent.Type, parent.ID, len(children))
+	for _, c := range children {
+		fmt.Fprintf(&b, "%d. #%d %s\n", c.ChildOrder, c.ID, c.Title)
+	}
+	b.WriteString("\n#" + fmt.Sprintf("%d", parent.ID) + " cannot be completed until every child is done.")
+
+	return textResult(b.String()), TaskSplitOutput{Parent: parent, Children: children}, nil
+}
+
+// formatReview renders a review request for the agent. Structure first, then
+// the spec, then the instruction — the agent reads the constraints before the
+// content it is judging.
+func formatReview(r core.TaskReview) string {
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "Review of %s #%d: %s\n", r.Type, r.TaskID, r.Title)
+	if r.Phase != "" {
+		fmt.Fprintf(&b, "Phase: %s\n", r.Phase)
+	}
+
+	if len(r.MissingSections) > 0 {
+		fmt.Fprintf(&b, "\nMissing sections: %s\n", strings.Join(r.MissingSections, ", "))
+	}
+	if len(r.EmptySections) > 0 {
+		fmt.Fprintf(&b, "Empty sections: %s\n", strings.Join(r.EmptySections, ", "))
+	}
+	if len(r.MissingSections) == 0 && len(r.EmptySections) == 0 {
+		b.WriteString("\nAll required sections are present and non-empty.\n")
+	}
+	if r.OpenQuestions != "" {
+		fmt.Fprintf(&b, "\nAlready open:\n%s\n", r.OpenQuestions)
+	}
+
+	fmt.Fprintf(&b, "\n--- Current description ---\n\n%s\n", r.Description)
+
+	if r.Instruction != "" {
+		fmt.Fprintf(&b, "\n--- Review instruction ---\n\n%s\n", r.Instruction)
+	}
+
+	return b.String()
 }
 
 func (s *Server) taskList(ctx context.Context, req *mcp.CallToolRequest, input TaskListInput) (*mcp.CallToolResult, TaskListOutput, error) {
@@ -461,6 +579,9 @@ func (s *Server) taskGet(ctx context.Context, req *mcp.CallToolRequest, input Ta
 				text += fmt.Sprintf("\n\nWorkflow: %s (phase %d/%d)", wc.CurrentPhase, wc.PhaseIndex+1, len(wc.Phases))
 				if wc.CurrentPrompt != "" {
 					text += fmt.Sprintf("\nPhase instruction: %s", wc.CurrentPrompt)
+				}
+				if wc.CurrentOutput != "" {
+					text += fmt.Sprintf("\nPhase output: record this phase's outcome under '## %s' in the description via task_update. task_advance is blocked until that section has content.", wc.CurrentOutput)
 				}
 				if wc.NextPhase != "" {
 					text += fmt.Sprintf("\nNext phase: %s", wc.NextPhase)

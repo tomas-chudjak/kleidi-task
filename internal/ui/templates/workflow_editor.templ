@@ -70,6 +70,21 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 										placeholder="AI prompt for this phase..."
 										style="margin-top:8px;min-height:60px;"
 									>{ wf.PhasePrompts[phase] }</textarea>
+									<div style="margin-top:8px;">
+										<label class="klt-field-label" style="font-size:0.65rem;margin-bottom:2px;">Output section</label>
+										<input
+											type="text"
+											class="klt-input klt-wf-phase-output"
+											name={ fmt.Sprintf("phase_%d_output", i) }
+											value={ wf.PhaseOutputs[phase] }
+											placeholder="e.g. Design — leave empty for no required output"
+											autocomplete="off"
+											data-1p-ignore
+											data-lpignore="true"
+											data-form-type="other"
+											style="font-size:0.75rem;"
+										/>
+									</div>
 									<div class="klt-wf-triggers" style="margin-top:8px;display:flex;gap:8px;">
 										<div style="flex:1;">
 											<label class="klt-field-label" style="font-size:0.65rem;margin-bottom:2px;">Before triggers</label>
@@ -112,6 +127,9 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 					<p class="klt-settings-desc" style="margin-top:8px;font-size:0.7rem;color:var(--klt-fg-muted);">
 						Triggers: comma-separated skill names or shell commands. Built-in: <code>run-tests</code>, <code>lint</code>, <code>type-check</code>, <code>smoke-test</code>, <code>regression-test</code>. Any other value is treated as an AI prompt.
 					</p>
+					<p class="klt-settings-desc" style="margin-top:4px;font-size:0.7rem;color:var(--klt-fg-muted);">
+						Output section: the task description heading this phase must write its outcome into. A phase with an output section cannot be advanced past while that section is empty.
+					</p>
 					<script>
 						function addWfPhase() {
 							var container = document.getElementById('wf-phases');
@@ -149,6 +167,22 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 							ta.placeholder = 'AI prompt for this phase...';
 							ta.style.marginTop = '8px';
 							ta.style.minHeight = '60px';
+							// Output section input
+							var outWrap = document.createElement('div');
+							outWrap.style.marginTop = '8px';
+							var outLbl = document.createElement('label');
+							outLbl.className = 'klt-field-label';
+							outLbl.style.cssText = 'font-size:0.65rem;margin-bottom:2px;';
+							outLbl.textContent = 'Output section';
+							var outInp = document.createElement('input');
+							outInp.type = 'text';
+							outInp.className = 'klt-input klt-wf-phase-output';
+							outInp.name = 'phase_' + (idx - 1) + '_output';
+							outInp.placeholder = 'e.g. Design — leave empty for no required output';
+							outInp.autocomplete = 'off';
+							outInp.style.fontSize = '0.75rem';
+							outWrap.appendChild(outLbl);
+							outWrap.appendChild(outInp);
 							// Trigger inputs
 							var trigDiv = document.createElement('div');
 							trigDiv.className = 'klt-wf-triggers';
@@ -173,6 +207,7 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 							});
 							div.appendChild(header);
 							div.appendChild(ta);
+							div.appendChild(outWrap);
 							div.appendChild(trigDiv);
 							container.insertBefore(div, lastCard);
 							renumberWfPhases();
@@ -186,6 +221,8 @@ templ WorkflowEditorPage(project core.Project, wf core.WorkflowDef, workflows []
 								if (nameInput) nameInput.name = 'phase_' + i + '_name';
 								var promptInput = card.querySelector('textarea');
 								if (promptInput) promptInput.name = 'phase_' + i + '_prompt';
+								var outputInput = card.querySelector('.klt-wf-phase-output');
+								if (outputInput) outputInput.name = 'phase_' + i + '_output';
 								var beforeInput = card.querySelector('.klt-wf-trigger-before');
 								if (beforeInput) beforeInput.name = 'phase_' + i + '_trigger_before';
 								var afterInput = card.querySelector('.klt-wf-trigger-after');
