@@ -17,7 +17,7 @@ Single Go binary
     ↓
 4 entry points: MCP Server | CLI (cobra) | REST API (chi) | UI Server (HTMX)
     ↓
-Service Layer (TaskService, ProjectService, SearchService)
+Service Layer (TaskService, ProjectService, WorkflowService, TemplateService, …)
     ↓
 Repository Layer (sqlc generated)
     ↓
@@ -108,7 +108,7 @@ klt mcp                 # Start stdio MCP server (one process per MCP client)
 
 ## Tech Stack
 
-- **Go 1.22+** — single binary, no CGO (uses `modernc.org/sqlite`)
+- **Go 1.25+** — single binary, no CGO (uses `modernc.org/sqlite`)
 - **sqlc** — type-safe Go from SQL (queries in `internal/db/queries/`, output in `internal/db/generated/`)
 - **goose** — embedded migrations
 - **chi v5** — HTTP router
@@ -161,6 +161,7 @@ Never skip phases. Never ignore phase instructions. The workflow is the source o
 - **sqlc workflow:** modify SQL in `internal/db/queries/` → run `sqlc generate` → use generated code in `internal/db/generated/`
 - **NO manual DB changes — EVER.** All schema changes go through goose migration files. All data changes go through klt CLI/API/MCP. sqlite3 CLI is read-only for debugging. No ad-hoc SQL execution against production or dev databases.
 - **Service layer is the single source of truth** — all 4 entry points call the same services, no duplicated business logic
+- **Never rewrite a whole description to change one section** — use `internal/core/sections.go` (`SectionContent`, `UpsertSection`, `AppendToSection`)
 - **Project detection** follows Git pattern: walk up from cwd looking for `.tasks/` directory
 - **All static assets embedded** via `go:embed` — templates, CSS, JS are in the binary
 - **ahoylog-css additions** (badge, modal, dropdown, toast, spinner, empty) are PRs to the separate `ahoylog/ahoylog-css` repo, not part of this repo
@@ -174,14 +175,16 @@ Never skip phases. Never ignore phase instructions. The workflow is the source o
 - `internal/cli/` — cobra commands
 - `internal/api/` — chi REST API with middleware and handlers
 - `internal/ui/` — HTMX UI handlers, `.templ` templates, vendored static assets
+- `internal/render/` — canonical task list rendering (see the output contract above)
 - `internal/config/` — koanf configuration
+- `internal/claude/` — Claude Code skills embedded into the binary (`klt setup` installs them)
 - `claude-skill/` — pre-built Claude skill for MCP integration
 
 ## Implementation Order
 
-Follow the roadmap: v0.1 (CLI + MCP) → v0.2 (UI + REST) → v0.3 (Polish) → v0.4 (AI-native).
-
-Within v0.1: service layer first → CLI → MCP → binary build.
+v0.1 (CLI + MCP), v0.2 (UI + REST), v0.3 (Polish) and v0.4 (AI-native) have all shipped.
+For new work the order within a change is unchanged: **service layer first**, then the
+entry points that expose it (CLI, MCP, REST, UI), then docs.
 
 ## Naming
 

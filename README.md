@@ -1,6 +1,6 @@
 # KLEIDI task
 
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
 [![Docs](https://img.shields.io/badge/Docs-kleidi--task.pages.dev-blue)](https://kleidi-task.pages.dev)
@@ -24,12 +24,17 @@ Existing task managers are designed for humans clicking buttons. kleidi-task is 
 - Task types: task, bug, feature, hotfix, plus custom types
 - Full-text search (FTS5)
 - Categories, priorities, bulk operations
-- Task templates for quick creation
+- Task templates per type, enforced on create
+- Split a large task into ordered, PR-sized child tasks
 - Export/import as JSON or Markdown
 
 **AI Integration**
-- MCP server (stdio) for Claude Desktop, Cursor, VS Code
+- MCP server (stdio) for Claude Desktop, Cursor, VS Code — 24 tools
 - Task workflows with phase-based AI prompts
+- Spec-first task descriptions: templates the agent must fill, an `## Open questions`
+  section for unresolved decisions, and a review pass that reports gaps before
+  implementation starts
+- Workflow phases that must record their outcome in the task before advancing
 - Source code scanning for TODO/FIXME/HACK comments
 - Claude skill with auto-parse title prefixes
 
@@ -65,7 +70,7 @@ task build    # builds the klt binary
 task install  # symlinks to /usr/local/bin
 ```
 
-Requires Go 1.22+.
+Requires Go 1.25+.
 
 ### Docker
 
@@ -100,6 +105,38 @@ klt done 1
 klt serve
 # Open http://localhost:7842
 ```
+
+## Spec-first task flow
+
+A task description is a spec that accumulates, not text written once at creation.
+kleidi-task enforces that rather than trusting the AI to remember:
+
+```bash
+# 1. A task is created from its type's template — every section must be filled.
+#    With strict enforcement, an MCP or API create that skips the template is
+#    rejected with the list of missing headings.
+klt config set template_enforcement strict
+
+# 2. Before implementation, review the spec for gaps and conflicts.
+#    Reports missing and empty sections; writes nothing — you accept the findings.
+klt review 42
+
+# 3. Work advances through workflow phases. A phase can be required to record
+#    its outcome in the description (feature research -> "## Design"), and
+#    advancing is blocked while that section is empty.
+klt advance 42
+
+# 4. Large work is split into ordered, PR-sized children rather than one task.
+#    A parent cannot be completed while any child is open.
+klt split 42 "Schema and migration" "Service layer" "MCP and CLI wiring"
+```
+
+Anything the AI cannot answer from context lands under `## Open questions` in the
+task instead of becoming a silent assumption. Templates also carry **agent rules** —
+instructions handed to the AI filling them, never written into the task itself.
+
+Modes are per project: `off`, `warn` (default — logs, still creates) and `strict`.
+The CLI and web UI are never blocked; a human typing is not skipping the flow.
 
 ## MCP setup
 
@@ -156,13 +193,19 @@ See [docs/mcp-usage.md](docs/mcp-usage.md) for the full MCP tool reference.
 | `klt done <id>` | Mark task as complete |
 | `klt update <id>` | Update task fields |
 | `klt delete <id>` | Delete a task |
+| `klt split <id> <title>...` | Split a task into ordered child tasks |
+| `klt review <id>` | Review a description for gaps, conflicts and unmade decisions |
 | `klt advance <id>` | Advance task to next workflow phase |
 | `klt archive <id>` | Archive a completed task |
+| `klt unarchive <id>` | Restore an archived task back to done |
 | `klt suggest` | Scan source code for TODO/FIXME comments |
 | `klt export` | Export tasks as JSON or Markdown |
 | `klt import <file>` | Import tasks from file |
 | `klt serve` | Start HTTP server (UI + API) |
 | `klt mcp` | Start MCP stdio server |
+| `klt setup` | Install or update the Claude Code skills for this project |
+| `klt config get\|set` | View or change project configuration |
+| `klt project list\|stats` | Manage registered projects |
 | `klt user add <name>` | Add a user (enables Basic Auth) |
 | `klt backup` | Backup project database |
 | `klt version` | Show version |
@@ -176,7 +219,7 @@ You (CLI / Browser / Claude)
     |
   klt binary
     |
-  Service Layer (TaskService, ProjectService, WorkflowService)
+  Service Layer (TaskService, ProjectService, WorkflowService, TemplateService, ...)
     |
   SQLite
     |-- ~/.tasks/registry.db      (global project registry + users)
